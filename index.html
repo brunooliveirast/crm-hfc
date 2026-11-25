@@ -50,6 +50,23 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--verde);outline-o
 .filtros{display:flex;gap:8px;padding:10px 16px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--linha);background:#fff}
 .chip{white-space:nowrap;flex-shrink:0;border:1px solid var(--linha);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px}
 .chip.ativo{background:var(--verde);border-color:var(--verde);color:#fff}
+.chip.quente{border-color:#f0b9b3;color:var(--vermelho)}
+.chip.quente.ativo{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
+.zap{border:0;background:#25d366;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;text-decoration:none;flex-shrink:0}
+.zap:hover{filter:brightness(.92)}
+.cab-col .periodo{font-size:11px;color:var(--suave);font-weight:400}
+.rapidas{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.rapidas button{border:1px solid var(--linha);background:#fff;border-radius:999px;padding:3px 10px;font-size:12px}
+.rapidas button.ativo{background:var(--verde-claro);border-color:var(--verde);color:var(--verde-esc)}
+label.marcar{display:flex;gap:8px;align-items:center;color:var(--texto);font-size:14px;margin-top:14px}
+label.marcar input{width:auto}
+.lista-resp{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.item-resp{border:1px solid var(--linha);border-radius:8px;padding:10px}
+.item-resp textarea{min-height:90px;margin-top:6px}
+.item-resp .acoes{margin-top:8px}
+.dica{font-size:13px;color:var(--suave);margin:8px 0 0}
+.dup{margin-top:6px}
+.dup button{border:0;background:none;color:var(--azul);text-decoration:underline;padding:0;font-size:14px}
 .filtros select{width:auto;padding:5px 8px;font-size:13px}
 .filtros .resumo{margin-left:auto;font-size:13px;color:var(--suave)}
 .filtros .resumo b{color:var(--texto)}
@@ -138,6 +155,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--verde);outline-o
     <input class="busca" id="busca" type="search" placeholder="Buscar nome, telefone, e-mail…">
     <div class="direita">
       <span class="quem" id="quem"></span>
+      <button class="btn sec oculto" id="btn-respostas" title="Respostas prontas da equipe">Respostas</button>
       <button class="btn" id="btn-novo">+ Lead</button>
       <button class="btn sec" id="btn-sair">Sair</button>
     </div>
@@ -146,7 +164,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--verde);outline-o
     <button class="chip ativo" data-tipo="">Todos</button>
     <button class="chip" data-tipo="dayuse">Day Use</button>
     <button class="chip" data-tipo="hospedagem">Hospedagem</button>
-    <button class="chip" data-tipo="grupo">Grupo/evento</button>
+    <button class="chip" data-tipo="grupo">Grupo/excursão</button>
+    <button class="chip quente" id="chip-hoje" type="button" title="Retorno marcado pra hoje ou atrasado, ou card parado tempo demais">🔥 Atacar hoje <b id="n-hoje">0</b></button>
     <select id="f-resp" aria-label="Responsável"><option value="">Toda a equipe</option></select>
     <div class="resumo" id="resumo"></div>
   </div>
@@ -173,16 +192,24 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--verde);outline-o
         <div id="box-saida"><label for="c-saida">Check-out</label><input id="c-saida" type="date"></div>
         <div><label for="c-adultos">Adultos</label><input id="c-adultos" type="number" min="0" inputmode="numeric"></div>
         <div><label for="c-criancas">Crianças</label><input id="c-criancas" type="number" min="0" inputmode="numeric"></div>
+        <div class="inteira"><label class="marcar"><input id="c-pets" type="checkbox"> Vai levar pet 🐾</label></div>
         <div><label for="c-valor">Valor (R$)</label><input id="c-valor" inputmode="decimal" placeholder="0,00"></div>
         <div><label for="c-proximo">Próximo contato</label><input id="c-proximo" type="datetime-local"></div>
         <div class="inteira" id="box-motivo"><label for="c-motivo">Motivo da perda *</label><select id="c-motivo"></select></div>
-        <div class="inteira"><label for="c-etiquetas">Etiquetas (separe por vírgula)</label><input id="c-etiquetas" placeholder="aniversário, voltou, VIP"></div>
+        <div class="inteira"><label for="c-etiquetas">Etiquetas (toque pra marcar ou escreva, separando por vírgula)</label><input id="c-etiquetas" placeholder="aniversário, VIP">
+          <div class="rapidas" id="etq-rapidas"></div></div>
         <div class="inteira"><label for="c-obs">Observações</label><textarea id="c-obs" rows="3"></textarea></div>
       </div>
       <div class="erro" id="f-erro"></div>
+      <div class="dup oculto" id="f-dup"></div>
       <div class="acoes">
         <button class="btn" type="submit">Salvar</button>
+        <button class="btn sec" type="button" id="btn-avancar">Avançar etapa →</button>
         <a class="btn sec" id="btn-zap" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Abrir WhatsApp</a>
+      </div>
+      <div id="box-resp" class="oculto">
+        <label for="c-resposta">Mandar resposta pronta no WhatsApp</label>
+        <select id="c-resposta"></select>
       </div>
       <div class="secao" id="secao-hist">
         <h4>Anotações e histórico</h4>
@@ -194,6 +221,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--verde);outline-o
         <div class="acoes"><button class="btn perigo" type="button" id="btn-arquivar">Arquivar lead</button></div>
       </div>
     </form>
+  </aside>
+</div>
+
+<!-- ================= RESPOSTAS PRONTAS (gestor) ================= -->
+<div class="fundo-ficha oculto" id="fundo-resp">
+  <aside class="ficha" role="dialog" aria-modal="true" aria-labelledby="r-titulo">
+    <div class="cab-ficha">
+      <h3 id="r-titulo">Respostas prontas</h3>
+      <button class="fechar" id="btn-fechar-resp" aria-label="Fechar">×</button>
+    </div>
+    <div class="corpo-ficha">
+      <p class="dica">A equipe escolhe a resposta na ficha do lead e o WhatsApp abre com o texto já escrito. Quem envia é sempre o atendente. Use <b>{nome}</b> pra puxar o primeiro nome do cliente.</p>
+      <div class="acoes"><button class="btn" type="button" id="btn-add-resp">+ Nova resposta</button></div>
+      <div class="lista-resp" id="lista-resp"></div>
+    </div>
   </aside>
 </div>
 
@@ -212,10 +254,13 @@ const ETAPAS = [
   ['novo','Novo'],['atendimento','Em atendimento'],['orcamento','Orçamento enviado'],
   ['negociando','Negociando'],['ganho','Vendido'],['perdido','Perdido']
 ];
-const TIPOS = [['dayuse','Day Use'],['hospedagem','Hospedagem'],['grupo','Grupo/evento']];
-const ORIGENS = [['anuncio','Anúncio'],['instagram','Instagram'],['whatsapp','WhatsApp direto'],
-  ['site','Site'],['indicacao','Indicação'],['cliente','Já é cliente'],['outro','Outro']];
-const MOTIVOS = ['','Preço','Sem vaga na data','Sumiu / não respondeu','Fechou em outro lugar','Só pesquisando','Outro'];
+const TIPOS = [['dayuse','Day Use'],['hospedagem','Hospedagem'],['grupo','Grupo/excursão']];
+const ORIGENS = [['instagram','Instagram'],['facebook','Facebook'],['anuncio','Anúncio (Meta)'],['google','Google / site'],
+  ['indicacao','Indicação'],['cliente','Já é cliente'],['whatsapp','WhatsApp direto'],['booking','Booking'],
+  ['planne','Loja Planne'],['site','Site (outro)'],['outro','Outro']];
+const MOTIVOS = ['','Preço','Não respondeu o orçamento','Sem vaga na data','Sumiu / não respondeu','Fechou em outro lugar','Só pesquisando','Outro'];
+// Etiquetas rápidas: lista curta e fixa (o BotConversa tem 120+, metade lixo)
+const ETIQUETAS_RAPIDAS = ['aniversário','feriado','casal','família com crianças','excursão','VIP','cupom','retornar em 5 dias'];
 const PARADO_DIAS = { novo:1, atendimento:2, orcamento:2, negociando:3 }; // card fica vermelho depois disso
 const rotulo = (lista, v) => (lista.find(x => x[0] === v) || [, v])[1];
 
@@ -250,6 +295,9 @@ if (!MODO_DEMO) {
     async porTelefone(tel){ const { data } = await sb.from('leads').select('*').eq('telefone', tel).eq('arquivado', false).maybeSingle(); return data; },
     async historico(id){ const { data, error } = await sb.from('historico').select('*').eq('lead_id', id).order('criado_em', { ascending:false }); if (error) throw error; return data; },
     async anotar(id, texto, autor){ const { error } = await sb.from('historico').insert({ lead_id:id, tipo:'nota', texto, autor }); if (error) throw error; },
+    async respostas(){ const { data, error } = await sb.from('respostas').select('*').order('ordem').order('titulo'); if (error) throw error; return data; },
+    async salvarResposta(r){ const q = r.id ? sb.from('respostas').update({ titulo:r.titulo, texto:r.texto }).eq('id', r.id) : sb.from('respostas').insert({ titulo:r.titulo, texto:r.texto }); const { error } = await q; if (error) throw error; },
+    async apagarResposta(id){ const { error } = await sb.from('respostas').delete().eq('id', id); if (error) throw error; },
     aoMudar(fn){ sb.channel('leads').on('postgres_changes', { event:'*', schema:'public', table:'leads' }, fn).subscribe(); }
   };
 } else {
@@ -267,8 +315,9 @@ if (!MODO_DEMO) {
     {nome:'Exemplo Juliana Prado',telefone:'31900000005',tipo:'dayuse',origem:'whatsapp',etapa:'ganho',responsavel:'u4',valor:579.6,data_visita:dia(3),adultos:4,etapa_desde:h(10),ganho_em:h(10)},
     {nome:'Exemplo Pedro Alves',telefone:'31900000006',tipo:'dayuse',origem:'anuncio',etapa:'perdido',responsavel:'u3',motivo_perda:'Preço',etapa_desde:h(50),perdido_em:h(50)},
     {nome:'Exemplo Marcos Dias',telefone:'31900000007',tipo:'dayuse',origem:'anuncio',etapa:'novo',responsavel:null,adultos:2,etapa_desde:h(1)}
-  ].map((l, i) => ({ id:'d'+i, email:null, valor:null, data_saida:null, criancas:null, proximo_contato:null, motivo_perda:null, observacoes:null, etiquetas:[], arquivado:false, criado_em:l.etapa_desde, ...l }));
+  ].map((l, i) => ({ id:'d'+i, email:null, valor:null, data_saida:null, criancas:null, proximo_contato:null, motivo_perda:null, observacoes:null, etiquetas:[], pets:false, arquivado:false, criado_em:l.etapa_desde, ...l }));
   let H = L.map((l, i) => ({ id:i, lead_id:l.id, autor:'u1', tipo:'criado', para:l.etapa, criado_em:l.criado_em }));
+  let R = [{ id:1, titulo:'Exemplo: boas-vindas', texto:'Oi, {nome}! Aqui é do Hotel Fazenda Coninho. (texto de exemplo)' }];
   let logado = null;
   const valida = l => {
     if (l.etapa === 'ganho' && l.valor == null) throw { message:'ganho_tem_valor' };
@@ -293,6 +342,9 @@ if (!MODO_DEMO) {
       L[i] = n; return {...n}; },
     async porTelefone(tel){ return L.find(x => x.telefone === tel && !x.arquivado) || null; },
     async historico(id){ return H.filter(x => x.lead_id === id).sort((a, b) => b.criado_em.localeCompare(a.criado_em)); },
+    async respostas(){ return R.map(r => ({...r})); },
+    async salvarResposta(r){ if (r.id) Object.assign(R.find(x => x.id === r.id), r); else R.push({ ...r, id:Date.now() }); },
+    async apagarResposta(id){ R = R.filter(x => x.id !== id); },
     async anotar(id, texto){ H.push({ id:Date.now(), lead_id:id, autor:eu.id, tipo:'nota', texto, criado_em:new Date().toISOString() }); },
     aoMudar(){}
   };
@@ -301,7 +353,18 @@ if (!MODO_DEMO) {
 /* =====================================================================
    ESTADO E TELA
    ===================================================================== */
-const estado = { usuario:null, perfis:[], leads:[], filtroTipo:'', filtroResp:'', busca:'', aberto:null };
+const estado = { usuario:null, perfis:[], leads:[], filtroTipo:'', filtroResp:'', busca:'', aberto:null, quente:false, respostas:[] };
+const FECHADAS = ['ganho','perdido'];
+const inicioMes = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).getTime(); };
+// Amanhã às 10h, no formato do campo datetime-local
+function amanha10(){ const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(10,0,0,0); return d; }
+// Card que precisa de alguém hoje: retorno vencendo/atrasado ou parado tempo demais na etapa
+function precisaAtencao(l){
+  if (FECHADAS.includes(l.etapa)) return false;
+  const fimHoje = new Date(); fimHoje.setHours(23,59,59,999);
+  if (l.proximo_contato && new Date(l.proximo_contato).getTime() <= fimHoje.getTime()) return true;
+  return PARADO_DIAS[l.etapa] != null && diasDesde(l.etapa_desde) >= PARADO_DIAS[l.etapa];
+}
 const nomeDe = id => estado.perfis.find(p => p.id === id)?.nome || '';
 
 function traduzErro(e){
@@ -325,8 +388,10 @@ async function iniciar(){
     const meu = estado.perfis.find(p => p.id === estado.usuario.id);
     $('#quem').textContent = meu?.nome || estado.usuario.email;
     const ativos = estado.perfis.filter(p => p.ativo).map(p => [p.id, p.nome]);
-    preencher($('#f-resp'), [['', 'Toda a equipe'], ['__sem', 'Sem responsável'], ...ativos]);
+    preencher($('#f-resp'), [['', 'Toda a equipe'], ['__meus', 'Só os meus'], ['__sem', 'Sem responsável'], ...ativos]);
     preencher($('#c-resp'), [['', '— ninguém ainda —'], ...ativos]);
+    $('#btn-respostas').classList.toggle('oculto', meu?.papel !== 'gestor');
+    await carregarRespostas();
     await recarregar();
     api.aoMudar(() => recarregar());
   } catch (e) { toast(traduzErro(e)); }
@@ -337,26 +402,31 @@ async function recarregar(){
   desenhar();
 }
 
-function filtrados(){
-  const b = estado.busca.trim().toLowerCase(), bd = soDigitos(b);
+function filtrados(semQuente){
+  const b = estado.busca.trim().toLowerCase(), bd = soDigitos(b), mes = inicioMes();
+  const resp = estado.filtroResp;
   return estado.leads.filter(l =>
     (!estado.filtroTipo || l.tipo === estado.filtroTipo) &&
-    (!estado.filtroResp || (estado.filtroResp === '__sem' ? !l.responsavel : l.responsavel === estado.filtroResp)) &&
-    (!b || (l.nome || '').toLowerCase().includes(b) || (l.email || '').toLowerCase().includes(b) || (bd.length >= 3 && (l.telefone || '').includes(bd)))
+    (!resp || (resp === '__sem' ? !l.responsavel : resp === '__meus' ? l.responsavel === estado.usuario.id : l.responsavel === resp)) &&
+    (!b || (l.nome || '').toLowerCase().includes(b) || (l.email || '').toLowerCase().includes(b) || (bd.length >= 3 && (l.telefone || '').includes(bd))) &&
+    // Vendido/Perdido: só o mês atual no quadro (a busca encontra os antigos)
+    (b || !FECHADAS.includes(l.etapa) || new Date(l.etapa === 'ganho' ? (l.ganho_em || l.etapa_desde) : (l.perdido_em || l.etapa_desde)).getTime() >= mes) &&
+    (semQuente || !estado.quente || precisaAtencao(l))
   );
 }
 
 function desenhar(){
   const lista = filtrados();
-  const abertos = lista.filter(l => !['ganho','perdido'].includes(l.etapa));
+  const abertos = lista.filter(l => !FECHADAS.includes(l.etapa));
   const naMesa = lista.filter(l => ['orcamento','negociando'].includes(l.etapa)).reduce((s, l) => s + Number(l.valor || 0), 0);
   $('#resumo').innerHTML = `<b>${abertos.length}</b> em aberto · <b>${brl(naMesa)}</b> em orçamento/negociação`;
+  $('#n-hoje').textContent = filtrados(true).filter(precisaAtencao).length;
 
   $('#quadro').innerHTML = ETAPAS.map(([etapa, nome]) => {
     const cards = lista.filter(l => l.etapa === etapa);
     const soma = cards.reduce((s, l) => s + Number(l.valor || 0), 0);
     return `<section class="coluna" data-etapa="${etapa}">
-      <div class="cab-col"><h2>${nome}</h2><span class="qtd">${cards.length}</span></div>
+      <div class="cab-col"><h2>${nome}${FECHADAS.includes(etapa) ? ' <span class="periodo">este mês</span>' : ''}</h2><span class="qtd">${cards.length}</span></div>
       ${soma ? `<div class="soma">${brl(soma)}</div>` : ''}
       <div class="lista">${cards.length ? cards.map(cartao).join('') : '<div class="vazio-col">Nenhum lead</div>'}</div>
     </section>`;
@@ -375,13 +445,18 @@ function cartao(l){
   const pessoas = [l.adultos ? l.adultos + ' ad' : '', l.criancas ? l.criancas + ' cr' : ''].filter(Boolean).join(' + ');
   const quando = l.data_visita ? (l.tipo === 'hospedagem' && l.data_saida ? `${dataBR(l.data_visita)}→${dataBR(l.data_saida)}` : dataBR(l.data_visita)) : '';
   const resp = nomeDe(l.responsavel);
+  const etq = (l.etiquetas || []).slice(0, 3).map(e => `<span class="selo" style="background:#f1f2ef;color:var(--suave)">${esc(e)}</span>`).join('');
   return `<article class="cartao" draggable="true" data-id="${esc(l.id)}" style="border-left-color:${parado ? 'var(--vermelho)' : 'transparent'}">
     <div class="nome">${esc(l.nome)}</div>
-    <div class="linha"><span class="selo ${esc(l.tipo)}">${esc(rotulo(TIPOS, l.tipo))}</span>${quando ? `<span>📅 ${quando}</span>` : ''}${pessoas ? `<span>${pessoas}</span>` : ''}${follow}</div>
+    <div class="linha"><span class="selo ${esc(l.tipo)}">${esc(rotulo(TIPOS, l.tipo))}</span>${quando ? `<span>📅 ${quando}</span>` : ''}${pessoas ? `<span>${pessoas}</span>` : ''}${l.pets ? '<span title="Vai levar pet">🐾</span>' : ''}${follow}</div>
+    ${etq ? `<div class="linha" style="margin-top:4px">${etq}</div>` : ''}
     ${l.etapa === 'perdido' && l.motivo_perda ? `<div class="linha" style="margin-top:4px">${esc(l.motivo_perda)}</div>` : ''}
     <div class="rodape">
       <span>${l.valor != null ? `<b style="color:var(--texto)">${brl(l.valor)}</b> · ` : ''}<span class="${parado ? 'parado' : ''}">${dias === 0 ? 'hoje' : dias + 'd'} na etapa</span></span>
-      <span class="avatar ${resp ? '' : 'vazio'}" title="${esc(resp || 'Sem responsável')}">${resp ? esc(iniciais(resp)) : '?'}</span>
+      <span style="display:inline-flex;gap:6px;align-items:center">
+        ${linkZap(l.telefone) ? `<a class="zap" href="${linkZap(l.telefone)}" target="_blank" rel="noopener" title="Abrir WhatsApp" data-zap>✆</a>` : ''}
+        <span class="avatar ${resp ? '' : 'vazio'}" title="${esc(resp || 'Sem responsável')}">${resp ? esc(iniciais(resp)) : '?'}</span>
+      </span>
     </div>
   </article>`;
 }
@@ -392,10 +467,18 @@ function ajustarCampos(){
   $('#lbl-visita').textContent = tipo === 'hospedagem' ? 'Check-in' : tipo === 'grupo' ? 'Data do evento' : 'Data do Day Use';
   $('#box-saida').classList.toggle('oculto', tipo !== 'hospedagem');
   $('#box-motivo').classList.toggle('oculto', etapa !== 'perdido');
-  const tel = soDigitos($('#c-telefone').value);
-  const zap = $('#btn-zap');
-  if (tel.length >= 10){ zap.href = 'https://wa.me/' + (tel.startsWith('55') ? tel : '55' + tel); zap.classList.remove('oculto'); }
-  else zap.classList.add('oculto');
+  const link = linkZap($('#c-telefone').value), zap = $('#btn-zap');
+  if (link){ zap.href = link; zap.classList.remove('oculto'); } else zap.classList.add('oculto');
+  $('#box-resp').classList.toggle('oculto', !link || !estado.respostas.length);
+  const ult = ETAPAS.findIndex(e => e[0] === etapa);
+  $('#btn-avancar').classList.toggle('oculto', !estado.aberto || ult < 0 || ult >= 4);
+}
+
+function linkZap(t){ const tel = soDigitos(t); return tel.length >= 10 ? 'https://wa.me/' + (tel.startsWith('55') ? tel : '55' + tel) : ''; }
+
+// Orçamento enviado sem retorno marcado: sugere amanhã 10h (dá pra trocar)
+function sugerirRetorno(){
+  if ($('#c-etapa').value === 'orcamento' && !$('#c-proximo').value) $('#c-proximo').value = isoParaLocal(amanha10().toISOString());
 }
 
 async function abrirFicha(lead, etapaForcada){
@@ -417,8 +500,12 @@ async function abrirFicha(lead, etapaForcada){
   $('#c-proximo').value = isoParaLocal(l.proximo_contato);
   $('#c-motivo').value = l.motivo_perda || '';
   $('#c-etiquetas').value = (l.etiquetas || []).join(', ');
+  $('#c-pets').checked = !!l.pets;
+  desenharRapidas();
+  $('#c-resposta').value = '';
   $('#c-obs').value = l.observacoes || '';
   $('#f-erro').textContent = '';
+  $('#f-dup').classList.add('oculto');
   $('#nota').value = '';
   $('#secao-hist').classList.toggle('oculto', !lead);
   ajustarCampos();
@@ -461,7 +548,8 @@ function lerFicha(){
     valor: valorTxt === '' || isNaN(Number(valorTxt)) ? null : Number(valorTxt),
     proximo_contato: $('#c-proximo').value ? new Date($('#c-proximo').value).toISOString() : null,
     motivo_perda: etapa === 'perdido' ? ($('#c-motivo').value || null) : null,
-    etiquetas: $('#c-etiquetas').value.split(',').map(s => s.trim()).filter(Boolean),
+    etiquetas: lerEtiquetas(),
+    pets: $('#c-pets').checked,
     observacoes: $('#c-obs').value.trim() || null
   };
 }
@@ -482,11 +570,83 @@ async function salvarFicha(ev){
     const msg = traduzErro(e);
     erro.textContent = msg;
     if (/telefone já tem/.test(msg)) {
+      // Não joga fora o que foi digitado: mostra de quem é e deixa abrir se quiser
       const outro = await api.porTelefone(l.telefone);
-      if (outro && confirm(`${msg}\n\nÉ de: ${outro.nome}. Abrir esse card?`)) abrirFicha(outro);
+      if (outro) {
+        const box = $('#f-dup');
+        box.innerHTML = `É de <b>${esc(outro.nome)}</b> (${esc(rotulo(ETAPAS, outro.etapa))}). <button type="button">Abrir esse card</button>`;
+        box.querySelector('button').onclick = () => abrirFicha(outro);
+        box.classList.remove('oculto');
+      }
     }
   }
 }
+
+/* ---------- etiquetas rápidas ---------- */
+function lerEtiquetas(){ return [...new Set($('#c-etiquetas').value.split(',').map(s => s.trim()).filter(Boolean))]; }
+function desenharRapidas(){
+  const atuais = lerEtiquetas().map(e => e.toLowerCase());
+  $('#etq-rapidas').innerHTML = ETIQUETAS_RAPIDAS.map(e =>
+    `<button type="button" class="${atuais.includes(e.toLowerCase()) ? 'ativo' : ''}" data-etq="${esc(e)}">${esc(e)}</button>`).join('');
+}
+$('#etq-rapidas').addEventListener('click', e => {
+  const b = e.target.closest('[data-etq]'); if (!b) return;
+  const e1 = b.dataset.etq, lista = lerEtiquetas();
+  const i = lista.findIndex(x => x.toLowerCase() === e1.toLowerCase());
+  if (i >= 0) lista.splice(i, 1); else lista.push(e1);
+  $('#c-etiquetas').value = lista.join(', '); desenharRapidas();
+});
+$('#c-etiquetas').addEventListener('input', desenharRapidas);
+
+/* ---------- respostas prontas ---------- */
+async function carregarRespostas(){
+  try { estado.respostas = await api.respostas(); } catch { estado.respostas = []; }
+  preencher($('#c-resposta'), [['', '— escolha —'], ...estado.respostas.map(r => [String(r.id), r.titulo])]);
+}
+$('#c-resposta').addEventListener('change', e => {
+  const r = estado.respostas.find(x => String(x.id) === e.target.value); e.target.value = '';
+  const link = linkZap($('#c-telefone').value); if (!r || !link) return;
+  const primeiro = ($('#c-nome').value.trim().split(/\s+/)[0]) || '';
+  const texto = r.texto.replace(/\{nome\}/gi, primeiro);
+  window.open(link + '?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+  if (estado.aberto) api.anotar(estado.aberto.id, `Resposta pronta aberta no WhatsApp: "${r.titulo}"`, estado.usuario.id).then(() => desenharHistorico(estado.aberto.id)).catch(() => {});
+});
+
+function desenharListaResp(){
+  const itens = estado.respostas;
+  $('#lista-resp').innerHTML = itens.length ? itens.map(r => `
+    <div class="item-resp" data-id="${esc(r.id)}">
+      <input class="r-tit" value="${esc(r.titulo)}" placeholder="Título (ex.: Valores Day Use)">
+      <textarea class="r-txt" placeholder="Texto da mensagem">${esc(r.texto)}</textarea>
+      <div class="acoes"><button class="btn" type="button" data-salvar>Salvar</button><button class="btn perigo" type="button" data-apagar>Apagar</button></div>
+    </div>`).join('') : '<p class="dica">Nenhuma resposta ainda. Comece pelas mais usadas no BotConversa: valores do Day Use, hospedagem, pix, localização, voucher.</p>';
+}
+$('#btn-respostas').addEventListener('click', async () => { await carregarRespostas(); desenharListaResp(); $('#fundo-resp').classList.remove('oculto'); });
+$('#btn-fechar-resp').addEventListener('click', () => $('#fundo-resp').classList.add('oculto'));
+$('#fundo-resp').addEventListener('click', e => { if (e.target.id === 'fundo-resp') $('#fundo-resp').classList.add('oculto'); });
+$('#btn-add-resp').addEventListener('click', () => {
+  if ($('#lista-resp .item-resp[data-id=""]')) return;
+  if (!estado.respostas.length) $('#lista-resp').innerHTML = '';
+  $('#lista-resp').insertAdjacentHTML('afterbegin', `<div class="item-resp" data-id="">
+    <input class="r-tit" placeholder="Título (ex.: Valores Day Use)"><textarea class="r-txt" placeholder="Texto da mensagem. Use {nome} pro primeiro nome."></textarea>
+    <div class="acoes"><button class="btn" type="button" data-salvar>Salvar</button></div></div>`);
+  $('#lista-resp .r-tit').focus();
+});
+$('#lista-resp').addEventListener('click', async e => {
+  const item = e.target.closest('.item-resp'); if (!item) return;
+  const id = item.dataset.id ? Number(item.dataset.id) : null;
+  try {
+    if (e.target.closest('[data-salvar]')) {
+      const titulo = item.querySelector('.r-tit').value.trim(), texto = item.querySelector('.r-txt').value.trim();
+      if (!titulo || !texto) { toast('Preencha título e texto.'); return; }
+      await api.salvarResposta({ id, titulo, texto }); toast('Resposta salva.');
+    } else if (e.target.closest('[data-apagar]')) {
+      if (!confirm('Apagar essa resposta pronta?')) return;
+      await api.apagarResposta(id); toast('Apagada.');
+    } else return;
+    await carregarRespostas(); desenharListaResp();
+  } catch (err) { toast(traduzErro(err)); }
+});
 
 /* ---------- arrastar e soltar (computador) ---------- */
 let arrastado = null;
@@ -499,7 +659,9 @@ document.addEventListener('drop', async e => {
   const lead = estado.leads.find(l => l.id === id), etapa = col.dataset.etapa;
   if (!lead || lead.etapa === etapa) return;
   if ((etapa === 'ganho' && lead.valor == null) || (etapa === 'perdido' && !lead.motivo_perda)) { abrirFicha(lead, etapa); return; }
-  try { await api.mudar(id, { etapa }); await recarregar(); toast(`${lead.nome} → ${rotulo(ETAPAS, etapa)}`); }
+  const mudanca = { etapa };
+  if (etapa === 'orcamento' && !lead.proximo_contato) mudanca.proximo_contato = amanha10().toISOString();
+  try { await api.mudar(id, mudanca); await recarregar(); toast(`${lead.nome} → ${rotulo(ETAPAS, etapa)}${mudanca.proximo_contato ? ' · retorno amanhã 10h' : ''}`); }
   catch (err) { toast(traduzErro(err)); }
 });
 
@@ -518,13 +680,24 @@ $('#fundo-ficha').addEventListener('click', e => { if (e.target.id === 'fundo-fi
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#fundo-ficha').classList.contains('oculto')) fecharFicha(); });
 $('#form-ficha').addEventListener('submit', salvarFicha);
 ['#c-tipo','#c-etapa','#c-telefone'].forEach(s => $(s).addEventListener('input', ajustarCampos));
-$('#quadro').addEventListener('click', e => { const c = e.target.closest('.cartao'); if (c) abrirFicha(estado.leads.find(l => l.id === c.dataset.id)); });
+$('#c-etapa').addEventListener('input', sugerirRetorno);
+$('#btn-avancar').addEventListener('click', () => {
+  const i = ETAPAS.findIndex(e => e[0] === $('#c-etapa').value);
+  if (i < 0 || i >= 4) return;
+  $('#c-etapa').value = ETAPAS[i + 1][0]; ajustarCampos(); sugerirRetorno();
+  if (ETAPAS[i + 1][0] === 'ganho' && !$('#c-valor').value) { $('#f-erro').textContent = 'Confirme o valor da venda e salve.'; $('#c-valor').focus(); return; }
+  $('#form-ficha').requestSubmit();
+});
+$('#quadro').addEventListener('click', e => { if (e.target.closest('[data-zap]')) return; const c = e.target.closest('.cartao'); if (c) abrirFicha(estado.leads.find(l => l.id === c.dataset.id)); });
 $('#busca').addEventListener('input', e => { estado.busca = e.target.value; desenhar(); });
 $('#f-resp').addEventListener('change', e => { estado.filtroResp = e.target.value; desenhar(); });
-document.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('.chip').forEach(x => x.classList.remove('ativo')); b.classList.add('ativo');
+document.querySelectorAll('.chip[data-tipo]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.chip[data-tipo]').forEach(x => x.classList.remove('ativo')); b.classList.add('ativo');
   estado.filtroTipo = b.dataset.tipo; desenhar();
 }));
+$('#chip-hoje').addEventListener('click', () => { estado.quente = !estado.quente; $('#chip-hoje').classList.toggle('ativo', estado.quente); desenhar(); });
+// Atualiza contadores de "parado" e "retornar hoje" mesmo sem ninguém mexer
+setInterval(() => { if ($('#fundo-ficha').classList.contains('oculto')) desenhar(); }, 5 * 60 * 1000);
 $('#btn-nota').addEventListener('click', async () => {
   const t = $('#nota').value.trim(); if (!t || !estado.aberto) return;
   try { await api.anotar(estado.aberto.id, t, estado.usuario.id); $('#nota').value = ''; desenharHistorico(estado.aberto.id); }
