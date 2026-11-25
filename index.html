@@ -269,7 +269,20 @@ label.marcar input{width:auto}
 .btn.espera{opacity:.5;pointer-events:none}
 
 /* ---------- chat da equipe ---------- */
-#ver-equipe{display:flex;flex-direction:column;overflow:hidden;padding-bottom:16px}
+#ver-equipe,#ver-conversas{display:flex;flex-direction:column;overflow:hidden;padding-bottom:16px}
+.wa-col{display:flex;flex-direction:column;min-height:0;min-width:0;gap:8px}
+.wa-col .chat-lista{flex:1;min-height:0}
+.wa-lado{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.wa-lado small{font-size:11px;color:var(--suave)}
+.chat-item.nova .tx b{font-weight:800}
+.chat-item.nova .tx span{color:var(--texto);font-weight:600}
+.wa-rapidas{display:flex;gap:6px;overflow-x:auto;padding:8px 14px 0;scrollbar-width:none}
+.wa-rapidas::-webkit-scrollbar{display:none}
+.wa-rapidas button{flex-shrink:0;border:1px solid var(--linha);background:var(--card2);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--suave)}
+.wa-janela{padding:6px 14px 0;font-size:12px;color:var(--suave)}
+.msg .q .falhou{color:var(--vermelho);font-weight:700}
+.msg img{display:block;max-width:240px;max-height:260px;border-radius:10px;margin-bottom:4px}
+.chat-cab .selo{flex-shrink:0}
 .chat{flex:1;min-height:0;display:grid;grid-template-columns:260px 1fr;gap:14px}
 .chat-lista{background:var(--card);border:1px solid var(--linha);border-radius:16px;overflow-y:auto;padding:8px}
 .chat-lista h4{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--suave);margin:10px 8px 4px}
@@ -347,6 +360,8 @@ label.marcar input{width:auto}
   .filtros #btn-pegar{order:-1}
   .dp-filtros{grid-template-columns:1fr 1fr}
   .chat{grid-template-columns:1fr}
+  .chat.aberta .wa-col{display:none}
+  .chat:not(.aberta) .wa-col{min-height:0;height:100%}
   .chat .chat-conv{display:none}
   .chat.aberta .chat-conv{display:flex}
   .chat.aberta .chat-lista{display:none}
@@ -381,6 +396,7 @@ label.marcar input{width:auto}
     <img class="emblema" data-marca="emblemaBranco" alt="Coninho">
     <button data-ver="painel"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Painel</button>
     <button data-ver="funil"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/></svg>Funil</button>
+    <button data-ver="conversas"><svg viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4.2A8 8 0 1 1 20 11.5z"/></svg>Conversas<span class="pino oculto" id="pino-wa"></span></button>
     <button data-ver="followup"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Follow-up<span class="pino oculto" id="pino-fu"></span></button>
     <button data-ver="relatorios"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h5M10 16h5"/></svg>Relatórios</button>
     <button data-ver="equipe"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Equipe<span class="pino oculto" id="pino-chat"></span></button>
@@ -451,6 +467,24 @@ label.marcar input{width:auto}
         <span class="rel-livre oculto" id="rel-livre"><input type="date" id="rel-de" aria-label="De"><span>a</span><input type="date" id="rel-ate" aria-label="Até"><button class="btn mini" type="button" id="rel-aplicar">Aplicar</button></span>
       </div>
       <div id="rel-conteudo"></div>
+    </div>
+
+    <!-- CONVERSAS (WhatsApp dentro do CRM) -->
+    <div class="ver oculto" id="ver-conversas">
+      <div class="aviso-zap oculto" id="wa-aviso" style="margin-bottom:12px"></div>
+      <div class="chat" id="wa">
+        <div class="wa-col">
+          <input id="wa-busca" type="search" placeholder="Buscar conversa…" aria-label="Buscar conversa">
+          <div class="chat-lista" id="wa-lista"></div>
+        </div>
+        <div class="chat-conv">
+          <div class="chat-cab"><button class="btn sec mini voltar" type="button" id="wa-voltar">‹</button><h3 id="wa-titulo"></h3><span class="selo etq" id="wa-etapa"></span><button class="btn sec mini" type="button" id="wa-ficha">Ficha</button></div>
+          <div class="chat-msgs" id="wa-msgs"></div>
+          <div class="wa-janela oculto" id="wa-janela"></div>
+          <div class="wa-rapidas" id="wa-rapidas"></div>
+          <form class="chat-form" id="wa-form"><textarea id="wa-texto" placeholder="Mensagem" maxlength="4000" aria-label="Mensagem pro cliente"></textarea><button class="btn" type="submit" id="wa-enviar">Enviar</button></form>
+        </div>
+      </div>
     </div>
 
     <!-- EQUIPE (chat interno) -->
@@ -740,7 +774,7 @@ const ETIQUETAS_RAPIDAS = ['aniversário','feriado','casal','família com crian�
 const PARADO_DIAS = { novo:1, atendimento:2, orcamento:2, negociando:3 }; // card fica vermelho depois disso
 const FECHADAS = ['ganho','perdido'];
 const SETORES = [['comercial','Comercial'],['reservas','Reservas'],['financeiro','Financeiro']];
-const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', followup:'Follow-up', relatorios:'Relatórios', equipe:'Equipe', base:'Base de leads', disparos:'Disparos', ajustes:'Ajustes' };
+const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', conversas:'Conversas', followup:'Follow-up', relatorios:'Relatórios', equipe:'Equipe', base:'Base de leads', disparos:'Disparos', ajustes:'Ajustes' };
 const rotulo = (lista, v) => (lista.find(x => x[0] === v) || [, v])[1];
 
 /* ---------- utilidades ---------- */
@@ -859,12 +893,16 @@ if (!MODO_DEMO) {
     async mensagens(){ const { data, error } = await sb.from('mensagens').select('*,leads(nome)').order('criado_em', { ascending:false }).limit(400); if (error) throw error; return data.reverse().map(m => ({ ...m, lead_nome: m.leads?.nome })); },
     async enviarMensagem(m){ const { error } = await sb.from('mensagens').insert({ canal:m.canal || null, para:m.para || null, lead_id:m.lead_id || null, texto:m.texto }); if (error) throw error; },
     aoMensagem(fn){ sb.channel('mensagens').on('postgres_changes', { event:'INSERT', schema:'public', table:'mensagens' }, p => fn(p.new)).subscribe(); },
+    async conversas(){ const { data, error } = await L().not('ultima_msg_em', 'is', null).order('ultima_msg_em', { ascending:false }).limit(300); if (error) throw error; return data; },
+    async waMensagens(id){ const { data, error } = await sb.from('wa_mensagens').select('*').eq('lead_id', id).order('criado_em', { ascending:false }).limit(300); if (error) throw error; return data.reverse(); },
+    async waEnviar(id, texto){ const { data, error } = await sb.functions.invoke('wa-enviar', { body:{ lead_id:id, texto } }); if (error) throw error; if (data?.erro) throw { message:data.erro }; },
+    aoWhats(fn){ sb.channel('wa').on('postgres_changes', { event:'*', schema:'public', table:'wa_mensagens' }, p => fn(p.new)).subscribe(); },
     aoMudar(fn){ sb.channel('leads').on('postgres_changes', { event:'*', schema:'public', table:'leads' }, fn).subscribe(); }
   };
 } else {
   // Dados de exemplo (fictícios, gerados). Ficam só na memória desta aba.
   const eu = { id:'u1', email:'demo@coninho.local' };
-  let CFG = { distribuicao:'peso' };
+  let CFG = { distribuicao:'peso', whatsapp:'ligado' };
   let P = [{id:'u1',nome:'Gestão',papel:'gestor',ativo:true,peso:0,setor:'comercial'},{id:'u2',nome:'Aline',papel:'vendedor',ativo:true,peso:50,setor:'comercial'},
            {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true,peso:30,setor:'comercial'},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true,peso:20,setor:'reservas'},
            {id:'u5',nome:'Rene',papel:'vendedor',ativo:true,peso:25,setor:'comercial'},{id:'u6',nome:'Juliana',papel:'vendedor',ativo:true,peso:25,setor:'comercial'}];
@@ -904,6 +942,13 @@ if (!MODO_DEMO) {
   let MSG = [{ id:1, autor:'u2', canal:'geral', para:null, lead_id:null, texto:'Bom dia, equipe! (mensagem de exemplo)', criado_em:iso(agora - 3 * 3600000) },
              { id:2, autor:'u3', canal:null, para:'u1', lead_id:'d7', texto:'Esse aqui pediu desconto pra grupo, posso dar? (exemplo)', criado_em:iso(agora - 1800000) }];
   let CAMP = [], ENV = [];
+  // conversas de exemplo (o demo finge que o número está ligado)
+  let WA = [], waId = 1, waCb = null;
+  const FALAS = [['entrada','Oi, boa tarde! Vi o anúncio de vocês, como funciona? (exemplo)'],['saida','Oi! Tudo bem? Me conta pra quantas pessoas seria e qual data vocês estão pensando. (exemplo)'],
+    ['entrada','Somos 2 adultos e 1 criança, no próximo sábado'],['saida','Perfeito! Vou te mandar o orçamento certinho agora.'],['entrada','Combinado, fico no aguardo'],['saida','Enviado! Qualquer dúvida é só chamar por aqui.']];
+  L.slice(0, 18).forEach((l, i) => { const n = 1 + (i % 6), t0 = agora - (i * 53 + 4) * 60000 - n * 240000;
+    for (let k = 0; k < n; k++) WA.push({ id:waId++, lead_id:l.id, direcao:FALAS[k][0], tipo:'texto', texto:FALAS[k][1], status:'lida', autor: FALAS[k][0] === 'saida' ? (l.responsavel || 'u1') : null, criado_em:iso(t0 + k * 240000) });
+    const u = WA[WA.length - 1]; l.ultima_msg_em = u.criado_em; l.ultima_msg = u.texto; l.nao_lidas = u.direcao === 'entrada' ? 1 : 0; });
   let logado = null;
   const valida = l => {
     if (l.etapa === 'ganho' && l.valor == null) throw { message:'ganho_tem_valor' };
@@ -955,6 +1000,15 @@ if (!MODO_DEMO) {
     async mensagens(){ return MSG.map(m => ({ ...m, lead_nome: L.find(l => l.id === m.lead_id)?.nome })); },
     async enviarMensagem(m){ MSG.push({ id:MSG.length + 1, autor:eu.id, canal:m.canal || null, para:m.para || null, lead_id:m.lead_id || null, texto:m.texto, criado_em:new Date().toISOString() }); },
     aoMensagem(){},
+    async conversas(){ return vivos().filter(l => l.ultima_msg_em).sort((a, b) => b.ultima_msg_em.localeCompare(a.ultima_msg_em)); },
+    async waMensagens(id){ return WA.filter(m => m.lead_id === id).map(m => ({...m})); },
+    async waEnviar(id, texto){
+      const grava = (direcao, tx) => { const m = { id:waId++, lead_id:id, direcao, tipo:'texto', texto:tx, status: direcao === 'saida' ? 'entregue' : 'lida', autor: direcao === 'saida' ? eu.id : null, criado_em:new Date().toISOString() };
+        WA.push(m); const l = L.find(x => x.id === id); l.ultima_msg_em = m.criado_em; l.ultima_msg = tx; if (direcao === 'entrada') l.nao_lidas = (l.nao_lidas || 0) + 1; return m; };
+      grava('saida', texto);
+      setTimeout(() => { const m = grava('entrada', 'Recebi, obrigado! (resposta automática do modo demonstração)'); if (waCb) waCb(m); }, 2500);
+    },
+    aoWhats(fn){ waCb = fn; },
     aoMudar(){}
   };
 }
@@ -963,7 +1017,7 @@ if (!MODO_DEMO) {
    ESTADO
    ===================================================================== */
 const estado = { usuario:null, meu:null, perfis:[], leads:[], achados:[], ver:'funil', filtroTipo:'', filtroResp:'', busca:'', aberto:null, quente:false,
-  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'dia', ref:new Date() }, rk:{ ordem:'valor', tipo:'' }, feed:[], avModo:'geral' };
+  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, wa:{ convs:[], lead:null, msgs:[], aberto:false, erro:null, extra:null }, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'dia', ref:new Date() }, rk:{ ordem:'valor', tipo:'' }, feed:[], avModo:'geral' };
 const nomeDe = id => estado.perfis.find(p => p.id === id)?.nome || '';
 const ehGestor = () => estado.meu?.papel === 'gestor';
 const cachePer = new Map();
@@ -1024,6 +1078,14 @@ async function iniciar(){
     await carregarRespostas();
     await recarregar(true);
     await carregarMsgs();
+    await waCarregar();
+    api.aoWhats(async m => {
+      await waCarregar();
+      const vendo = estado.ver === 'conversas' && m && estado.wa.lead === m.lead_id && (estado.wa.aberto || matchMedia('(min-width:641px)').matches);
+      if (vendo) { try { estado.wa.msgs = await api.waMensagens(m.lead_id); } catch {} waLer(m.lead_id); }
+      else if (m && m.direcao === 'entrada') toast('WhatsApp: ' + (waConv(m.lead_id)?.nome || 'mensagem nova'));
+      if (estado.ver === 'conversas') desenharConversas();
+    });
     api.aoMensagem(async m => { await carregarMsgs(); if (m && m.autor !== estado.usuario.id && !(estado.ver === 'equipe' && chaveConv(m) === estado.conversa)) toast('Mensagem de ' + (nomeDe(m.autor) || 'equipe')); if (estado.ver === 'equipe') desenharEquipe(); atualizarPinoChat(); });
     const salva = guarda.ler('ver');
     ir(TITULOS[salva] && (!['ajustes','disparos'].includes(salva) || ehGestor()) ? salva : (ehGestor() ? 'painel' : 'funil'));
@@ -1054,6 +1116,7 @@ async function recarregar(silencioso){
 
 function ir(v){
   estado.ver = v; guarda.por('ver', v);
+  if (v === 'conversas') waCarregar().then(() => { if (estado.ver === 'conversas') desenharConversas(); });
   if (v === 'base' || v === 'disparos') { estado.base = null; estado.baseErro = null; dp.camps = null; }
   document.querySelectorAll('.ver').forEach(e => e.classList.toggle('oculto', e.id !== 'ver-' + v));
   document.querySelectorAll('.lado [data-ver]').forEach(b => b.classList.toggle('ativo', b.dataset.ver === v));
@@ -1062,7 +1125,7 @@ function ir(v){
   desenhar();
 }
 function desenhar(){
-  ({ painel:desenharPainel, funil:desenharFunil, followup:desenharFollow, relatorios:desenharRel, equipe:desenharEquipe, base:desenharBase, disparos:desenharDisparos, ajustes:desenharAjustes })[estado.ver]();
+  ({ painel:desenharPainel, funil:desenharFunil, conversas:desenharConversas, followup:desenharFollow, relatorios:desenharRel, equipe:desenharEquipe, base:desenharBase, disparos:desenharDisparos, ajustes:desenharAjustes })[estado.ver]();
   atualizarPinoChat();
   const meus = estado.leads.filter(l => !FECHADAS.includes(l.etapa) && l.responsavel === estado.usuario.id && ['atrasado','hoje'].includes(situacao(l))).length;
   $('#pino-fu').textContent = meus; $('#pino-fu').classList.toggle('oculto', !meus);
@@ -1424,7 +1487,8 @@ function ajustarCampos(){
   $('#box-motivo').classList.toggle('oculto', etapa !== 'perdido');
   const link = linkZap($('#c-telefone').value), zap = $('#btn-zap');
   if (link){ zap.href = link; zap.classList.remove('oculto'); } else zap.classList.add('oculto');
-  $('#box-resp').classList.toggle('oculto', !link || !estado.respostas.length);
+  zap.textContent = waLigado() ? 'Abrir conversa' : 'Abrir WhatsApp';
+  $('#box-resp').classList.toggle('oculto', !link || !estado.respostas.length || waLigado());
   const ult = ETAPAS.findIndex(e => e[0] === etapa), aberto = estado.aberto && !FECHADAS.includes(estado.aberto.etapa);
   $('#btn-avancar').classList.toggle('oculto', !estado.aberto || ult < 0 || ult >= 4);
   $('#btn-ganho').classList.toggle('oculto', !aberto); $('#btn-perdido').classList.toggle('oculto', !aberto);
@@ -1616,6 +1680,92 @@ async function enviarChat(){
   try { await api.enviarMensagem(m); $('#chat-texto').value = ''; estado.chatLead = null; await carregarMsgs(); desenharEquipe(); }
   catch (e) { toast(traduzErro(e)); }
 }
+
+/* =====================================================================
+   CONVERSAS — WhatsApp dentro do CRM (precisa de número ligado; o demo simula)
+   ===================================================================== */
+const waLigado = () => estado.config.whatsapp === 'ligado';
+const waConv = id => estado.wa.convs.find(c => c.id === id) || (estado.wa.extra?.id === id ? estado.wa.extra : null) || estado.leads.find(l => l.id === id) || null;
+const waHora = iso => { const d = new Date(iso), h = new Date(); return d.toDateString() === h.toDateString() ? d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }) : d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' }); };
+async function waCarregar(){
+  try { estado.wa.convs = await api.conversas(); estado.wa.erro = null; } catch (e) { estado.wa.erro = e; }
+  const n = estado.wa.convs.filter(c => c.nao_lidas > 0).length;
+  $('#pino-wa').textContent = n > 9 ? '9+' : n; $('#pino-wa').classList.toggle('oculto', !n);
+}
+function waLer(id){
+  const c = estado.wa.convs.find(x => x.id === id); if (!c || !c.nao_lidas) return;
+  c.nao_lidas = 0; api.mudar(id, { nao_lidas:0 }).catch(() => {});
+  const n = estado.wa.convs.filter(x => x.nao_lidas > 0).length; $('#pino-wa').textContent = n > 9 ? '9+' : n; $('#pino-wa').classList.toggle('oculto', !n);
+}
+async function waAbrir(id){
+  estado.wa.lead = id; estado.wa.aberto = true; estado.wa.msgs = []; desenharConversas();
+  try { const m = await api.waMensagens(id); if (estado.wa.lead === id) estado.wa.msgs = m; } catch (e) { toast(traduzErro(e)); }
+  waLer(id); if (estado.ver === 'conversas') desenharConversas();
+}
+// Vem do card, do follow-up ou da ficha: abre a conversa daquele lead (mesmo que ainda não tenha mensagem)
+function irConversa(lead, texto){
+  estado.wa.extra = estado.wa.convs.some(c => c.id === lead.id) ? null : lead;
+  if (texto) $('#wa-texto').value = texto;
+  ir('conversas'); waAbrir(lead.id);
+}
+function waListaHTML(){
+  const b = $('#wa-busca').value.trim().toLowerCase(), bd = soDigitos(b);
+  const todas = [...(estado.wa.extra ? [estado.wa.extra] : []), ...estado.wa.convs].filter(c => !b || (c.nome || '').toLowerCase().includes(b) || (bd.length >= 3 && (c.telefone || '').includes(bd)));
+  return todas.map(c => `<button class="chat-item ${c.id === estado.wa.lead ? 'ativo' : ''} ${c.nao_lidas ? 'nova' : ''}" type="button" data-wa="${esc(c.id)}">
+      <span class="avatar">${esc(iniciais(c.nome))}</span>
+      <span class="tx"><b>${esc(c.nome)}</b><span>${esc(c.ultima_msg || 'Conversa nova')}</span></span>
+      <span class="wa-lado"><small>${c.ultima_msg_em ? waHora(c.ultima_msg_em) : ''}</small>${c.nao_lidas ? `<span class="pino">${c.nao_lidas}</span>` : ''}</span></button>`).join('')
+    || `<p class="dica" style="margin:10px 8px">${b ? 'Nenhuma conversa com esse nome.' : 'Nenhuma conversa ainda.'}</p>`;
+}
+function desenharConversas(){
+  const w = estado.wa, ligado = waLigado(), largo = matchMedia('(min-width:641px)').matches;
+  const av = $('#wa-aviso'); av.classList.toggle('oculto', ligado && !w.erro);
+  if (w.erro) av.innerHTML = erroCarga(w.erro);
+  else if (!ligado) av.innerHTML = '<b class="st">⚠️ Nenhum número de WhatsApp conectado.</b><br>É nesta tela que a equipe vai atender: as conversas dos clientes aparecem aqui e a resposta sai daqui, sem abrir o WhatsApp. Falta ligar o número (Ajustes → WhatsApp do CRM). Enquanto isso, o botão do WhatsApp nos cards continua abrindo o aplicativo.';
+  if (largo && !w.lead && w.convs.length) { waAbrir(w.convs[0].id); return; }
+  $('#wa-lista').innerHTML = waListaHTML();
+  $('#wa').classList.toggle('aberta', w.aberto && !!w.lead);
+  const c = w.lead ? waConv(w.lead) : null;
+  $('#wa-titulo').textContent = c ? c.nome : (ligado ? 'Escolha uma conversa' : 'Conversas');
+  $('#wa-etapa').textContent = c ? rotulo(ETAPAS, c.etapa) : ''; $('#wa-etapa').classList.toggle('oculto', !c); $('#wa-ficha').classList.toggle('oculto', !c);
+  $('#wa-msgs').innerHTML = w.msgs.map(m => { const minha = m.direcao === 'saida';
+    const st = !minha ? '' : m.status === 'falhou' ? ' · <span class="falhou">não enviada</span>' : m.status === 'pendente' ? ' · enviando…' : m.status === 'lida' ? ' · ✓✓ lida' : m.status === 'entregue' ? ' · ✓✓' : ' · ✓';
+    const midia = m.midia_url ? (m.tipo === 'imagem' ? `<img src="${esc(m.midia_url)}" alt="Imagem" loading="lazy">` : `<a href="${esc(m.midia_url)}" target="_blank" rel="noopener">📎 abrir ${esc(m.tipo)}</a>`) : (m.tipo !== 'texto' ? `<i>[${esc(m.tipo)}]</i>` : '');
+    return `<div class="msg ${minha ? 'minha' : ''}"><div class="q">${minha ? esc(nomeDe(m.autor) || 'equipe') + ' · ' : ''}${horaBR(m.criado_em)}${st}</div>${midia}<div class="t">${esc(m.texto || '')}</div></div>`; }).join('')
+    || `<div class="vazio" style="margin:auto;text-align:center">${c ? 'Nenhuma mensagem ainda com ' + esc(c.nome) + '.' : 'As conversas dos clientes aparecem aqui.'}</div>`;
+  $('#wa-msgs').scrollTop = $('#wa-msgs').scrollHeight;
+  const ultEntrada = [...w.msgs].reverse().find(m => m.direcao === 'entrada'), fora = c && (!ultEntrada || Date.now() - new Date(ultEntrada.criado_em).getTime() > 24 * 3600000);
+  $('#wa-janela').classList.toggle('oculto', !fora || !ligado);
+  if (fora) $('#wa-janela').textContent = ultEntrada ? '⏳ Faz mais de 24h que esse cliente escreveu: pela API oficial, até ele responder, só sai mensagem-modelo aprovada.' : '⏳ Esse cliente ainda não escreveu: pela API oficial, a primeira mensagem tem que ser um modelo aprovado.';
+  $('#wa-rapidas').innerHTML = c && ligado ? estado.respostas.map(r => `<button type="button" data-rapida="${esc(r.id)}">${esc(r.titulo)}</button>`).join('') : '';
+  const pode = !!c && ligado; $('#wa-texto').disabled = !pode; $('#wa-enviar').disabled = !pode;
+  $('#wa-texto').placeholder = pode ? 'Mensagem' : (ligado ? 'Escolha uma conversa' : 'Número não conectado');
+}
+async function waEnviarMsg(){
+  const w = estado.wa, texto = $('#wa-texto').value.trim(); if (!texto || !w.lead || !waLigado()) return;
+  const id = w.lead, prov = { direcao:'saida', tipo:'texto', texto, status:'pendente', autor:estado.usuario.id, criado_em:new Date().toISOString() };
+  w.msgs.push(prov); $('#wa-texto').value = ''; desenharConversas();
+  try { await api.waEnviar(id, texto); if (w.lead === id) w.msgs = await api.waMensagens(id); if (w.extra?.id === id) w.extra = null; await waCarregar(); }
+  catch (e) { prov.status = 'falhou'; toast('⚠️ Mensagem não enviada: ' + traduzErro(e)); }
+  if (estado.ver === 'conversas') desenharConversas();
+}
+$('#wa-lista').addEventListener('click', e => { const b = e.target.closest('[data-wa]'); if (b) waAbrir(b.dataset.wa); });
+$('#wa-busca').addEventListener('input', () => { $('#wa-lista').innerHTML = waListaHTML(); });
+$('#wa-voltar').addEventListener('click', () => { estado.wa.aberto = false; desenharConversas(); });
+$('#wa-ficha').addEventListener('click', async () => { const c = waConv(estado.wa.lead); if (c) abrirFicha(await api.lead(c.id) || c); });
+$('#wa-form').addEventListener('submit', e => { e.preventDefault(); waEnviarMsg(); });
+$('#wa-texto').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && matchMedia('(min-width:641px)').matches) { e.preventDefault(); waEnviarMsg(); } });
+$('#wa-rapidas').addEventListener('click', e => { const b = e.target.closest('[data-rapida]'); if (!b) return; const r = estado.respostas.find(x => String(x.id) === b.dataset.rapida), c = waConv(estado.wa.lead); if (!r) return;
+  $('#wa-texto').value = r.texto.replace(/\{nome\}/gi, String(c?.nome || '').trim().split(/\s+/)[0] || ''); $('#wa-texto').focus(); });
+// Com número ligado, o botão do WhatsApp (card, follow-up, ficha) abre a conversa aqui dentro em vez do aplicativo
+document.addEventListener('click', e => {
+  if (!waLigado()) return;
+  const z = e.target.closest('[data-zap]'), f = e.target.closest('#btn-zap'); if (!z && !f) return;
+  let l = null;
+  if (f) l = estado.aberto; else { const id = z.closest('[data-id]')?.dataset.id; l = estado.leads.find(x => x.id === id) || (estado.achados || []).find(x => x.id === id); }
+  if (!l) return;
+  e.preventDefault(); e.stopPropagation(); if (f) fecharFicha(); irConversa(l);
+}, true);
 
 /* =====================================================================
    DISPAROS (gestor) — lista, texto variado e fila de envio assistido
