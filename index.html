@@ -235,6 +235,33 @@ label.marcar input{width:auto}
 .janela{position:fixed;inset:0;background:rgba(15,25,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30}
 .janela .cx{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:420px;box-shadow:var(--sombra)}
 .janela h3{margin:0 0 4px;font-size:18px;color:var(--vinho)}
+/* ---------- chat da equipe ---------- */
+#ver-equipe{display:flex;flex-direction:column;overflow:hidden;padding-bottom:16px}
+.chat{flex:1;min-height:0;display:grid;grid-template-columns:260px 1fr;gap:14px}
+.chat-lista{background:var(--card);border:1px solid var(--linha);border-radius:16px;overflow-y:auto;padding:8px}
+.chat-lista h4{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--suave);margin:10px 8px 4px}
+.chat-item{width:100%;display:flex;align-items:center;gap:8px;border:0;background:none;border-radius:10px;padding:8px;text-align:left}
+.chat-item:hover{background:var(--card2)}
+.chat-item.ativo{background:var(--verde-claro)}
+.chat-item .tx{flex:1;min-width:0}
+.chat-item .tx b{display:block;font-weight:600}
+.chat-item .tx span{display:block;font-size:12px;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-item .pino{min-width:18px;height:18px;border-radius:9px;background:#D7392E;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.chat-conv{background:var(--card);border:1px solid var(--linha);border-radius:16px;display:flex;flex-direction:column;min-height:0;min-width:0}
+.chat-cab{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--linha)}
+.chat-cab h3{margin:0;font-size:17px;flex:1}
+.chat-cab .voltar{display:none}
+.chat-msgs{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:78%;align-self:flex-start;background:var(--card2);border-radius:14px 14px 14px 4px;padding:8px 12px}
+.msg.minha{align-self:flex-end;background:var(--verde-claro);border-radius:14px 14px 4px 14px}
+.msg .q{font-size:11px;color:var(--suave);margin-bottom:2px}
+.msg .t{white-space:pre-wrap;word-break:break-word}
+.msg .sobre{display:inline-block;margin-top:6px;border:1px solid var(--linha);background:var(--card);border-radius:999px;padding:2px 10px;font-size:12px}
+.chat-sobre{padding:6px 14px 0;font-size:13px;color:var(--suave)}
+.chat-sobre button{border:0;background:none;color:var(--vermelho);font-size:15px;padding:0 4px}
+.chat-form{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--linha)}
+.chat-form textarea{resize:none;height:42px}
+.selo.setor{background:var(--amarelo-claro);color:var(--amarelo)}
 .toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:#221F1A;color:#FFFDF8;padding:10px 16px;border-radius:10px;font-size:14px;z-index:50;max-width:calc(100% - 32px)}
 
 /* ---------- avisos (sino) ---------- */
@@ -251,8 +278,12 @@ label.marcar input{width:auto}
 
 /* ---------- ajustes ---------- */
 .metas-grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 12px}
-.lin-equipe{display:grid;grid-template-columns:1fr 130px auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--linha)}
+.lin-equipe{display:grid;grid-template-columns:1fr 120px 130px 92px auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--linha)}
 .lin-equipe label{margin:0}
+.lin-equipe .e-peso-cx{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--suave)}
+.selo.minha{background:var(--amarelo-claro);color:var(--amarelo)}
+.item-resp .de{display:flex;gap:6px;align-items:center;margin-bottom:6px;font-size:12px;color:var(--suave)}
+.item-resp.travado input,.item-resp.travado textarea{background:var(--card2)}
 
 @media (max-width:980px){ .kpis,.stats{grid-template-columns:repeat(2,minmax(0,1fr))} .duas{grid-template-columns:1fr} }
 @media (max-width:640px){
@@ -279,6 +310,13 @@ label.marcar input{width:auto}
   .taxa b{display:inline}
   .metas-grade{grid-template-columns:1fr 1fr}
   .lin-equipe{grid-template-columns:1fr 1fr}
+  .filtros #btn-pegar{order:-1}
+  .chat{grid-template-columns:1fr}
+  .chat .chat-conv{display:none}
+  .chat.aberta .chat-conv{display:flex}
+  .chat.aberta .chat-lista{display:none}
+  .chat-cab .voltar{display:inline-flex}
+  .msg{max-width:90%}
   .avisos{top:56px;right:12px}
   .item-fu{grid-template-columns:1fr}
   .item-fu .ac{justify-content:flex-end}
@@ -310,6 +348,7 @@ label.marcar input{width:auto}
     <button data-ver="funil"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/></svg>Funil</button>
     <button data-ver="followup"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Follow-up<span class="pino oculto" id="pino-fu"></span></button>
     <button data-ver="relatorios"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h5M10 16h5"/></svg>Relatórios</button>
+    <button data-ver="equipe"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Equipe<span class="pino oculto" id="pino-chat"></span></button>
     <button data-ver="ajustes" id="nav-ajustes" class="oculto"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Ajustes</button>
   </nav>
 
@@ -344,6 +383,8 @@ label.marcar input{width:auto}
         <button class="chip" data-tipo="grupo">Grupo/excursão</button>
         <button class="chip quente" id="chip-hoje" type="button" title="Retorno marcado pra hoje ou atrasado, ou card parado tempo demais">🔥 Atacar hoje <b id="n-hoje">0</b></button>
         <select id="f-resp" aria-label="Responsável"></select>
+        <select id="f-setor" aria-label="Setor"></select>
+        <button class="btn sol mini oculto" id="btn-pegar" type="button" style="flex-shrink:0">Pegar próximo lead</button>
         <div class="resumo" id="resumo"></div>
       </div>
       <main class="quadro" id="quadro"></main>
@@ -367,6 +408,19 @@ label.marcar input{width:auto}
       <div id="rel-conteudo"></div>
     </div>
 
+    <!-- EQUIPE (chat interno) -->
+    <div class="ver oculto" id="ver-equipe">
+      <div class="chat" id="chat">
+        <div class="chat-lista" id="chat-lista"></div>
+        <div class="chat-conv">
+          <div class="chat-cab"><button class="btn sec mini voltar" type="button" id="chat-voltar">‹ Conversas</button><h3 id="chat-titulo"></h3></div>
+          <div class="chat-msgs" id="chat-msgs"></div>
+          <div class="chat-sobre oculto" id="chat-sobre"></div>
+          <form class="chat-form" id="chat-form"><textarea id="chat-texto" placeholder="Escreva pra equipe…" maxlength="2000" aria-label="Mensagem"></textarea><button class="btn" type="submit">Enviar</button></form>
+        </div>
+      </div>
+    </div>
+
     <!-- AJUSTES (gestor) -->
     <div class="ver oculto" id="ver-ajustes">
       <div class="cartela">
@@ -381,13 +435,23 @@ label.marcar input{width:auto}
         <div class="acoes" style="max-width:220px"><button class="btn" id="btn-salvar-metas">Salvar metas</button></div>
       </div>
       <div class="cartela">
+        <h2>Distribuição dos leads</h2>
+        <p class="sub">O que acontece com o lead que chega sem responsável.</p>
+        <select id="aj-dist" style="max-width:420px" aria-label="Modo de distribuição">
+          <option value="manual">Manual: fica sem dono até alguém assumir</option>
+          <option value="peso">Sorteio por peso: o sistema entrega na proporção da equipe</option>
+          <option value="fila">Fila: cada vendedor puxa o próximo</option>
+        </select>
+        <p class="dica" id="aj-dist-info"></p>
+      </div>
+      <div class="cartela">
         <h2>Equipe</h2>
-        <p class="sub">Quem entra no CRM. Usuário novo é criado no Supabase (Authentication → Users) e aparece aqui pra você dar nome e papel.</p>
+        <p class="sub">Quem entra no CRM. Usuário novo é criado no Supabase (Authentication → Users) e aparece aqui pra você dar nome e papel. O <b>peso</b> é a fatia de leads de cada um no sorteio (60 e 40 = 60% e 40%; zero = não recebe). O sorteio e a fila respeitam o <b>setor</b>.</p>
         <div id="aj-equipe"></div>
       </div>
       <div class="cartela">
         <h2>Respostas prontas</h2>
-        <p class="sub">Textos que a equipe abre no WhatsApp com um toque, direto da ficha do lead.</p>
+        <p class="sub">Textos que a equipe abre no WhatsApp com um toque, direto da ficha do lead. As suas valem pra equipe toda; cada vendedor também cria as dele.</p>
         <button class="btn sec" id="btn-respostas">Abrir respostas prontas</button>
       </div>
     </div>
@@ -449,10 +513,15 @@ label.marcar input{width:auto}
         <button class="btn sec" type="button" id="btn-avancar">Avançar etapa →</button>
         <a class="btn sec" id="btn-zap" target="_blank" rel="noopener">Abrir WhatsApp</a>
       </div>
+      <div class="acoes oculto" id="acoes-equipe" style="margin-top:8px">
+        <button class="btn sec" type="button" id="btn-transferir">Transferir lead ⇄</button>
+        <button class="btn sec" type="button" id="btn-falar">Falar com a equipe</button>
+      </div>
       <div id="box-resp" class="oculto">
         <label for="c-resposta">Mandar resposta pronta no WhatsApp</label>
         <select id="c-resposta"></select>
       </div>
+      <p class="dica"><button class="btn sec mini" type="button" id="btn-minhas-resp">Minhas mensagens prontas</button></p>
       <div class="secao" id="secao-hist">
         <h4>Anotações e histórico</h4>
         <div class="nota-nova">
@@ -485,6 +554,23 @@ label.marcar input{width:auto}
   </div>
 </div>
 
+<!-- ================= TRANSFERIR LEAD ================= -->
+<div class="janela oculto" id="fundo-transf">
+  <div class="cx" role="dialog" aria-modal="true" aria-labelledby="tr-titulo">
+    <h3 id="tr-titulo">Transferir lead</h3>
+    <p class="dica" id="tr-sub" style="margin-top:0"></p>
+    <label for="tr-setor">Pra qual setor</label><select id="tr-setor"></select>
+    <label for="tr-pessoa">Pra quem</label><select id="tr-pessoa"></select>
+    <label for="tr-recado">Recado pra quem vai receber</label>
+    <textarea id="tr-recado" rows="3" placeholder="Ex.: já pagou o sinal, falta mandar o voucher"></textarea>
+    <div class="erro" id="tr-erro"></div>
+    <div class="acoes">
+      <button class="btn" type="button" id="tr-ok">Transferir</button>
+      <button class="btn sec" type="button" id="tr-cancelar">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ================= RESPOSTAS PRONTAS (gestor) ================= -->
 <div class="fundo-ficha oculto" id="fundo-resp">
   <aside class="ficha" role="dialog" aria-modal="true" aria-labelledby="r-titulo">
@@ -493,7 +579,7 @@ label.marcar input{width:auto}
       <button class="fechar" id="btn-fechar-resp" aria-label="Fechar">×</button>
     </div>
     <div class="corpo-ficha">
-      <p class="dica">A equipe escolhe a resposta na ficha do lead e o WhatsApp abre com o texto já escrito. Quem envia é sempre o atendente. Use <b>{nome}</b> pra puxar o primeiro nome do cliente.</p>
+      <p class="dica">Escolha a resposta na ficha do lead e o WhatsApp abre com o texto já escrito. Quem envia é sempre o atendente. Use <b>{nome}</b> pra puxar o primeiro nome do cliente. <span id="r-dica-dono"></span></p>
       <div class="acoes"><button class="btn" type="button" id="btn-add-resp">+ Nova resposta</button></div>
       <div class="lista-resp" id="lista-resp"></div>
     </div>
@@ -523,7 +609,8 @@ const MOTIVOS = ['','Preço','Não respondeu o orçamento','Sem vaga na data','S
 const ETIQUETAS_RAPIDAS = ['aniversário','feriado','casal','família com crianças','excursão','VIP','cupom','retornar em 5 dias'];
 const PARADO_DIAS = { novo:1, atendimento:2, orcamento:2, negociando:3 }; // card fica vermelho depois disso
 const FECHADAS = ['ganho','perdido'];
-const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', followup:'Follow-up', relatorios:'Relatórios', ajustes:'Ajustes' };
+const SETORES = [['comercial','Comercial'],['reservas','Reservas'],['financeiro','Financeiro']];
+const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', followup:'Follow-up', relatorios:'Relatórios', equipe:'Equipe', ajustes:'Ajustes' };
 const rotulo = (lista, v) => (lista.find(x => x[0] === v) || [, v])[1];
 
 /* ---------- utilidades ---------- */
@@ -585,7 +672,7 @@ if (!MODO_DEMO) {
     async sessao(){ const { data } = await sb.auth.getSession(); return data.session?.user || null; },
     async entrar(email, senha){ const { data, error } = await sb.auth.signInWithPassword({ email, password: senha }); if (error) throw error; return data.user; },
     async sair(){ await sb.auth.signOut(); },
-    async perfis(){ const { data, error } = await sb.from('perfis').select('id,nome,papel,ativo').order('nome'); if (error) throw error; return data; },
+    async perfis(){ const { data, error } = await sb.from('perfis').select('id,nome,papel,ativo,peso,setor').order('nome'); if (error) throw error; return data; },
     async salvarPerfil(id, p){ const { error } = await sb.from('perfis').update(p).eq('id', id); if (error) throw error; },
     // Quadro: tudo que está aberto + vendidos/perdidos do mês atual
     async quadro(){
@@ -621,22 +708,29 @@ if (!MODO_DEMO) {
     async historico(id){ const { data, error } = await sb.from('historico').select('*').eq('lead_id', id).order('criado_em', { ascending:false }); if (error) throw error; return data; },
     async anotar(id, texto, autor, tipo){ const { error } = await sb.from('historico').insert({ lead_id:id, tipo: tipo || 'nota', texto, autor }); if (error) throw error; },
     async feed(){
-      const { data, error } = await sb.from('historico').select('id,lead_id,autor,tipo,de,para,criado_em,leads!inner(nome,responsavel,valor,motivo_perda,origem,arquivado)').eq('leads.arquivado', false)
-        .or('tipo.in.(criado,followup),para.in.(ganho,perdido)').order('criado_em', { ascending:false }).limit(40);
+      const { data, error } = await sb.from('historico').select('id,lead_id,autor,tipo,de,para,texto,criado_em,leads!inner(nome,responsavel,valor,motivo_perda,origem,arquivado)').eq('leads.arquivado', false)
+        .or('tipo.in.(criado,followup,transferencia),para.in.(ganho,perdido)').order('criado_em', { ascending:false }).limit(40);
       if (error) throw error; return data.map(e => ({ ...e, lead: e.leads }));
     },
     async meta(mes){ const { data, error } = await sb.from('metas').select('*').eq('mes', mes).maybeSingle(); if (error) throw error; return data; },
     async salvarMeta(m){ const { error } = await sb.from('metas').upsert({ ...m, atualizado_em:new Date().toISOString() }); if (error) throw error; },
+    async config(){ const { data, error } = await sb.from('config').select('*'); if (error) throw error; return Object.fromEntries(data.map(c => [c.chave, c.valor])); },
+    async salvarConfig(chave, valor){ const { error } = await sb.from('config').upsert({ chave, valor }); if (error) throw error; },
+    async pegarProximo(){ const { data, error } = await sb.rpc('pegar_proximo'); if (error) throw error; return data?.[0] || null; },
     async respostas(){ const { data, error } = await sb.from('respostas').select('*').order('ordem').order('titulo'); if (error) throw error; return data; },
-    async salvarResposta(r){ const q = r.id ? sb.from('respostas').update({ titulo:r.titulo, texto:r.texto }).eq('id', r.id) : sb.from('respostas').insert({ titulo:r.titulo, texto:r.texto }); const { error } = await q; if (error) throw error; },
+    async salvarResposta(r){ const q = r.id ? sb.from('respostas').update({ titulo:r.titulo, texto:r.texto }).eq('id', r.id) : sb.from('respostas').insert({ titulo:r.titulo, texto:r.texto, dono:r.dono }); const { error } = await q; if (error) throw error; },
     async apagarResposta(id){ const { error } = await sb.from('respostas').delete().eq('id', id); if (error) throw error; },
+    async mensagens(){ const { data, error } = await sb.from('mensagens').select('*,leads(nome)').order('criado_em', { ascending:false }).limit(400); if (error) throw error; return data.reverse().map(m => ({ ...m, lead_nome: m.leads?.nome })); },
+    async enviarMensagem(m){ const { error } = await sb.from('mensagens').insert({ canal:m.canal || null, para:m.para || null, lead_id:m.lead_id || null, texto:m.texto }); if (error) throw error; },
+    aoMensagem(fn){ sb.channel('mensagens').on('postgres_changes', { event:'INSERT', schema:'public', table:'mensagens' }, p => fn(p.new)).subscribe(); },
     aoMudar(fn){ sb.channel('leads').on('postgres_changes', { event:'*', schema:'public', table:'leads' }, fn).subscribe(); }
   };
 } else {
   // Dados de exemplo (fictícios, gerados). Ficam só na memória desta aba.
   const eu = { id:'u1', email:'demo@coninho.local' };
-  let P = [{id:'u1',nome:'Gestão',papel:'gestor',ativo:true},{id:'u2',nome:'Aline',papel:'vendedor',ativo:true},
-           {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true}];
+  let CFG = { distribuicao:'peso' };
+  let P = [{id:'u1',nome:'Gestão',papel:'gestor',ativo:true,peso:0,setor:'comercial'},{id:'u2',nome:'Aline',papel:'vendedor',ativo:true,peso:50,setor:'comercial'},
+           {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true,peso:30,setor:'comercial'},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true,peso:20,setor:'reservas'}];
   let s = 11; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647, pick = a => a[Math.floor(rnd() * a.length)];
   const agora = Date.now(), iniM = Math.min(D.ini('mes', new Date()).getTime(), agora - 20 * 86400000);
   const iso = t => new Date(t).toISOString(), ymd = t => iso(t).slice(0, 10);
@@ -659,7 +753,7 @@ if (!MODO_DEMO) {
       pets: rnd() < .12, etiquetas: rnd() < .25 ? [pick(ETIQUETAS_RAPIDAS)] : [], motivo_perda: etapa === 'perdido' ? pick(MOTIVOS.slice(1, 6)) : null, observacoes:null,
       proximo_contato: comRetorno ? iso(agora + (rnd() * 6 - 2) * 86400000) : null, proximo_passo: comRetorno ? pick(PASSOS) : null,
       etapa_desde: iso(desde), ganho_em: etapa === 'ganho' ? iso(desde) : null, perdido_em: etapa === 'perdido' ? iso(desde) : null,
-      criado_em: iso(criado), arquivado:false };
+      criado_em: iso(criado), arquivado:false, setor:'comercial' };
     if (tipo === 'hospedagem') l.data_saida = ymd(new Date(l.data_visita).getTime() + 2 * 86400000);
     L.push(l);
     H.push({ id:hid++, lead_id:l.id, autor:resp || 'u1', tipo:'criado', para:'novo', criado_em:l.criado_em });
@@ -668,8 +762,10 @@ if (!MODO_DEMO) {
     let de = 'novo'; caminho.forEach((para, k) => { H.push({ id:hid++, lead_id:l.id, autor:resp || 'u1', tipo:'etapa', de, para, criado_em: iso(criado + (desde - criado) * (k + 1) / caminho.length) }); de = para; });
     if (resp && rnd() < .45) H.push({ id:hid++, lead_id:l.id, autor:resp, tipo:'followup', texto:'Retorno feito', criado_em: iso(criado + rnd() * (agora - criado)) });
   }
-  let R = [{ id:1, titulo:'Exemplo: boas-vindas', texto:'Oi, {nome}! Aqui é do Hotel Fazenda Coninho. (texto de exemplo)' }];
+  let R = [{ id:1, dono:null, titulo:'Exemplo: boas-vindas', texto:'Oi, {nome}! Aqui é do Hotel Fazenda Coninho. (texto de exemplo)' }];
   let M = { [D.chaveMes(new Date())]: { mes:D.chaveMes(new Date()), leads:80, orcamentos:40, vendas:20, faturamento:18000 } };
+  let MSG = [{ id:1, autor:'u2', canal:'geral', para:null, lead_id:null, texto:'Bom dia, equipe! (mensagem de exemplo)', criado_em:iso(agora - 3 * 3600000) },
+             { id:2, autor:'u3', canal:null, para:'u1', lead_id:'d7', texto:'Esse aqui pediu desconto pra grupo, posso dar? (exemplo)', criado_em:iso(agora - 1800000) }];
   let logado = null;
   const valida = l => {
     if (l.etapa === 'ganho' && l.valor == null) throw { message:'ganho_tem_valor' };
@@ -688,7 +784,9 @@ if (!MODO_DEMO) {
     async buscar(){ return []; },
     async lead(id){ const l = L.find(x => x.id === id); return l ? {...l} : null; },
     async criar(l){ const t = new Date().toISOString(); const n = { ...l, id:'n' + Date.now(), etiquetas:l.etiquetas || [], arquivado:false, criado_em:t, etapa_desde:t };
-      if (n.telefone) n.telefone = soDigitos(n.telefone); valida(n); L.push(n);
+      if (n.telefone) n.telefone = soDigitos(n.telefone); valida(n);
+      if (!n.responsavel && CFG.distribuicao === 'peso') { const c = P.filter(x => x.ativo && x.peso > 0 && x.setor === (n.setor || 'comercial')); let r = Math.random() * c.reduce((t, x) => t + x.peso, 0); n.responsavel = (c.find(x => (r -= x.peso) < 0) || {}).id || null; }
+      L.push(n);
       H.push({ id:hid++, lead_id:n.id, autor:eu.id, tipo:'criado', para:n.etapa, criado_em:t }); return {...n}; },
     async mudar(id, l){ const i = L.findIndex(x => x.id === id); const a = L[i]; const n = { ...a, ...l };
       if (n.telefone) n.telefone = soDigitos(n.telefone); valida(n);
@@ -700,13 +798,19 @@ if (!MODO_DEMO) {
     async porTelefone(tel){ return L.find(x => x.telefone === tel && !x.arquivado) || null; },
     async historico(id){ return H.filter(x => x.lead_id === id).sort((a, b) => b.criado_em.localeCompare(a.criado_em)); },
     async anotar(id, texto, autor, tipo){ H.push({ id:hid++, lead_id:id, autor:eu.id, tipo: tipo || 'nota', texto, criado_em:new Date().toISOString() }); },
-    async feed(){ return H.filter(e => e.tipo === 'criado' || e.tipo === 'followup' || FECHADAS.includes(e.para)).sort((a, b) => b.criado_em.localeCompare(a.criado_em)).slice(0, 40)
+    async feed(){ return H.filter(e => e.tipo === 'criado' || e.tipo === 'followup' || e.tipo === 'transferencia' || FECHADAS.includes(e.para)).sort((a, b) => b.criado_em.localeCompare(a.criado_em)).slice(0, 40)
       .map(e => ({ ...e, lead: L.find(l => l.id === e.lead_id) })); },
     async meta(mes){ return M[mes] ? {...M[mes]} : null; },
     async salvarMeta(m){ M[m.mes] = {...m}; },
+    async config(){ return {...CFG}; },
+    async salvarConfig(chave, valor){ CFG[chave] = valor; },
+    async pegarProximo(){ const l = L.filter(x => !x.responsavel && !x.arquivado && !FECHADAS.includes(x.etapa) && (x.setor || 'comercial') === P[0].setor).sort((a, b) => a.criado_em.localeCompare(b.criado_em))[0]; if (!l) return null; l.responsavel = eu.id; return {...l}; },
     async respostas(){ return R.map(r => ({...r})); },
     async salvarResposta(r){ if (r.id) Object.assign(R.find(x => x.id === r.id), r); else R.push({ ...r, id:Date.now() }); },
     async apagarResposta(id){ R = R.filter(x => x.id !== id); },
+    async mensagens(){ return MSG.map(m => ({ ...m, lead_nome: L.find(l => l.id === m.lead_id)?.nome })); },
+    async enviarMensagem(m){ MSG.push({ id:MSG.length + 1, autor:eu.id, canal:m.canal || null, para:m.para || null, lead_id:m.lead_id || null, texto:m.texto, criado_em:new Date().toISOString() }); },
+    aoMensagem(){},
     aoMudar(){}
   };
 }
@@ -715,7 +819,7 @@ if (!MODO_DEMO) {
    ESTADO
    ===================================================================== */
 const estado = { usuario:null, meu:null, perfis:[], leads:[], achados:[], ver:'funil', filtroTipo:'', filtroResp:'', busca:'', aberto:null, quente:false,
-  respostas:[], mesRef:new Date(), rel:{ modo:'dia', ref:new Date() }, feed:[], avModo:'geral' };
+  respostas:[], config:{}, filtroSetor:'', msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'dia', ref:new Date() }, feed:[], avModo:'geral' };
 const nomeDe = id => estado.perfis.find(p => p.id === id)?.nome || '';
 const ehGestor = () => estado.meu?.papel === 'gestor';
 const cachePer = new Map();
@@ -775,6 +879,8 @@ async function iniciar(){
     $('#nav-ajustes').classList.toggle('oculto', !ehGestor());
     await carregarRespostas();
     await recarregar(true);
+    await carregarMsgs();
+    api.aoMensagem(async m => { await carregarMsgs(); if (m && m.autor !== estado.usuario.id && !(estado.ver === 'equipe' && chaveConv(m) === estado.conversa)) toast('Mensagem de ' + (nomeDe(m.autor) || 'equipe')); if (estado.ver === 'equipe') desenharEquipe(); atualizarPinoChat(); });
     const salva = guarda.ler('ver');
     ir(TITULOS[salva] && (salva !== 'ajustes' || ehGestor()) ? salva : (ehGestor() ? 'painel' : 'funil'));
     api.aoMudar(() => { clearTimeout(iniciar.t); iniciar.t = setTimeout(() => recarregar(), 400); });
@@ -783,6 +889,7 @@ async function iniciar(){
 
 async function carregarPerfis(){
   estado.perfis = await api.perfis();
+  try { estado.config = await api.config(); } catch { estado.config = {}; }
   estado.meu = estado.perfis.find(p => p.id === estado.usuario.id) || null;
   const ativos = estado.perfis.filter(p => p.ativo).map(p => [p.id, p.nome]);
   const fr = $('#f-resp').value, fu = $('#fu-resp').value;
@@ -790,6 +897,7 @@ async function carregarPerfis(){
   preencher($('#fu-resp'), [['__meus', 'Só os meus'], ['', 'Toda a equipe'], ...ativos]);
   preencher($('#c-resp'), [['', '— ninguém ainda —'], ...ativos]);
   $('#f-resp').value = fr || ''; $('#fu-resp').value = fu || (ehGestor() ? '' : '__meus');
+  preencher($('#f-setor'), [['', 'Todos os setores'], ...SETORES]); $('#f-setor').value = estado.filtroSetor;
 }
 
 async function recarregar(silencioso){
@@ -807,7 +915,8 @@ function ir(v){
   desenhar();
 }
 function desenhar(){
-  ({ painel:desenharPainel, funil:desenharFunil, followup:desenharFollow, relatorios:desenharRel, ajustes:desenharAjustes })[estado.ver]();
+  ({ painel:desenharPainel, funil:desenharFunil, followup:desenharFollow, relatorios:desenharRel, equipe:desenharEquipe, ajustes:desenharAjustes })[estado.ver]();
+  atualizarPinoChat();
   const meus = estado.leads.filter(l => !FECHADAS.includes(l.etapa) && l.responsavel === estado.usuario.id && ['atrasado','hoje'].includes(situacao(l))).length;
   $('#pino-fu').textContent = meus; $('#pino-fu').classList.toggle('oculto', !meus);
 }
@@ -965,6 +1074,7 @@ function filtrados(semQuente){
   const base = b && estado.achados.length ? [...new Map([...estado.leads, ...estado.achados].map(l => [l.id, l])).values()] : estado.leads;
   return base.filter(l =>
     (!estado.filtroTipo || l.tipo === estado.filtroTipo) &&
+    (!estado.filtroSetor || (l.setor || 'comercial') === estado.filtroSetor) &&
     (!resp || (resp === '__sem' ? !l.responsavel : resp === '__meus' ? l.responsavel === estado.usuario.id : l.responsavel === resp)) &&
     (!b || (l.nome || '').toLowerCase().includes(b) || (l.email || '').toLowerCase().includes(b) || (bd.length >= 3 && (l.telefone || '').includes(bd))) &&
     // Vendido/Perdido: só o mês atual no quadro (a busca encontra os antigos)
@@ -979,6 +1089,8 @@ function desenharFunil(){
   const naMesa = lista.filter(l => ['orcamento','negociando'].includes(l.etapa)).reduce((s, l) => s + Number(l.valor || 0), 0);
   $('#resumo').innerHTML = `<b>${abertos.length}</b> em aberto · <b>${brl(naMesa)}</b> em orçamento/negociação`;
   $('#n-hoje').textContent = filtrados(true).filter(precisaAtencao).length;
+  const fila = estado.leads.filter(l => !l.responsavel && !FECHADAS.includes(l.etapa) && (l.setor || 'comercial') === (estado.meu?.setor || 'comercial')).length;
+  $('#btn-pegar').textContent = `Pegar próximo lead (${fila})`; $('#btn-pegar').classList.toggle('oculto', !fila);
   $('#quadro').innerHTML = ETAPAS.map(([etapa, nome]) => {
     const cards = lista.filter(l => l.etapa === etapa);
     const soma = cards.reduce((s, l) => s + Number(l.valor || 0), 0);
@@ -1003,7 +1115,7 @@ function cartao(l){
   const etq = (l.etiquetas || []).slice(0, 3).map(e => `<span class="selo etq">${esc(e)}</span>`).join('');
   return `<article class="cartao" draggable="true" data-id="${esc(l.id)}" style="border-left-color:${parado ? 'var(--vermelho)' : 'transparent'}">
     <div class="nome">${bola(l)}<span>${esc(l.nome)}</span></div>
-    <div class="linha"><span class="selo ${esc(l.tipo)}">${esc(rotulo(TIPOS, l.tipo))}</span>${quando ? `<span>📅 ${quando}</span>` : ''}${pessoas ? `<span>${pessoas}</span>` : ''}${l.pets ? '<span title="Vai levar pet">🐾</span>' : ''}${follow}</div>
+    <div class="linha"><span class="selo ${esc(l.tipo)}">${esc(rotulo(TIPOS, l.tipo))}</span>${l.setor && l.setor !== 'comercial' ? `<span class="selo setor">${esc(rotulo(SETORES, l.setor))}</span>` : ''}${quando ? `<span>📅 ${quando}</span>` : ''}${pessoas ? `<span>${pessoas}</span>` : ''}${l.pets ? '<span title="Vai levar pet">🐾</span>' : ''}${follow}</div>
     ${aberto && l.proximo_passo ? `<div class="linha" style="margin-top:4px">→ ${esc(l.proximo_passo)}</div>` : ''}
     ${etq ? `<div class="linha" style="margin-top:4px">${etq}</div>` : ''}
     ${l.etapa === 'perdido' && l.motivo_perda ? `<div class="linha" style="margin-top:4px">${esc(l.motivo_perda)}</div>` : ''}
@@ -1078,7 +1190,8 @@ function desenharAvisos(){
   const itens = estado.feed.filter(e => !minhas || e.lead?.responsavel === eu).map(e => {
     const nome = e.lead?.nome || 'Lead', quem = nomeDe(e.autor);
     let t, s;
-    if (e.tipo === 'criado') { t = 'Novo lead: ' + nome; s = 'Chegou por ' + rotulo(ORIGENS, e.lead?.origem || 'outro'); }
+    if (e.tipo === 'transferencia') { t = 'Transferido: ' + nome; s = e.texto || ''; }
+    else if (e.tipo === 'criado') { t = 'Novo lead: ' + nome; s = 'Chegou por ' + rotulo(ORIGENS, e.lead?.origem || 'outro'); }
     else if (e.tipo === 'followup') { t = 'Retorno feito: ' + nome; s = quem ? 'Por ' + quem : ''; }
     else if (e.para === 'ganho') { t = 'Vendido: ' + nome; s = [e.lead?.valor != null ? brl(e.lead.valor) : '', quem ? 'por ' + quem : ''].filter(Boolean).join(' · '); }
     else { t = 'Perdido: ' + nome; s = e.lead?.motivo_perda || ''; }
@@ -1098,10 +1211,16 @@ async function desenharAjustes(){
     $('#m-leads').value = m.leads ?? ''; $('#m-orc').value = m.orcamentos ?? ''; $('#m-vendas').value = m.vendas ?? '';
     $('#m-fat').value = m.faturamento != null ? String(m.faturamento).replace('.', ',') : '';
   } catch (e) { toast(traduzErro(e)); }
+  const modo = estado.config.distribuicao || 'manual', comPeso = estado.perfis.filter(p => p.ativo && p.peso > 0), total = comPeso.reduce((t, p) => t + p.peso, 0);
+  $('#aj-dist').value = modo;
+  $('#aj-dist-info').textContent = modo === 'peso' ? (total ? 'Hoje: ' + comPeso.map(p => `${p.nome} ${Math.round(p.peso / total * 100)}%`).join(' · ') + '. É sorteio: em poucos leads varia, em muitos fecha na proporção.' : '⚠️ Ninguém tem peso ainda: defina os pesos na Equipe, senão o lead continua sem dono.')
+    : modo === 'fila' ? 'O botão "Pegar próximo lead" aparece no Funil e entrega o lead sem dono mais antigo pra quem clicou.' : 'O lead sem dono aparece no filtro "Sem responsável" e no sino.';
   $('#aj-equipe').innerHTML = estado.perfis.map(p => { const eu = p.id === estado.usuario.id; return `
     <div class="lin-equipe" data-id="${esc(p.id)}">
       <input class="e-nome" value="${esc(p.nome)}" aria-label="Nome">
       <select class="e-papel" aria-label="Papel" ${eu ? 'disabled' : ''}><option value="vendedor" ${p.papel === 'vendedor' ? 'selected' : ''}>Atendente</option><option value="gestor" ${p.papel === 'gestor' ? 'selected' : ''}>Gestor</option></select>
+      <select class="e-setor" aria-label="Setor">${SETORES.map(([v, r]) => `<option value="${v}" ${(p.setor || 'comercial') === v ? 'selected' : ''}>${r}</option>`).join('')}</select>
+      <span class="e-peso-cx">Peso <input class="e-peso" type="number" min="0" inputmode="numeric" value="${p.peso ?? 0}" aria-label="Peso na distribuição"></span>
       <label class="marcar"><input class="e-ativo" type="checkbox" ${p.ativo ? 'checked' : ''} ${eu ? 'disabled' : ''}> Ativo</label>
       <button class="btn sec mini" type="button" data-salvar-perfil>Salvar</button>
     </div>`; }).join('');
@@ -1121,6 +1240,7 @@ function ajustarCampos(){
   const ult = ETAPAS.findIndex(e => e[0] === etapa), aberto = estado.aberto && !FECHADAS.includes(estado.aberto.etapa);
   $('#btn-avancar').classList.toggle('oculto', !estado.aberto || ult < 0 || ult >= 4);
   $('#btn-ganho').classList.toggle('oculto', !aberto); $('#btn-perdido').classList.toggle('oculto', !aberto);
+  $('#acoes-equipe').classList.toggle('oculto', !estado.aberto);
 }
 // Orçamento enviado sem retorno marcado: sugere amanhã 10h (dá pra trocar)
 function sugerirRetorno(){
@@ -1178,6 +1298,7 @@ async function desenharHistorico(id){
     let t;
     if (h.tipo === 'nota') t = esc(h.texto);
     else if (h.tipo === 'followup') t = '✓ ' + esc(h.texto || 'Retorno feito');
+    else if (h.tipo === 'transferencia') t = '⇄ ' + esc(h.texto || 'Transferido');
     else if (h.tipo === 'criado') t = `Lead criado em <b>${esc(rotulo(ETAPAS, h.para))}</b>`;
     else if (h.tipo === 'etapa') t = `${esc(rotulo(ETAPAS, h.de))} → <b>${esc(rotulo(ETAPAS, h.para))}</b>`;
     else t = `Responsável: ${esc(nomeDe(h.de) || 'ninguém')} → <b>${esc(nomeDe(h.para) || 'ninguém')}</b>`;
@@ -1217,7 +1338,7 @@ async function salvarFicha(ev){
   if (l.etapa === 'perdido' && !l.motivo_perda) { erro.textContent = 'Para marcar como Perdido, escolha o motivo.'; return; }
   try {
     if (estado.aberto) await api.mudar(estado.aberto.id, l);
-    else await api.criar(l);
+    else await api.criar({ ...l, setor: estado.meu?.setor || 'comercial' });
     toast(estado.aberto ? 'Salvo.' : 'Lead criado.');
     fecharFicha(); await recarregar();
   } catch (e) {
@@ -1234,6 +1355,78 @@ async function salvarFicha(ev){
       }
     }
   }
+}
+
+/* ---------- transferir lead (setor e/ou pessoa) ---------- */
+function pessoasDoSetor(){
+  const setor = $('#tr-setor').value, l = estado.aberto;
+  const gente = estado.perfis.filter(p => p.ativo && (p.setor || 'comercial') === setor && !(l && p.id === l.responsavel && (l.setor || 'comercial') === setor));
+  preencher($('#tr-pessoa'), [['', '— quem pegar primeiro (fila do setor) —'], ...gente.map(p => [p.id, p.nome])]);
+}
+function abrirTransferir(){
+  const l = estado.aberto; if (!l) return;
+  $('#tr-sub').textContent = `${l.nome} · hoje em ${rotulo(SETORES, l.setor || 'comercial')}${nomeDe(l.responsavel) ? ' com ' + nomeDe(l.responsavel) : ', sem responsável'}`;
+  preencher($('#tr-setor'), SETORES); $('#tr-setor').value = l.setor || 'comercial'; pessoasDoSetor();
+  $('#tr-recado').value = ''; $('#tr-erro').textContent = ''; $('#fundo-transf').classList.remove('oculto');
+}
+async function confirmarTransferir(){
+  const l = estado.aberto; if (!l) return;
+  const setor = $('#tr-setor').value, pessoa = $('#tr-pessoa').value || null, recado = $('#tr-recado').value.trim();
+  if (setor === (l.setor || 'comercial') && pessoa === (l.responsavel || null)) { $('#tr-erro').textContent = 'Escolha outro setor ou outra pessoa.'; return; }
+  const texto = `Transferido pra ${rotulo(SETORES, setor)}${pessoa ? ' · ' + nomeDe(pessoa) : ' (fila do setor)'}${recado ? ': ' + recado : ''}`;
+  try {
+    await api.mudar(l.id, { setor, responsavel: pessoa });
+    await api.anotar(l.id, texto, estado.usuario.id, 'transferencia');
+    $('#fundo-transf').classList.add('oculto'); fecharFicha(); await recarregar(); toast(`${l.nome}: ${texto.split(':')[0].toLowerCase()}.`);
+  } catch (e) { $('#tr-erro').textContent = traduzErro(e); }
+}
+
+/* =====================================================================
+   EQUIPE (chat interno)
+   ===================================================================== */
+const chaveConv = m => m.canal || 'dm:' + (m.autor === estado.usuario.id ? m.para : m.autor);
+const lidos = () => { try { return JSON.parse(guarda.ler('lido_' + estado.usuario.id) || '{}'); } catch { return {}; } };
+const naoLidas = chave => { const ate = lidos()[chave] || 0; return estado.msgs.filter(m => chaveConv(m) === chave && m.autor !== estado.usuario.id && new Date(m.criado_em).getTime() > ate).length; };
+function marcarLida(chave){ const l = lidos(); l[chave] = Date.now(); guarda.por('lido_' + estado.usuario.id, JSON.stringify(l)); }
+async function carregarMsgs(){ try { estado.msgs = await api.mensagens(); } catch { estado.msgs = []; } }
+function conversas(){
+  const meu = estado.meu?.setor || 'comercial';
+  const canais = [['geral', 'Geral (todo mundo)'], ...SETORES.filter(([v]) => ehGestor() || v === meu).map(([v, r]) => ['setor:' + v, 'Setor ' + r])];
+  const pessoas = estado.perfis.filter(p => p.ativo && p.id !== estado.usuario.id).map(p => ['dm:' + p.id, p.nome, rotulo(SETORES, p.setor || 'comercial')]);
+  return { canais, pessoas };
+}
+function atualizarPinoChat(){
+  if (!estado.usuario) return;
+  const { canais, pessoas } = conversas(), n = [...canais, ...pessoas].reduce((t, c) => t + naoLidas(c[0]), 0);
+  $('#pino-chat').textContent = n > 9 ? '9+' : n; $('#pino-chat').classList.toggle('oculto', !n);
+}
+function desenharEquipe(){
+  const { canais, pessoas } = conversas(), todas = [...canais, ...pessoas];
+  if (!todas.some(c => c[0] === estado.conversa)) estado.conversa = 'geral';
+  if (estado.chatAberto || matchMedia('(min-width:641px)').matches) marcarLida(estado.conversa);
+  const item = ([chave, nome, sub]) => { const ult = estado.msgs.filter(m => chaveConv(m) === chave).pop(), n = naoLidas(chave);
+    return `<button class="chat-item ${chave === estado.conversa ? 'ativo' : ''}" type="button" data-conv="${esc(chave)}">
+      <span class="avatar ${chave.startsWith('dm:') ? '' : 'vazio'}">${chave.startsWith('dm:') ? esc(iniciais(nome)) : '#'}</span>
+      <span class="tx"><b>${esc(nome)}</b><span>${esc(ult ? ult.texto : (sub || 'Sem mensagens ainda'))}</span></span>${n ? `<span class="pino">${n}</span>` : ''}</button>`; };
+  $('#chat-lista').innerHTML = '<h4>Canais</h4>' + canais.map(item).join('') + '<h4>Pessoas</h4>' + (pessoas.map(item).join('') || '<p class="dica" style="margin:4px 8px">Ninguém mais na equipe ainda.</p>');
+  $('#chat').classList.toggle('aberta', estado.chatAberto);
+  $('#chat-titulo').textContent = (todas.find(c => c[0] === estado.conversa) || [, ''])[1];
+  const msgs = estado.msgs.filter(m => chaveConv(m) === estado.conversa);
+  $('#chat-msgs').innerHTML = msgs.map(m => `<div class="msg ${m.autor === estado.usuario.id ? 'minha' : ''}">
+      <div class="q">${esc(nomeDe(m.autor) || 'equipe')} · ${horaBR(m.criado_em)}</div><div class="t">${esc(m.texto)}</div>
+      ${m.lead_id ? `<button class="sobre" type="button" data-lead="${esc(m.lead_id)}">📇 ${esc(m.lead_nome || 'ver lead')}</button>` : ''}</div>`).join('')
+    || '<div class="vazio" style="margin:auto">Nenhuma mensagem aqui ainda. Manda a primeira.</div>';
+  $('#chat-msgs').scrollTop = $('#chat-msgs').scrollHeight;
+  $('#chat-sobre').classList.toggle('oculto', !estado.chatLead);
+  if (estado.chatLead) $('#chat-sobre').innerHTML = `Sobre o lead <b>${esc(estado.chatLead.nome)}</b> <button type="button" id="chat-sem-lead" aria-label="Tirar o lead">×</button>`;
+  atualizarPinoChat();
+}
+async function enviarChat(){
+  const texto = $('#chat-texto').value.trim(); if (!texto) return;
+  const c = estado.conversa, m = { texto, lead_id: estado.chatLead?.id || null };
+  if (c.startsWith('dm:')) m.para = c.slice(3); else m.canal = c;
+  try { await api.enviarMensagem(m); $('#chat-texto').value = ''; estado.chatLead = null; await carregarMsgs(); desenharEquipe(); }
+  catch (e) { toast(traduzErro(e)); }
 }
 
 /* ---------- etiquetas rápidas ---------- */
@@ -1265,15 +1458,19 @@ $('#c-resposta').addEventListener('change', e => {
   window.open(link + '?text=' + encodeURIComponent(texto), '_blank', 'noopener');
   if (estado.aberto) api.anotar(estado.aberto.id, `Resposta pronta aberta no WhatsApp: "${r.titulo}"`, estado.usuario.id).then(() => desenharHistorico(estado.aberto.id)).catch(() => {});
 });
+const podeResp = r => ehGestor() || r.dono === estado.usuario.id;
 function desenharListaResp(){
   const itens = estado.respostas;
-  $('#lista-resp').innerHTML = itens.length ? itens.map(r => `
-    <div class="item-resp" data-id="${esc(r.id)}">
-      <input class="r-tit" value="${esc(r.titulo)}" placeholder="Título (ex.: Valores Day Use)">
-      <textarea class="r-txt" placeholder="Texto da mensagem">${esc(r.texto)}</textarea>
-      <div class="acoes"><button class="btn" type="button" data-salvar>Salvar</button><button class="btn perigo" type="button" data-apagar>Apagar</button></div>
-    </div>`).join('') : '<p class="dica">Nenhuma resposta ainda. Comece pelas mais usadas: valores do Day Use, hospedagem, pix, localização, voucher.</p>';
+  $('#r-dica-dono').textContent = ehGestor() ? 'As que você criar valem pra equipe toda.' : 'As que você criar são só suas; as da equipe quem edita é a gestão.';
+  $('#lista-resp').innerHTML = itens.length ? itens.map(r => { const pode = podeResp(r); return `
+    <div class="item-resp ${pode ? '' : 'travado'}" data-id="${esc(r.id)}">
+      <div class="de"><span class="selo ${r.dono ? 'minha' : 'etq'}">${r.dono ? (r.dono === estado.usuario.id ? 'minha' : 'de ' + esc(nomeDe(r.dono) || 'vendedor')) : 'da equipe'}</span></div>
+      <input class="r-tit" value="${esc(r.titulo)}" placeholder="Título (ex.: Valores Day Use)" ${pode ? '' : 'readonly'}>
+      <textarea class="r-txt" placeholder="Texto da mensagem" ${pode ? '' : 'readonly'}>${esc(r.texto)}</textarea>
+      ${pode ? '<div class="acoes"><button class="btn" type="button" data-salvar>Salvar</button><button class="btn perigo" type="button" data-apagar>Apagar</button></div>' : ''}
+    </div>`; }).join('') : '<p class="dica">Nenhuma resposta ainda. Comece pelas mais usadas: valores do Day Use, hospedagem, pix, localização, voucher.</p>';
 }
+$('#btn-minhas-resp').addEventListener('click', async () => { await carregarRespostas(); desenharListaResp(); $('#fundo-resp').classList.remove('oculto'); });
 $('#btn-respostas').addEventListener('click', async () => { await carregarRespostas(); desenharListaResp(); $('#fundo-resp').classList.remove('oculto'); });
 $('#btn-fechar-resp').addEventListener('click', () => $('#fundo-resp').classList.add('oculto'));
 $('#fundo-resp').addEventListener('click', e => { if (e.target.id === 'fundo-resp') $('#fundo-resp').classList.add('oculto'); });
@@ -1292,12 +1489,12 @@ $('#lista-resp').addEventListener('click', async e => {
     if (e.target.closest('[data-salvar]')) {
       const titulo = item.querySelector('.r-tit').value.trim(), texto = item.querySelector('.r-txt').value.trim();
       if (!titulo || !texto) { toast('Preencha título e texto.'); return; }
-      await api.salvarResposta({ id, titulo, texto }); toast('Resposta salva.');
+      await api.salvarResposta({ id, titulo, texto, dono: ehGestor() ? null : estado.usuario.id }); toast('Resposta salva.');
     } else if (e.target.closest('[data-apagar]')) {
       if (!confirm('Apagar essa resposta pronta?')) return;
       await api.apagarResposta(id); toast('Apagada.');
     } else return;
-    await carregarRespostas(); desenharListaResp();
+    await carregarRespostas(); desenharListaResp(); ajustarCampos();
   } catch (err) { toast(traduzErro(err)); }
 });
 
@@ -1350,7 +1547,8 @@ $('#btn-fechar').addEventListener('click', fecharFicha);
 $('#fundo-ficha').addEventListener('click', e => { if (e.target.id === 'fundo-ficha') fecharFicha(); });
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  if (!$('#fundo-prox').classList.contains('oculto')) { $('#fundo-prox').classList.add('oculto'); proxLead = null; }
+  if (!$('#fundo-transf').classList.contains('oculto')) $('#fundo-transf').classList.add('oculto');
+  else if (!$('#fundo-prox').classList.contains('oculto')) { $('#fundo-prox').classList.add('oculto'); proxLead = null; }
   else if (!$('#avisos').classList.contains('oculto')) $('#avisos').classList.add('oculto');
   else if (!$('#fundo-resp').classList.contains('oculto')) $('#fundo-resp').classList.add('oculto');
   else if (!$('#fundo-ficha').classList.contains('oculto')) fecharFicha();
@@ -1388,11 +1586,29 @@ $('#busca').addEventListener('input', e => {
   if (q.length >= 3) tBusca = setTimeout(async () => { try { const r = await api.buscar(q); if (estado.busca.trim() === q) { estado.achados = r; desenharFunil(); } } catch {} }, 350);
 });
 $('#f-resp').addEventListener('change', e => { estado.filtroResp = e.target.value; desenharFunil(); });
+$('#f-setor').addEventListener('change', e => { estado.filtroSetor = e.target.value; desenharFunil(); });
 document.querySelectorAll('.chip[data-tipo]').forEach(b => b.addEventListener('click', () => {
   document.querySelectorAll('.chip[data-tipo]').forEach(x => x.classList.remove('ativo')); b.classList.add('ativo');
   estado.filtroTipo = b.dataset.tipo; desenharFunil();
 }));
 $('#chip-hoje').addEventListener('click', () => { estado.quente = !estado.quente; $('#chip-hoje').classList.toggle('ativo', estado.quente); desenharFunil(); });
+
+// transferir e chat
+$('#btn-transferir').addEventListener('click', abrirTransferir);
+$('#tr-setor').addEventListener('change', pessoasDoSetor);
+$('#tr-ok').addEventListener('click', confirmarTransferir);
+$('#tr-cancelar').addEventListener('click', () => $('#fundo-transf').classList.add('oculto'));
+$('#btn-falar').addEventListener('click', () => { const l = estado.aberto; if (!l) return; estado.chatLead = { id:l.id, nome:l.nome }; estado.chatAberto = true; fecharFicha(); ir('equipe'); $('#chat-texto').focus(); });
+$('#chat-lista').addEventListener('click', e => { const b = e.target.closest('[data-conv]'); if (!b) return; estado.conversa = b.dataset.conv; estado.chatAberto = true; desenharEquipe(); });
+$('#chat-voltar').addEventListener('click', () => { estado.chatAberto = false; desenharEquipe(); });
+$('#chat-form').addEventListener('submit', e => { e.preventDefault(); enviarChat(); });
+$('#chat-texto').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarChat(); } });
+$('#chat-sobre').addEventListener('click', e => { if (e.target.closest('#chat-sem-lead')) { estado.chatLead = null; desenharEquipe(); } });
+$('#chat-msgs').addEventListener('click', async e => {
+  const b = e.target.closest('[data-lead]'); if (!b) return;
+  const l = estado.leads.find(x => String(x.id) === b.dataset.lead) || await api.lead(b.dataset.lead);
+  if (l && !l.arquivado) abrirFicha(l); else toast('Esse lead foi arquivado.');
+});
 
 // follow-up
 $('#fu-resp').addEventListener('change', desenharFollow);
@@ -1421,6 +1637,14 @@ $('#av-lista').addEventListener('click', async e => {
 document.addEventListener('click', e => { if (!e.target.closest('#avisos') && !e.target.closest('#btn-sino')) $('#avisos').classList.add('oculto'); });
 
 // ajustes
+$('#aj-dist').addEventListener('change', async e => {
+  try { await api.salvarConfig('distribuicao', e.target.value); estado.config.distribuicao = e.target.value; toast('Distribuição salva.'); desenharAjustes(); }
+  catch (err) { toast(traduzErro(err)); e.target.value = estado.config.distribuicao || 'manual'; }
+});
+$('#btn-pegar').addEventListener('click', async () => {
+  try { const l = await api.pegarProximo(); await recarregar(); if (l) { toast(`${l.nome} agora é seu.`); abrirFicha(estado.leads.find(x => x.id === l.id) || l); } else toast('A fila está vazia.'); }
+  catch (err) { toast(traduzErro(err)); }
+});
 $('#btn-salvar-metas').addEventListener('click', async () => {
   const n = v => v === '' ? null : Math.max(0, Math.round(Number(v)));
   try {
@@ -1432,7 +1656,7 @@ $('#aj-equipe').addEventListener('click', async e => {
   if (!e.target.closest('[data-salvar-perfil]')) return;
   const lin = e.target.closest('.lin-equipe'), nome = lin.querySelector('.e-nome').value.trim();
   if (!nome) { toast('Preencha o nome.'); return; }
-  const p = { nome }; if (lin.dataset.id !== estado.usuario.id) { p.papel = lin.querySelector('.e-papel').value; p.ativo = lin.querySelector('.e-ativo').checked; }
+  const p = { nome, setor: lin.querySelector('.e-setor').value, peso: Math.max(0, Math.round(Number(lin.querySelector('.e-peso').value) || 0)) }; if (lin.dataset.id !== estado.usuario.id) { p.papel = lin.querySelector('.e-papel').value; p.ativo = lin.querySelector('.e-ativo').checked; }
   try { await api.salvarPerfil(lin.dataset.id, p); await carregarPerfis(); toast('Salvo.'); desenharAjustes(); }
   catch (err) { toast(traduzErro(err)); }
 });
