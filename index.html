@@ -603,7 +603,7 @@ if (!MODO_DEMO) {
         todas(() => L().gte('criado_em', a).lt('criado_em', b)),
         todas(() => L().gte('ganho_em', a).lt('ganho_em', b)),
         todas(() => L().gte('perdido_em', a).lt('perdido_em', b)),
-        todas(() => sb.from('historico').select('id,lead_id,autor,tipo,de,para,criado_em').in('tipo', ['etapa','followup']).gte('criado_em', a).lt('criado_em', b))
+        todas(() => sb.from('historico').select('id,lead_id,autor,tipo,de,para,criado_em,leads!inner(arquivado)').eq('leads.arquivado', false).in('tipo', ['etapa','followup']).gte('criado_em', a).lt('criado_em', b))
       ]);
       const porId = new Map(); [...n, ...g, ...p].forEach(l => porId.set(l.id, l));
       return { leads:[...porId.values()], eventos };
@@ -621,7 +621,7 @@ if (!MODO_DEMO) {
     async historico(id){ const { data, error } = await sb.from('historico').select('*').eq('lead_id', id).order('criado_em', { ascending:false }); if (error) throw error; return data; },
     async anotar(id, texto, autor, tipo){ const { error } = await sb.from('historico').insert({ lead_id:id, tipo: tipo || 'nota', texto, autor }); if (error) throw error; },
     async feed(){
-      const { data, error } = await sb.from('historico').select('id,lead_id,autor,tipo,de,para,criado_em,leads(nome,responsavel,valor,motivo_perda,origem)')
+      const { data, error } = await sb.from('historico').select('id,lead_id,autor,tipo,de,para,criado_em,leads!inner(nome,responsavel,valor,motivo_perda,origem,arquivado)').eq('leads.arquivado', false)
         .or('tipo.in.(criado,followup),para.in.(ganho,perdido)').order('criado_em', { ascending:false }).limit(40);
       if (error) throw error; return data.map(e => ({ ...e, lead: e.leads }));
     },
@@ -862,7 +862,7 @@ async function desenharPainel(){
   try { [d, meta] = await Promise.all([dadosPeriodo(ini, fim), api.meta(D.chaveMes(estado.mesRef))]); }
   catch (e) { if (vez === fichaPainel) $('#painel-conteudo').innerHTML = erroCarga(e); return; }
   if (vez !== fichaPainel || estado.ver !== 'painel') return;
-  const c = calcular(d, ini, fim), m = meta || {};
+  const c = calcular(d, ini, fim), m = meta || {}, temMeta = ['leads','orcamentos','vendas','faturamento'].some(k => m[k]);
   const kpi = (i, nome, valor, sub, alvo, atual, fmt) => `<div class="kpi"><div class="n">${String(i).padStart(2, '0')} · ${nome}</div><div class="v num">${valor}</div><div class="s">${sub}</div>
     ${alvo ? `<span class="meta num">Meta: ${fmt ? fmt(alvo) : alvo} · ${pct(atual, alvo)}%</span><div class="trilho"><i style="width:${Math.min(100, pct(atual, alvo))}%"></i></div>` : ''}</div>`;
   const ehMesAtual = D.chaveMes(new Date()) === D.chaveMes(estado.mesRef);
@@ -876,7 +876,7 @@ async function desenharPainel(){
         ${kpi(4, 'Vendas', c.vendas, c.ticket ? 'ticket médio ' + brl0(c.ticket) : 'fechadas no mês', m.vendas, c.vendas)}
         ${kpi(5, 'Faturamento', brl0(c.faturamento), 'vendido no mês', m.faturamento, c.faturamento, brl0)}
       </div>
-      ${meta ? '' : `<div class="fichas"><span>Sem meta definida pra este mês${ehGestor() ? ' · <a href="#" id="lk-metas" style="color:var(--sol)">definir metas</a>' : ''}</span></div>`}
+      ${temMeta ? '' : `<div class="fichas"><span>Sem meta definida pra este mês${ehGestor() ? ' · <a href="#" id="lk-metas" style="color:var(--sol)">definir metas</a>' : ''}</span></div>`}
     </section>
     <section class="heroi">
       <div class="cab"><span class="rot">Do lead à venda</span><span class="mes">${D.rot('mes', estado.mesRef)}</span></div>
