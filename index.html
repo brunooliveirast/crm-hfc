@@ -130,7 +130,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .cartela .sub{color:var(--suave);font-size:13px;margin:0 0 12px}
 .duas{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .rolagem{overflow-x:auto}
-table.tab{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+table.tab{width:100%;border-collapse:collapse;font-size:14px;min-width:660px}
 .tab th{text-align:right;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--suave);padding:8px 10px;border-bottom:1px solid var(--linha);white-space:nowrap}
 .tab td{text-align:right;padding:10px;border-bottom:1px solid var(--linha);white-space:nowrap}
 .tab th:first-child,.tab td:first-child{text-align:left}
@@ -844,10 +844,14 @@ function calcular(d, ini, fim){
 }
 
 const tabAtendentes = c => `<div class="rolagem"><table class="tab num">
-  <tr><th>Atendente</th><th>Leads</th><th>Orçamentos</th><th>Vendas</th><th>Faturamento</th><th>Conversão</th><th>Follow-ups</th><th>Atrasados agora</th></tr>
-  ${c.atendentes.map(r => `<tr><td class="forte">${esc(r.nome)}</td><td>${r.leads}</td><td>${r.orcamentos}</td><td class="forte">${r.vendas}</td><td>${brl(r.valor)}</td>
-    <td>${pctTxt(r.vendas, r.leads)}</td><td>${r.followups}</td><td class="${r.atrasados ? 'ruim' : ''}">${r.atrasados}</td></tr>`).join('') || '<tr><td colspan="8" class="vazio">Ninguém na equipe ainda.</td></tr>'}
+  <tr><th>Atendente</th><th>Leads</th><th>Orçamentos</th><th>Vendas</th><th>Faturamento</th><th>Ticket médio</th><th>Conversão</th><th>Follow-ups</th><th>Atrasados agora</th></tr>
+  ${c.atendentes.map(r => `<tr><td class="forte">${esc(r.nome)}</td><td>${r.leads}</td><td>${r.orcamentos}</td><td class="forte">${r.vendas}</td><td>${brl(r.valor)}</td><td>${r.vendas ? brl0(r.valor / r.vendas) : '—'}</td>
+    <td>${pctTxt(r.vendas, r.leads)}</td><td>${r.followups}</td><td class="${r.atrasados ? 'ruim' : ''}">${r.atrasados}</td></tr>`).join('') || '<tr><td colspan="9" class="vazio">Ninguém na equipe ainda.</td></tr>'}
 </table></div>`;
+const tabTipos = c => `<section class="cartela"><h2>Day Use, hospedagem e grupos</h2><p class="sub">Cada tipo de venda separado.</p><div class="rolagem"><table class="tab num" style="min-width:480px">
+  <tr><th>Tipo</th><th>Leads</th><th>Vendas</th><th>Conversão</th><th>Faturamento</th><th>Ticket médio</th></tr>
+  ${c.tipos.map(t => `<tr><td class="forte">${esc(t.nome)}</td><td>${t.n}</td><td class="forte">${t.vendas}</td><td>${pctTxt(t.vendas, t.n)}</td><td>${brl(t.valor)}</td><td>${t.vendas ? brl0(t.valor / t.vendas) : '—'}</td></tr>`).join('')}
+</table></div></section>`;
 const barras = (itens, max, fmt, cls) => itens.length ? itens.map(i => `<div class="lin-barra"><span>${esc(i.nome)}</span><div class="b"><i class="${cls || ''}" style="width:${max ? Math.max(3, i.n / max * 100) : 0}%"></i></div><small class="num">${fmt(i)}</small></div>`).join('') : '<div class="vazio">Nada no período.</div>';
 const erroCarga = e => `<div class="aviso-erro">⚠️ Não consegui carregar os números (${esc(traduzErro(e))}). Isso não é zero: é dado que não chegou. Tente de novo em instantes.</div>`;
 
@@ -902,10 +906,7 @@ async function desenharPainel(){
       <section class="cartela"><h2>Por que perdemos</h2><p class="sub">Motivo marcado em cada lead perdido no mês.</p>
         ${barras(c.motivos, Math.max(1, ...c.motivos.map(o => o.n)), o => o.n, 'vinho')}</section>
     </div>
-    <section class="cartela"><h2>Por tipo de venda</h2><div class="rolagem"><table class="tab num" style="min-width:420px">
-      <tr><th>Tipo</th><th>Leads</th><th>Vendas</th><th>Conversão</th><th>Faturamento</th></tr>
-      ${c.tipos.map(t => `<tr><td class="forte">${esc(t.nome)}</td><td>${t.n}</td><td>${t.vendas}</td><td>${pctTxt(t.vendas, t.n)}</td><td>${brl(t.valor)}</td></tr>`).join('')}
-    </table></div></section>`;
+    ${tabTipos(c)}`;
   $('#lk-metas')?.addEventListener('click', e => { e.preventDefault(); ir('ajustes'); });
 }
 
@@ -925,7 +926,9 @@ function textoRelatorio(c, modo, ref, meta){
     `Perdidos: *${c.perdidos}*`, `Follow-ups feitos: *${c.followups}*`];
   if (c.novos) L.push(`Conversão (vendas sobre leads): *${pctTxt(c.vendas, c.novos)}*`);
   const at = c.atendentes.filter(r => r.leads || r.vendas || r.orcamentos || r.followups);
-  if (at.length) { L.push('', '*Por atendente*'); at.forEach(r => L.push(`${r.nome}: ${r.vendas} ${r.vendas === 1 ? 'venda' : 'vendas'} · ${brl(r.valor)} · ${r.orcamentos} orçamentos · ${r.followups} follow-ups`)); }
+  if (at.length) { L.push('', '*Por atendente*'); at.forEach(r => L.push(`${r.nome}: ${r.vendas} ${r.vendas === 1 ? 'venda' : 'vendas'} · ${brl(r.valor)}${r.vendas ? ' · ticket ' + brl0(r.valor / r.vendas) : ''} · conversão ${pctTxt(r.vendas, r.leads)} · ${r.orcamentos} orçamentos · ${r.followups} follow-ups`)); }
+  const tp = c.tipos.filter(t => t.n || t.vendas);
+  if (tp.length) { L.push('', '*Por tipo*'); tp.forEach(t => L.push(`${t.nome}: ${t.n} leads · ${t.vendas} ${t.vendas === 1 ? 'venda' : 'vendas'} · ${brl(t.valor)}${t.vendas ? ' · ticket ' + brl0(t.valor / t.vendas) : ''}`)); }
   if (c.origens.length) L.push('', '*De onde vieram os leads*', c.origens.map(o => `${o.nome} ${o.n}`).join(' · '));
   if (c.motivos.length) L.push('', '*Por que perdemos*', c.motivos.map(o => `${o.nome} ${o.n}`).join(' · '));
   L.push('', '*Agora no funil*', `${c.agora.abertos} em aberto · ${brl(c.agora.naMesa)} em orçamento e negociação · ${c.agora.atrasados} retornos atrasados`);
@@ -944,6 +947,7 @@ async function desenharRel(){
   $('#rel-conteudo').innerHTML = `
     <div class="stats">${st('Leads novos', c.novos)}${st('Orçamentos', c.orcados)}${st('Vendas', c.vendas)}${st('Faturamento', brl0(c.faturamento))}${st('Follow-ups', c.followups)}</div>
     <section class="cartela"><h2>Por atendente</h2><p class="sub">${esc(D.rot(modo, ref))}</p>${tabAtendentes(c)}</section>
+    ${tabTipos(c)}
     <section class="cartela"><h2>Texto pronto pro WhatsApp</h2><p class="sub">Copie e cole no grupo. Já sai com negrito do WhatsApp.</p>
       <pre class="texto" id="rel-texto"></pre><button class="btn" id="btn-copiar">Copiar relatório</button></section>`;
   $('#rel-texto').textContent = texto;
