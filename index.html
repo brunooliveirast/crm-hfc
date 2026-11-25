@@ -130,12 +130,27 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .cartela .sub{color:var(--suave);font-size:13px;margin:0 0 12px}
 .duas{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .rolagem{overflow-x:auto}
+.rk-barra{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.rk-barra .seg{flex-wrap:wrap;border-radius:16px}
+.rk-barra select{width:auto;max-width:100%}
+.tab.rk th:first-child,.tab.rk td:first-child{text-align:center;width:36px}
+.tab.rk th:nth-child(2),.tab.rk td:nth-child(2){text-align:left}
+.rel-livre{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rel-livre input{width:auto}
+#rel-atalho{width:auto}
 table.tab{width:100%;border-collapse:collapse;font-size:14px;min-width:660px}
 .tab th{text-align:right;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--suave);padding:8px 10px;border-bottom:1px solid var(--linha);white-space:nowrap}
 .tab td{text-align:right;padding:10px;border-bottom:1px solid var(--linha);white-space:nowrap}
 .tab th:first-child,.tab td:first-child{text-align:left}
 .tab tr:last-child td{border-bottom:0}
 .tab td.forte{font-weight:700}
+.tab.esq th,.tab.esq td{text-align:left}
+.tab.esq tbody tr{cursor:pointer}
+.tab.esq tbody tr:hover td{background:var(--card2)}
+.tab.esq td.etqs{white-space:normal;min-width:140px;max-width:260px}
+.tab-rola{overflow-x:auto;margin-top:12px}
+.aviso-zap{border:1px dashed var(--linha);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.5}
+.aviso-zap b.st{display:inline-block;margin-bottom:4px}
 .tab .ruim{color:var(--vermelho);font-weight:700}
 .lin-barra{display:grid;grid-template-columns:minmax(90px,150px) 1fr auto;gap:10px;align-items:center;padding:6px 0;font-size:14px}
 .lin-barra .b{height:8px;border-radius:4px;background:var(--card2);overflow:hidden}
@@ -306,9 +321,10 @@ label.marcar input{width:auto}
 @media (max-width:980px){ .kpis,.stats{grid-template-columns:repeat(2,minmax(0,1fr))} .duas{grid-template-columns:1fr} }
 @media (max-width:640px){
   #app{display:block}
-  .lado{position:fixed;left:0;right:0;bottom:0;z-index:15;flex-direction:row;justify-content:space-around;padding:4px 4px calc(4px + env(safe-area-inset-bottom));height:auto;overflow:visible}
+  .lado{position:fixed;left:0;right:0;bottom:0;z-index:15;flex-direction:row;justify-content:flex-start;padding:4px 4px calc(4px + env(safe-area-inset-bottom));height:auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+  .lado::-webkit-scrollbar{display:none}
   .lado .emblema{display:none}
-  .lado button{width:auto;flex:1;padding:6px 2px 4px;font-size:10px}
+  .lado button{width:auto;flex:1 0 auto;min-width:60px;padding:6px 2px 4px;font-size:10px}
   .lado .pino{right:calc(50% - 22px)}
   .corpo{height:100%;padding-bottom:62px}
   .topo{padding:10px 14px 8px}
@@ -368,6 +384,7 @@ label.marcar input{width:auto}
     <button data-ver="followup"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Follow-up<span class="pino oculto" id="pino-fu"></span></button>
     <button data-ver="relatorios"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h5M10 16h5"/></svg>Relatórios</button>
     <button data-ver="equipe"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Equipe<span class="pino oculto" id="pino-chat"></span></button>
+    <button data-ver="base"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>Base</button>
     <button data-ver="disparos" id="nav-disparos" class="oculto"><svg viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>Disparos</button>
     <button data-ver="ajustes" id="nav-ajustes" class="oculto"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Ajustes</button>
   </nav>
@@ -424,6 +441,14 @@ label.marcar input{width:auto}
       <div class="barra-ver">
         <div class="seg" id="rel-modo"><button data-modo="dia">Diário</button><button data-modo="semana">Semanal</button><button data-modo="mes">Mensal</button></div>
         <div class="periodo-nav"><button id="rel-ant" aria-label="Anterior">‹</button><span id="rel-rot"></span><button id="rel-prox" aria-label="Próximo">›</button></div>
+        <select id="rel-atalho" aria-label="Escolher período">
+          <option value="">Escolher período…</option><option value="hoje">Hoje</option><option value="ontem">Ontem</option>
+          <option value="7">Últimos 7 dias</option><option value="14">Últimos 14 dias</option><option value="28">Últimos 28 dias</option>
+          <option value="30">Últimos 30 dias</option><option value="90">Últimos 90 dias</option>
+          <option value="semana">Esta semana</option><option value="mes">Este mês</option><option value="mesant">Mês passado</option>
+          <option value="livre">Personalizado…</option>
+        </select>
+        <span class="rel-livre oculto" id="rel-livre"><input type="date" id="rel-de" aria-label="De"><span>a</span><input type="date" id="rel-ate" aria-label="Até"><button class="btn mini" type="button" id="rel-aplicar">Aplicar</button></span>
       </div>
       <div id="rel-conteudo"></div>
     </div>
@@ -438,6 +463,25 @@ label.marcar input{width:auto}
           <div class="chat-sobre oculto" id="chat-sobre"></div>
           <form class="chat-form" id="chat-form"><textarea id="chat-texto" placeholder="Escreva pra equipe…" maxlength="2000" aria-label="Mensagem"></textarea><button class="btn" type="submit">Enviar</button></form>
         </div>
+      </div>
+    </div>
+
+    <!-- BASE DE LEADS -->
+    <div class="ver oculto" id="ver-base">
+      <div class="cartela">
+        <p class="sub">Todo mundo que já entrou no CRM, em qualquer etapa, inclusive vendidos e perdidos antigos. Toque na linha pra abrir a ficha.</p>
+        <div class="dp-filtros">
+          <input id="b-busca" type="search" placeholder="Nome ou telefone…" aria-label="Buscar">
+          <select id="b-tipo" aria-label="Tipo"></select><select id="b-etapa" aria-label="Etapa"></select>
+          <select id="b-resp" aria-label="Vendedor"></select><select id="b-etq" aria-label="Etiqueta"></select>
+          <select id="b-origem" aria-label="Origem"></select><select id="b-setor" aria-label="Setor"></select>
+        </div>
+        <div class="dp-pe"><b id="b-cont"></b>
+          <button class="btn sec mini" type="button" id="b-atualizar">Atualizar</button>
+          <button class="btn sec mini oculto" type="button" id="b-exportar">Exportar planilha</button>
+          <button class="btn mini oculto" type="button" id="b-disparar">Disparar pra esses</button></div>
+        <div id="b-aviso"></div>
+        <div class="tab-rola"><table class="tab esq" id="b-tab"></table></div>
       </div>
     </div>
 
@@ -465,8 +509,8 @@ label.marcar input{width:auto}
       <div class="cartela">
         <h2>2. Mensagem</h2>
         <p class="sub">Cada pessoa recebe um texto um pouco diferente. Toque num código pra inserir.</p>
-        <label for="dp-titulo">Nome do disparo (só pra você, fica no histórico do lead)</label>
-        <input id="dp-titulo" placeholder="Ex.: Reveillon, base de dezembro">
+        <label for="dp-titulo">Nome da campanha (vira etiqueta: quem receber e quem responder fica marcado com ela)</label>
+        <input id="dp-titulo" maxlength="60" placeholder="Ex.: Réveillon, Black de novembro">
         <label for="dp-msg">Texto</label>
         <textarea id="dp-msg" rows="6">[Oi|Olá|Oii], {nome}! {saudacao}, [tudo bem?|como você tá?|tudo certo por aí?]
 
@@ -476,12 +520,17 @@ label.marcar input{width:auto}
           <button type="button" data-cod="{saudacao}">{saudacao} bom dia / boa tarde / boa noite</button>
           <button type="button" data-cod="[opção 1|opção 2|opção 3]">[a|b|c] sorteia uma</button>
         </div>
+        <label>Imagem junto (opcional)</label>
+        <div class="dp-pe" style="margin-top:0"><label class="btn sec mini" style="margin:0;color:var(--texto)">Escolher imagem<input id="dp-img" type="file" accept="image/*" hidden></label>
+          <button class="btn sec mini oculto" type="button" id="dp-img-tirar">Tirar imagem</button></div>
+        <img id="dp-img-previa" class="oculto" alt="Imagem do disparo" style="max-width:180px;max-height:180px;border-radius:10px;margin-top:8px;display:block">
+        <p class="dica">Sem número conectado, o CRM <b>copia a imagem a cada envio</b>: quando o WhatsApp abrir, aperte <b>Ctrl+V</b> e envie (funciona no computador). Vídeo: por enquanto cole o link dele no texto; anexar vídeo de verdade só com o número conectado.</p>
         <label>Como vai chegar (3 exemplos sorteados)</label>
         <div id="dp-previa"></div>
       </div>
       <div class="cartela">
         <h2>3. Envio</h2>
-        <p class="sub">Hoje o envio é <b>assistido</b>: o CRM abre o WhatsApp com o texto pronto, você aperta enviar, e ele segura o próximo por um tempo sorteado. Envio 100% automático depende de ligar um número ao CRM.</p>
+        <div class="aviso-zap"><b class="st">⚠️ Nenhum número de WhatsApp conectado ao CRM.</b><br>Por isso o envio hoje é <b>assistido</b>: o CRM abre o seu WhatsApp com o texto pronto, você aperta enviar, e ele segura o próximo por um tempo sorteado. O número se conecta em <b>Ajustes → WhatsApp do CRM</b>; com ele ligado o envio sai sozinho e a resposta cai no Funil.</div>
         <div class="dp-tempo">
           <div><label for="dp-min">Esperar de (segundos)</label><input id="dp-min" type="number" min="0" value="20" inputmode="numeric"></div>
           <div><label for="dp-max">até (segundos)</label><input id="dp-max" type="number" min="0" value="60" inputmode="numeric"></div>
@@ -489,6 +538,11 @@ label.marcar input{width:auto}
         </div>
         <div class="erro" id="dp-erro"></div>
         <div id="dp-fila"></div>
+      </div>
+      <div class="cartela">
+        <h2>Campanhas feitas</h2>
+        <p class="sub">Marcados = leads com a etiqueta da campanha. Vendas = desses, quantos estão em Vendido.</p>
+        <div class="tab-rola" style="margin-top:0"><table class="tab" id="dp-camps"></table></div>
       </div>
     </div>
 
@@ -504,6 +558,11 @@ label.marcar input{width:auto}
           <div><label for="m-fat">Faturamento (R$)</label><input id="m-fat" inputmode="decimal" placeholder="0,00"></div>
         </div>
         <div class="acoes" style="max-width:220px"><button class="btn" id="btn-salvar-metas">Salvar metas</button></div>
+      </div>
+      <div class="cartela">
+        <h2>WhatsApp do CRM</h2>
+        <p class="sub">É aqui que o número do hotel se conecta ao CRM.</p>
+        <div class="aviso-zap"><b class="st">⚠️ Nenhum número conectado ainda.</b><br>Quando a conexão for instalada, aparece aqui o QR code pra ler com o celular (igual ao WhatsApp Web) e o estado do número. Com ele ligado: mensagem nova vira lead no <b>Novo</b> sozinha, resposta de disparo chega marcada com a campanha, e o disparo sai sem apertar botão.<br>Enquanto isso: lead entra na mão e o disparo é assistido.</div>
       </div>
       <div class="cartela">
         <h2>Distribuição dos leads</h2>
@@ -675,13 +734,13 @@ const ETAPAS = [
 const TIPOS = [['dayuse','Day Use'],['hospedagem','Hospedagem'],['grupo','Grupo/excursão']];
 const ORIGENS = [['instagram','Instagram'],['facebook','Facebook'],['anuncio','Anúncio (Meta)'],['google','Google / site'],
   ['indicacao','Indicação'],['cliente','Já é cliente'],['whatsapp','WhatsApp direto'],['booking','Booking'],
-  ['planne','Loja Planne'],['site','Site (outro)'],['outro','Outro']];
+  ['planne','Loja Planne'],['site','Site (outro)'],['disparo','Disparo'],['outro','Outro']];
 const MOTIVOS = ['','Preço','Não respondeu o orçamento','Sem vaga na data','Sumiu / não respondeu','Fechou em outro lugar','Só pesquisando','Outro'];
 const ETIQUETAS_RAPIDAS = ['aniversário','feriado','casal','família com crianças','excursão','VIP','cupom','retornar em 5 dias','não enviar'];
 const PARADO_DIAS = { novo:1, atendimento:2, orcamento:2, negociando:3 }; // card fica vermelho depois disso
 const FECHADAS = ['ganho','perdido'];
 const SETORES = [['comercial','Comercial'],['reservas','Reservas'],['financeiro','Financeiro']];
-const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', followup:'Follow-up', relatorios:'Relatórios', equipe:'Equipe', disparos:'Disparos', ajustes:'Ajustes' };
+const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', followup:'Follow-up', relatorios:'Relatórios', equipe:'Equipe', base:'Base de leads', disparos:'Disparos', ajustes:'Ajustes' };
 const rotulo = (lista, v) => (lista.find(x => x[0] === v) || [, v])[1];
 
 /* ---------- utilidades ---------- */
@@ -773,7 +832,12 @@ if (!MODO_DEMO) {
       res.forEach(r => { if (r.error) throw r.error; r.data.forEach(l => porId.set(l.id, l)); }); return [...porId.values()];
     },
     async lead(id){ const { data } = await sb.from('leads').select('*').eq('id', id).maybeSingle(); return data; },
-    async comTelefone(){ return todas(() => sb.from('leads').select('id,nome,telefone,tipo,etapa,responsavel,etiquetas,setor').eq('arquivado', false).not('telefone', 'is', null)); },
+    async base(){ return todas(() => L()); },
+    async criarCampanha(c){ const { data, error } = await sb.from('campanhas').insert(c).select().single(); if (error) throw error; return data; },
+    async registrarEnvio(e){ const { error } = await sb.from('campanha_envios').insert(e); if (error) throw error; },
+    async campanhas(){ const { data, error } = await sb.from('campanhas').select('*').order('criado_em', { ascending:false }).limit(30); if (error) throw error;
+      const env = await todas(() => sb.from('campanha_envios').select('id,campanha_id')), n = {}; env.forEach(e => n[e.campanha_id] = (n[e.campanha_id] || 0) + 1);
+      return data.map(c => ({ ...c, enviados: n[c.id] || 0 })); },
     async criar(l){ const { data, error } = await sb.from('leads').insert(l).select().single(); if (error) throw error; return data; },
     async mudar(id, l){ const { data, error } = await sb.from('leads').update(l).eq('id', id).select().single(); if (error) throw error; return data; },
     async porTelefone(tel){ const { data } = await sb.from('leads').select('*').eq('telefone', tel).eq('arquivado', false).maybeSingle(); return data; },
@@ -838,6 +902,7 @@ if (!MODO_DEMO) {
   let M = { [D.chaveMes(new Date())]: { mes:D.chaveMes(new Date()), leads:80, orcamentos:40, vendas:20, faturamento:18000 } };
   let MSG = [{ id:1, autor:'u2', canal:'geral', para:null, lead_id:null, texto:'Bom dia, equipe! (mensagem de exemplo)', criado_em:iso(agora - 3 * 3600000) },
              { id:2, autor:'u3', canal:null, para:'u1', lead_id:'d7', texto:'Esse aqui pediu desconto pra grupo, posso dar? (exemplo)', criado_em:iso(agora - 1800000) }];
+  let CAMP = [], ENV = [];
   let logado = null;
   const valida = l => {
     if (l.etapa === 'ganho' && l.valor == null) throw { message:'ganho_tem_valor' };
@@ -854,10 +919,15 @@ if (!MODO_DEMO) {
     async quadro(){ return vivos(); },
     async periodo(){ return { leads:vivos(), eventos:H.filter(e => e.tipo === 'etapa' || e.tipo === 'followup').map(e => ({...e})) }; },
     async buscar(){ return []; },
-    async comTelefone(){ return vivos().filter(l => l.telefone); },
+    async base(){ return vivos(); },
+    async criarCampanha(c){ const n = { ...c, id:CAMP.length + 1, criado_em:new Date().toISOString() }; CAMP.push(n); return {...n}; },
+    async registrarEnvio(e){ ENV.push({ ...e, enviado_em:new Date().toISOString() }); },
+    async campanhas(){ return CAMP.map(c => ({ ...c, enviados: ENV.filter(e => e.campanha_id === c.id).length })).reverse(); },
     async lead(id){ const l = L.find(x => x.id === id); return l ? {...l} : null; },
     async criar(l){ const t = new Date().toISOString(); const n = { ...l, id:'n' + Date.now(), etiquetas:l.etiquetas || [], arquivado:false, criado_em:t, etapa_desde:t };
       if (n.telefone) n.telefone = soDigitos(n.telefone); valida(n);
+      const env = n.telefone && [...ENV].reverse().find(e => e.telefone.slice(-8) === n.telefone.slice(-8));
+      if (env) { const c = 'campanha: ' + CAMP.find(x => x.id === env.campanha_id).nome; if (!n.etiquetas.includes(c)) n.etiquetas = [...n.etiquetas, c]; if (['whatsapp','outro'].includes(n.origem)) n.origem = 'disparo'; }
       if (!n.responsavel && CFG.distribuicao === 'peso') { const c = P.filter(x => x.ativo && x.peso > 0 && x.setor === (n.setor || 'comercial')); let r = Math.random() * c.reduce((t, x) => t + x.peso, 0); n.responsavel = (c.find(x => (r -= x.peso) < 0) || {}).id || null; }
       L.push(n);
       H.push({ id:hid++, lead_id:n.id, autor:eu.id, tipo:'criado', para:n.etapa, criado_em:t }); return {...n}; },
@@ -892,7 +962,7 @@ if (!MODO_DEMO) {
    ESTADO
    ===================================================================== */
 const estado = { usuario:null, meu:null, perfis:[], leads:[], achados:[], ver:'funil', filtroTipo:'', filtroResp:'', busca:'', aberto:null, quente:false,
-  respostas:[], config:{}, filtroSetor:'', msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'dia', ref:new Date() }, feed:[], avModo:'geral' };
+  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'dia', ref:new Date() }, rk:{ ordem:'valor', tipo:'' }, feed:[], avModo:'geral' };
 const nomeDe = id => estado.perfis.find(p => p.id === id)?.nome || '';
 const ehGestor = () => estado.meu?.papel === 'gestor';
 const cachePer = new Map();
@@ -977,18 +1047,21 @@ async function recarregar(silencioso){
   cachePer.clear();
   estado.leads = (await api.quadro()).sort((a, b) => String(b.etapa_desde).localeCompare(String(a.etapa_desde)));
   api.feed().then(f => { estado.feed = f; atualizarSino(); }).catch(() => {});
+  if (estado.ver === 'base') estado.base = null;
   if (!silencioso) desenhar();
 }
 
 function ir(v){
   estado.ver = v; guarda.por('ver', v);
+  if (v === 'base' || v === 'disparos') { estado.base = null; estado.baseErro = null; dp.camps = null; }
   document.querySelectorAll('.ver').forEach(e => e.classList.toggle('oculto', e.id !== 'ver-' + v));
   document.querySelectorAll('.lado [data-ver]').forEach(b => b.classList.toggle('ativo', b.dataset.ver === v));
   $('#titulo-ver').textContent = TITULOS[v];
+  document.querySelector('.lado .ativo')?.scrollIntoView({ inline:'nearest', block:'nearest' });
   desenhar();
 }
 function desenhar(){
-  ({ painel:desenharPainel, funil:desenharFunil, followup:desenharFollow, relatorios:desenharRel, equipe:desenharEquipe, disparos:desenharDisparos, ajustes:desenharAjustes })[estado.ver]();
+  ({ painel:desenharPainel, funil:desenharFunil, followup:desenharFollow, relatorios:desenharRel, equipe:desenharEquipe, base:desenharBase, disparos:desenharDisparos, ajustes:desenharAjustes })[estado.ver]();
   atualizarPinoChat();
   const meus = estado.leads.filter(l => !FECHADAS.includes(l.etapa) && l.responsavel === estado.usuario.id && ['atrasado','hoje'].includes(situacao(l))).length;
   $('#pino-fu').textContent = meus; $('#pino-fu').classList.toggle('oculto', !meus);
@@ -1013,11 +1086,19 @@ function calcular(d, ini, fim){
     agora: { abertos:abertos.length, naMesa:soma(abertos.filter(l => ['orcamento','negociando'].includes(l.etapa))),
       atrasados:abertos.filter(l => situacao(l) === 'atrasado').length, semResp:abertos.filter(l => !l.responsavel).length } };
   const linhas = [...estado.perfis.filter(p => p.ativo).map(p => [p.id, p.nome]), [null, 'Sem responsável']];
-  c.atendentes = linhas.map(([id, nome]) => {
-    const g = ganhos.filter(l => (l.responsavel || null) === id), n = novos.filter(l => (l.responsavel || null) === id);
-    return { id, nome, leads:n.length, orcamentos:new Set(orcEv.filter(e => (e.autor || null) === id).map(e => e.lead_id)).size, vendas:g.length, valor:soma(g),
-      followups:fups.filter(e => (e.autor || null) === id).length, atrasados:abertos.filter(l => (l.responsavel || null) === id && situacao(l) === 'atrasado').length };
-  }).filter(r => r.id || r.leads || r.vendas || r.atrasados);
+  const tipoDe = new Map(estado.leads.map(l => [l.id, l.tipo])); d.leads.forEach(l => tipoDe.set(l.id, l.tipo));
+  // Tempo pra atender: do lead chegar até sair do Novo (primeira troca de etapa). Só leads que chegaram no período.
+  const saida = new Map(); d.eventos.filter(e => e.tipo === 'etapa' && e.de === 'novo').forEach(e => { const x = saida.get(e.lead_id); if (!x || e.criado_em < x.criado_em) saida.set(e.lead_id, e); });
+  const tempos = novos.filter(l => saida.has(l.id)).map(l => ({ tipo:l.tipo, autor:saida.get(l.id).autor || null, min:Math.max(0, (new Date(saida.get(l.id).criado_em) - new Date(l.criado_em)) / 60000) }));
+  const mediana = v => { if (!v.length) return null; const o = [...v].sort((x, y) => x - y), m = o.length >> 1; return o.length % 2 ? o[m] : (o[m - 1] + o[m]) / 2; };
+  c.atPor = tipo => { const t = l => !tipo || l.tipo === tipo, te = e => !tipo || tipoDe.get(e.lead_id) === tipo;
+    return linhas.map(([id, nome]) => {
+      const g = ganhos.filter(l => t(l) && (l.responsavel || null) === id), n = novos.filter(l => t(l) && (l.responsavel || null) === id);
+      return { id, nome, leads:n.length, orcamentos:new Set(orcEv.filter(e => te(e) && (e.autor || null) === id).map(e => e.lead_id)).size, vendas:g.length, valor:soma(g),
+        conv: n.length ? g.length / n.length : null, tempo: mediana(tempos.filter(x => t(x) && x.autor === id).map(x => x.min)),
+        followups:fups.filter(e => te(e) && (e.autor || null) === id).length, atrasados:abertos.filter(l => t(l) && (l.responsavel || null) === id && situacao(l) === 'atrasado').length };
+    }).filter(r => r.id || r.leads || r.vendas || r.atrasados); };
+  c.atendentes = c.atPor('');
   const agrupa = (lista, campo, rot) => { const m = new Map(); lista.forEach(l => m.set(l[campo] || '—', (m.get(l[campo] || '—') || 0) + 1)); return [...m].map(([k, n]) => ({ k, nome: rot ? rotulo(rot, k) : k, n })).sort((x, y) => y.n - x.n); };
   c.origens = agrupa(novos, 'origem', ORIGENS).map(o => { const g = ganhos.filter(l => l.origem === o.k); return { ...o, vendas:g.length, valor:soma(g) }; });
   c.tipos = TIPOS.map(([k, nome]) => { const g = ganhos.filter(l => l.tipo === k); return { nome, n:novos.filter(l => l.tipo === k).length, vendas:g.length, valor:soma(g) }; });
@@ -1025,11 +1106,30 @@ function calcular(d, ini, fim){
   return c;
 }
 
-const tabAtendentes = c => `<div class="rolagem"><table class="tab num">
-  <tr><th>Atendente</th><th>Leads</th><th>Orçamentos</th><th>Vendas</th><th>Faturamento</th><th>Ticket médio</th><th>Conversão</th><th>Follow-ups</th><th>Atrasados agora</th></tr>
-  ${c.atendentes.map(r => `<tr><td class="forte">${esc(r.nome)}</td><td>${r.leads}</td><td>${r.orcamentos}</td><td class="forte">${r.vendas}</td><td>${brl(r.valor)}</td><td>${r.vendas ? brl0(r.valor / r.vendas) : '—'}</td>
-    <td>${pctTxt(r.vendas, r.leads)}</td><td>${r.followups}</td><td class="${r.atrasados ? 'ruim' : ''}">${r.atrasados}</td></tr>`).join('') || '<tr><td colspan="9" class="vazio">Ninguém na equipe ainda.</td></tr>'}
+const RK = [['valor','Valor vendido'],['vendas','Nº de vendas'],['conv','Conversão'],['tempo','Tempo pra atender']];
+const durTxt = m => m == null ? '—' : m < 1 ? 'menos de 1 min' : m < 60 ? Math.round(m) + ' min' : m < 2880 ? Math.floor(m / 60) + 'h' + (Math.round(m % 60) ? ' ' + Math.round(m % 60) + 'min' : '') : Math.round(m / 1440) + ' dias';
+// Ordem do ranking: o critério escolhido e, no empate, valor vendido > nº de vendas > conversão
+function rankear(c, ordem, tipo){
+  const chaves = { valor:['valor','vendas','conv'], vendas:['vendas','valor','conv'], conv:['conv','valor','vendas'], tempo:['tempo','valor','vendas'] }[ordem];
+  const cmp = (x, y) => { for (const k of chaves) { const d = k === 'tempo' ? (x.tempo ?? Infinity) - (y.tempo ?? Infinity) : (y[k] ?? -1) - (x[k] ?? -1); if (d) return d; } return x.nome.localeCompare(y.nome); };
+  const todos = c.atPor(tipo); return [...todos.filter(r => r.id).sort(cmp), ...todos.filter(r => !r.id)];
+}
+let rkUlt = null;
+function rankingHTML(c){
+  rkUlt = c; const { ordem, tipo } = estado.rk, linhas = rankear(c, ordem, tipo), f = k => k === ordem ? ' class="forte"' : '';
+  const pontua = r => ordem === 'tempo' ? r.tempo != null : (r[ordem] || 0) > 0;
+  let pos = 0;
+  return `<div class="rk-barra"><div class="seg" role="group" aria-label="Ordenar por">${RK.map(([k, n]) => `<button type="button" data-rk-ordem="${k}" class="${k === ordem ? 'ativo' : ''}">${n}</button>`).join('')}</div>
+    <select data-rk-tipo aria-label="Tipo de venda">${[['', 'Tudo: Day Use, hospedagem e grupo'], ...TIPOS.map(([k, n]) => [k, 'Só ' + n])].map(([k, n]) => `<option value="${k}" ${k === tipo ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
+  <div class="rolagem"><table class="tab num rk">
+  <tr><th>#</th><th>Atendente</th><th>Faturamento</th><th>Vendas</th><th>Conversão</th><th>Tempo pra atender</th><th>Ticket médio</th><th>Leads</th><th>Orçamentos</th><th>Follow-ups</th><th>Atrasados agora</th></tr>
+  ${linhas.map(r => { const p = r.id && pontua(r) ? ++pos : 0; return `<tr><td>${p ? (['🥇','🥈','🥉'][p - 1] || p + 'º') : '—'}</td><td class="forte">${esc(r.nome)}</td><td${f('valor')}>${brl(r.valor)}</td><td${f('vendas')}>${r.vendas}</td><td${f('conv')}>${pctTxt(r.vendas, r.leads)}</td><td${f('tempo')}>${durTxt(r.tempo)}</td>
+    <td>${r.vendas ? brl0(r.valor / r.vendas) : '—'}</td><td>${r.leads}</td><td>${r.orcamentos}</td><td>${r.followups}</td><td class="${r.atrasados ? 'ruim' : ''}">${r.atrasados}</td></tr>`; }).join('') || '<tr><td colspan="11" class="vazio">Ninguém na equipe ainda.</td></tr>'}
 </table></div>`;
+}
+const cartelaRanking = (c, sub) => `<section class="cartela"><h2>Ranking por atendente</h2><p class="sub">${sub ? esc(sub) + ' · ' : ''}No empate vale valor vendido, depois nº de vendas, depois conversão. Tempo pra atender = do lead chegar até sair do Novo (mediana).</p><div class="rk-caixa">${rankingHTML(c)}</div></section>`;
+document.addEventListener('click', e => { const b = e.target.closest('[data-rk-ordem]'); if (!b || !rkUlt) return; estado.rk.ordem = b.dataset.rkOrdem; b.closest('.rk-caixa').innerHTML = rankingHTML(rkUlt); });
+document.addEventListener('change', e => { const x = e.target.closest('[data-rk-tipo]'); if (!x || !rkUlt) return; estado.rk.tipo = x.value; x.closest('.rk-caixa').innerHTML = rankingHTML(rkUlt); });
 const tabTipos = c => `<section class="cartela"><h2>Day Use, hospedagem e grupos</h2><p class="sub">Cada tipo de venda separado.</p><div class="rolagem"><table class="tab num" style="min-width:480px">
   <tr><th>Tipo</th><th>Leads</th><th>Vendas</th><th>Conversão</th><th>Faturamento</th><th>Ticket médio</th></tr>
   ${c.tipos.map(t => `<tr><td class="forte">${esc(t.nome)}</td><td>${t.n}</td><td class="forte">${t.vendas}</td><td>${pctTxt(t.vendas, t.n)}</td><td>${brl(t.valor)}</td><td>${t.vendas ? brl0(t.valor / t.vendas) : '—'}</td></tr>`).join('')}
@@ -1081,7 +1181,7 @@ async function desenharPainel(){
         ${ehMesAtual && c.agora.semResp ? `<span class="alerta">Sem responsável <b class="num">${c.agora.semResp}</b></span>` : ''}
       </div>
     </section>
-    <section class="cartela"><h2>Desempenho individual</h2><p class="sub">Leads e vendas contam pra quem é o responsável; orçamentos e follow-ups, pra quem fez.</p>${tabAtendentes(c)}</section>
+    ${cartelaRanking(c)}
     <div class="duas">
       <section class="cartela"><h2>De onde vêm os leads</h2><p class="sub">Leads do mês e quantos viraram venda.</p>
         ${barras(c.origens, Math.max(1, ...c.origens.map(o => o.n)), o => `${o.n} leads · ${o.vendas} vendas`)}</section>
@@ -1096,19 +1196,19 @@ async function desenharPainel(){
    RELATÓRIOS (diário, semanal, mensal)
    ===================================================================== */
 let fichaRel = 0;
-function textoRelatorio(c, modo, ref, meta){
-  const nome = { dia:'Relatório do dia', semana:'Relatório da semana', mes:'Fechamento do mês' }[modo];
+function textoRelatorio(c, modo, rot, meta){
+  const nome = { dia:'Relatório do dia', semana:'Relatório da semana', mes:'Fechamento do mês', livre:'Relatório do período' }[modo];
   const m = modo === 'mes' && meta ? meta : {};
   const alvo = (v, a, f) => a ? ` de ${f ? f(a) : a} (${pct(v, a)}%)` : '';
-  const L = [`*Coninho · ${nome} · ${D.rot(modo, ref)}*`, '',
+  const L = [`*Coninho · ${nome} · ${rot}*`, '',
     `Leads novos: *${c.novos}*${alvo(c.novos, m.leads)}`,
     `Orçamentos enviados: *${c.orcados}*${alvo(c.orcados, m.orcamentos)}`,
     `Vendas: *${c.vendas}*${alvo(c.vendas, m.vendas)}`,
     `Faturamento: *${brl(c.faturamento)}*${alvo(c.faturamento, m.faturamento, brl0)}`,
     `Perdidos: *${c.perdidos}*`, `Follow-ups feitos: *${c.followups}*`];
   if (c.novos) L.push(`Conversão (vendas sobre leads): *${pctTxt(c.vendas, c.novos)}*`);
-  const at = c.atendentes.filter(r => r.leads || r.vendas || r.orcamentos || r.followups);
-  if (at.length) { L.push('', '*Por atendente*'); at.forEach(r => L.push(`${r.nome}: ${r.vendas} ${r.vendas === 1 ? 'venda' : 'vendas'} · ${brl(r.valor)}${r.vendas ? ' · ticket ' + brl0(r.valor / r.vendas) : ''} · conversão ${pctTxt(r.vendas, r.leads)} · ${r.orcamentos} orçamentos · ${r.followups} follow-ups`)); }
+  const at = rankear(c, 'valor', '').filter(r => r.leads || r.vendas || r.orcamentos || r.followups);
+  if (at.length) { L.push('', '*Ranking por atendente*'); at.forEach((r, i) => L.push(`${r.id ? (i + 1) + 'º ' : ''}${r.nome}: ${r.vendas} ${r.vendas === 1 ? 'venda' : 'vendas'} · ${brl(r.valor)}${r.vendas ? ' · ticket ' + brl0(r.valor / r.vendas) : ''} · conversão ${pctTxt(r.vendas, r.leads)}${r.tempo != null ? ' · atende em ' + durTxt(r.tempo) : ''} · ${r.orcamentos} orçamentos · ${r.followups} follow-ups`)); }
   const tp = c.tipos.filter(t => t.n || t.vendas);
   if (tp.length) { L.push('', '*Por tipo*'); tp.forEach(t => L.push(`${t.nome}: ${t.n} leads · ${t.vendas} ${t.vendas === 1 ? 'venda' : 'vendas'} · ${brl(t.valor)}${t.vendas ? ' · ticket ' + brl0(t.valor / t.vendas) : ''}`)); }
   if (c.origens.length) L.push('', '*De onde vieram os leads*', c.origens.map(o => `${o.nome} ${o.n}`).join(' · '));
@@ -1116,19 +1216,33 @@ function textoRelatorio(c, modo, ref, meta){
   L.push('', '*Agora no funil*', `${c.agora.abertos} em aberto · ${brl(c.agora.naMesa)} em orçamento e negociação · ${c.agora.atrasados} retornos atrasados`);
   return L.join('\n');
 }
+const ymdLocal = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+function relFaixa(){
+  const { modo, ref, de, ate } = estado.rel;
+  if (modo !== 'livre') return { ini:D.ini(modo, ref), fim:D.fim(modo, ref), rot:D.rot(modo, ref) };
+  const ini = D.ini('dia', de), ult = D.ini('dia', ate), ano = ini.getFullYear() !== ult.getFullYear() || ini.getFullYear() !== new Date().getFullYear();
+  const f = x => x.toLocaleDateString('pt-BR', ano ? { day:'2-digit', month:'2-digit', year:'2-digit' } : { day:'2-digit', month:'2-digit' });
+  return { ini, fim:D.fim('dia', ate), rot: ini.getTime() === ult.getTime() ? f(ini) : f(ini) + ' a ' + f(ult) };
+}
+function relMover(n){
+  const r = estado.rel;
+  if (r.modo === 'livre') { const dias = Math.round((D.ini('dia', r.ate) - D.ini('dia', r.de)) / 86400000) + 1; r.de = D.mover('dia', r.de, n * dias); r.ate = D.mover('dia', r.ate, n * dias); $('#rel-de').value = ymdLocal(r.de); $('#rel-ate').value = ymdLocal(r.ate); }
+  else r.ref = D.mover(r.modo, r.ref, n);
+  desenhar();
+}
 async function desenharRel(){
-  const { modo, ref } = estado.rel, ini = D.ini(modo, ref), fim = D.fim(modo, ref), vez = ++fichaRel;
+  const { modo, ref } = estado.rel, { ini, fim, rot } = relFaixa(), vez = ++fichaRel;
   document.querySelectorAll('#rel-modo button').forEach(b => b.classList.toggle('ativo', b.dataset.modo === modo));
-  $('#rel-rot').textContent = D.rot(modo, ref);
+  $('#rel-rot').textContent = rot;
   let d, meta = null;
   try { d = await dadosPeriodo(ini, fim); if (modo === 'mes') meta = await api.meta(D.chaveMes(ref)); }
   catch (e) { if (vez === fichaRel) $('#rel-conteudo').innerHTML = erroCarga(e); return; }
   if (vez !== fichaRel || estado.ver !== 'relatorios') return;
-  const c = calcular(d, ini, fim), texto = textoRelatorio(c, modo, ref, meta);
+  const c = calcular(d, ini, fim), texto = textoRelatorio(c, modo, rot, meta);
   const st = (n, v) => `<div class="stat"><div class="n">${n}</div><div class="v num">${v}</div></div>`;
   $('#rel-conteudo').innerHTML = `
     <div class="stats">${st('Leads novos', c.novos)}${st('Orçamentos', c.orcados)}${st('Vendas', c.vendas)}${st('Faturamento', brl0(c.faturamento))}${st('Follow-ups', c.followups)}</div>
-    <section class="cartela"><h2>Por atendente</h2><p class="sub">${esc(D.rot(modo, ref))}</p>${tabAtendentes(c)}</section>
+    ${cartelaRanking(c, rot)}
     ${tabTipos(c)}
     <section class="cartela"><h2>Texto pronto pro WhatsApp</h2><p class="sub">Copie e cole no grupo. Já sai com negrito do WhatsApp.</p>
       <pre class="texto" id="rel-texto"></pre><button class="btn" id="btn-copiar">Copiar relatório</button></section>`;
@@ -1505,7 +1619,7 @@ async function enviarChat(){
 /* =====================================================================
    DISPAROS (gestor) — lista, texto variado e fila de envio assistido
    ===================================================================== */
-const dp = { fonte:'crm', base:null, erro:null, pronto:false, fora:new Set(), lista:[], fila:[], pos:0, esperaAte:0, timer:null };
+const dp = { fonte:'crm', img:null, camp:null, camps:null, pronto:false, fora:new Set(), lista:[], fila:[], pos:0, esperaAte:0, timer:null };
 const NAO_ENVIAR = 'não enviar';
 const dpSaudacao = () => { const h = new Date().getHours(); return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'; };
 // {nome} = primeiro nome · {saudacao} = pela hora · [a|b|c] = sorteia uma opção
@@ -1519,7 +1633,7 @@ function dpLerLista(txt){
   txt.split(/\r?\n/).forEach(lin => {
     const partes = lin.split(/[;,\t]/).map(x => x.trim()).filter(Boolean); if (!partes.length) return;
     const it = partes.findIndex(x => !/[a-zA-ZÀ-ú]/.test(x) && soDigitos(x).length >= 10 && soDigitos(x).length <= 13); if (it < 0) return;
-    const tel = soDigitos(partes[it]); if (vistos.has(tel)) return; vistos.add(tel);
+    let tel = soDigitos(partes[it]); if (tel.length >= 12 && tel.startsWith('55')) tel = tel.slice(2); if (vistos.has(tel)) return; vistos.add(tel);
     out.push({ nome: partes.find((x, i) => i !== it) || '', telefone: tel });
   });
   return out;
@@ -1527,7 +1641,7 @@ function dpLerLista(txt){
 function dpCRM(){
   const b = $('#dp-busca').value.trim().toLowerCase(), bd = soDigitos(b), tipo = $('#dp-tipo').value, etapa = $('#dp-etapa').value, resp = $('#dp-resp').value, etq = $('#dp-etq').value, setor = $('#dp-setor').value;
   const vistos = new Set();
-  return (dp.base || []).filter(l => l.telefone && soDigitos(l.telefone).length >= 10 &&
+  return (estado.base || []).filter(l => l.telefone && soDigitos(l.telefone).length >= 10 &&
     !(l.etiquetas || []).some(e => e.toLowerCase() === NAO_ENVIAR) &&
     (!tipo || l.tipo === tipo) && (!etapa || (etapa === '__abertos' ? !FECHADAS.includes(l.etapa) : l.etapa === etapa)) &&
     (!resp || (resp === '__sem' ? !l.responsavel : l.responsavel === resp)) && (!etq || (l.etiquetas || []).includes(etq)) &&
@@ -1537,10 +1651,83 @@ function dpCRM(){
 }
 const dpAlvos = () => dp.fonte === 'crm' ? dpCRM().filter(l => !dp.fora.has(l.id)).map(l => ({ id:l.id, nome:l.nome, telefone:l.telefone })) : dp.lista;
 
+let basePend = null;
+function carregarBase(){
+  return basePend ||= (async () => { estado.baseErro = null; try { estado.base = await api.base(); } catch (e) { estado.base = null; estado.baseErro = e; } basePend = null; })();
+}
+const etqCamp = nome => 'campanha: ' + nome;
+async function dpCampanhas(){
+  const t = $('#dp-camps');
+  if (!dp.camps) { try { dp.camps = await api.campanhas(); } catch (e) { t.innerHTML = `<tr><td>${erroCarga(e)}</td></tr>`; return; } }
+  if (!dp.camps.length) { t.innerHTML = '<tr><td class="vazio" style="text-align:left">Nenhuma campanha ainda. A primeira aparece aqui quando você montar uma fila.</td></tr>'; return; }
+  t.innerHTML = '<thead><tr><th>Campanha</th><th>Data</th><th>Enviados</th><th>Marcados</th><th>Vendas</th><th>Faturamento</th></tr></thead><tbody>' + dp.camps.map(c => {
+    const m = estado.base ? estado.base.filter(l => (l.etiquetas || []).includes(etqCamp(c.nome))) : null, v = m && m.filter(l => l.etapa === 'ganho');
+    return `<tr><td class="forte">${esc(c.nome)}</td><td>${esc(dataBR(c.criado_em))}</td><td>${c.enviados} de ${c.total}</td><td>${m ? m.length : '⚠️'}</td><td>${v ? v.length : '⚠️'}</td><td>${v ? brl0(v.reduce((t, l) => t + Number(l.valor || 0), 0)) : '⚠️'}</td></tr>`; }).join('') + '</tbody>';
+}
+
+/* ---------- Base de leads ---------- */
+const bs = { pronto:false, max:300 };
+function baseFiltrada(){
+  const b = $('#b-busca').value.trim().toLowerCase(), bd = soDigitos(b), tipo = $('#b-tipo').value, etapa = $('#b-etapa').value, resp = $('#b-resp').value, etq = $('#b-etq').value, origem = $('#b-origem').value, setor = $('#b-setor').value;
+  return (estado.base || []).filter(l =>
+    (!tipo || l.tipo === tipo) && (!etapa || (etapa === '__abertos' ? !FECHADAS.includes(l.etapa) : l.etapa === etapa)) &&
+    (!resp || (resp === '__sem' ? !l.responsavel : l.responsavel === resp)) && (!etq || (l.etiquetas || []).includes(etq)) &&
+    (!origem || l.origem === origem) && (!setor || (l.setor || 'comercial') === setor) &&
+    (!b || (l.nome || '').toLowerCase().includes(b) || (bd.length >= 3 && (l.telefone || '').includes(bd))))
+    .sort((x, y) => String(y.criado_em).localeCompare(String(x.criado_em)));
+}
+async function desenharBase(){
+  if (!bs.pronto) {
+    bs.pronto = true;
+    preencher($('#b-tipo'), [['', 'Qualquer tipo'], ...TIPOS]);
+    preencher($('#b-etapa'), [['', 'Qualquer etapa'], ['__abertos', 'Só em aberto'], ...ETAPAS]);
+    preencher($('#b-origem'), [['', 'Qualquer origem'], ...ORIGENS]);
+    preencher($('#b-setor'), [['', 'Qualquer setor'], ...SETORES]);
+    preencher($('#b-etq'), [['', 'Qualquer etiqueta']]);
+  }
+  const r = $('#b-resp').value;
+  preencher($('#b-resp'), [['', 'Qualquer vendedor'], ['__sem', 'Sem responsável'], ...estado.perfis.filter(x => x.ativo).map(x => [x.id, x.nome])]); $('#b-resp').value = r || '';
+  $('#b-exportar').classList.toggle('oculto', !ehGestor()); $('#b-disparar').classList.toggle('oculto', !ehGestor());
+  if (!estado.base && !estado.baseErro) { $('#b-cont').textContent = 'Carregando…'; await carregarBase(); }
+  const etqs = [...new Set((estado.base || []).flatMap(l => l.etiquetas || []))].sort(), atual = $('#b-etq').value;
+  preencher($('#b-etq'), [['', 'Qualquer etiqueta'], ...etqs.map(e => [e, e])]); $('#b-etq').value = etqs.includes(atual) ? atual : '';
+  baseAtualizar();
+}
+function baseAtualizar(){
+  if (estado.baseErro || !estado.base) { $('#b-aviso').innerHTML = estado.baseErro ? erroCarga(estado.baseErro) : ''; $('#b-tab').innerHTML = ''; $('#b-cont').textContent = ''; return; }
+  const f = baseFiltrada(); $('#b-aviso').innerHTML = '';
+  $('#b-cont').textContent = `${f.length} de ${estado.base.length} ${estado.base.length === 1 ? 'lead' : 'leads'}`;
+  $('#b-tab').innerHTML = f.length ? '<thead><tr><th>Nome</th><th>Telefone</th><th>Tipo</th><th>Etapa</th><th>Vendedor</th><th>Origem</th><th>Etiquetas</th><th>Valor</th><th>Entrou</th></tr></thead><tbody>' +
+    f.slice(0, bs.max).map(l => `<tr data-id="${esc(l.id)}"><td class="forte">${esc(l.nome)}</td><td>${esc(l.telefone || '—')}</td><td>${esc(rotulo(TIPOS, l.tipo))}</td><td>${esc(rotulo(ETAPAS, l.etapa))}</td><td>${esc(nomeDe(l.responsavel) || '—')}</td><td>${esc(rotulo(ORIGENS, l.origem))}</td><td class="etqs">${(l.etiquetas || []).map(e => `<span class="selo etq">${esc(e)}</span>`).join(' ')}</td><td>${l.valor != null ? brl0(l.valor) : ''}</td><td>${esc(dataBR(l.criado_em))}</td></tr>`).join('') +
+    '</tbody>' + (f.length > bs.max ? `<tfoot><tr><td colspan="9" class="vazio">Mostrando os ${bs.max} mais recentes de ${f.length}. Filtre pra achar os outros${ehGestor() ? ' (a planilha exportada leva todos)' : ''}.</td></tr></tfoot>` : '')
+    : '<tr><td class="vazio">Ninguém nesse filtro.</td></tr>';
+}
+function baseExportar(){
+  const f = baseFiltrada(); if (!f.length) { toast('Nada pra exportar nesse filtro.'); return; }
+  // aspas em tudo; texto que começa com = + - @ ganha apóstrofo (planilha não executa como fórmula)
+  const cel = v => { let t = String(v ?? ''); if (/^[=+\-@\t\r]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g, '""') + '"'; };
+  const dia = d => d ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : '';
+  const linhas = [['Nome','Telefone','E-mail','Tipo','Etapa','Vendedor','Setor','Origem','Etiquetas','Valor','Data da visita','Motivo da perda','Próximo contato','Entrou em']]
+    .concat(f.map(l => [l.nome, l.telefone, l.email, rotulo(TIPOS, l.tipo), rotulo(ETAPAS, l.etapa), nomeDe(l.responsavel) || '', rotulo(SETORES, l.setor || 'comercial'), rotulo(ORIGENS, l.origem),
+      (l.etiquetas || []).join(', '), l.valor != null ? String(Number(l.valor).toFixed(2)).replace('.', ',') : '', dia(l.data_visita), l.motivo_perda, dia(l.proximo_contato), dia(l.criado_em)]));
+  const blob = new Blob(['﻿' + linhas.map(l => l.map(cel).join(';')).join('\r\n')], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `base-de-leads-${new Date().toISOString().slice(0, 10)}.csv`; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast(`${f.length} ${f.length === 1 ? 'lead exportado' : 'leads exportados'}.`);
+}
+['#b-busca','#b-tipo','#b-etapa','#b-resp','#b-etq','#b-origem','#b-setor'].forEach(q => $(q).addEventListener('input', baseAtualizar));
+$('#b-atualizar').addEventListener('click', async () => { estado.base = null; estado.baseErro = null; await desenharBase(); if (!estado.baseErro) toast('Base atualizada.'); });
+$('#b-exportar').addEventListener('click', baseExportar);
+$('#b-tab').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); if (!tr) return; const l = (estado.base || []).find(x => String(x.id) === tr.dataset.id); if (l) abrirFicha(l); });
+$('#b-disparar').addEventListener('click', () => {
+  const f = baseFiltrada(), dentro = new Set(f.map(l => l.id)); if (!f.length) { toast('Ninguém nesse filtro.'); return; }
+  dp.fora = new Set(estado.base.filter(l => !dentro.has(l.id)).map(l => l.id)); dp.fonte = 'crm';
+  ['#dp-busca','#dp-tipo','#dp-etapa','#dp-resp','#dp-etq','#dp-setor'].forEach(q => $(q).value = '');
+  ir('disparos'); toast(`${f.length} da Base marcados no disparo (quem não tem telefone ou está em "não enviar" fica de fora).`);
+});
+
 async function dpCarregar(){
-  dp.erro = null;
-  try { dp.base = await api.comTelefone(); } catch (e) { dp.base = null; dp.erro = e; }
-  const etqs = [...new Set((dp.base || []).flatMap(l => l.etiquetas || []))].filter(e => e.toLowerCase() !== NAO_ENVIAR).sort();
+  await carregarBase();
+  const etqs = [...new Set((estado.base || []).flatMap(l => l.etiquetas || []))].filter(e => e.toLowerCase() !== NAO_ENVIAR).sort();
   const atual = $('#dp-etq').value; preencher($('#dp-etq'), [['', 'Qualquer etiqueta'], ...etqs.map(e => [e, e])]); $('#dp-etq').value = etqs.includes(atual) ? atual : '';
 }
 async function desenharDisparos(){
@@ -1553,14 +1740,14 @@ async function desenharDisparos(){
   }
   const r = $('#dp-resp').value;
   preencher($('#dp-resp'), [['', 'Qualquer vendedor'], ['__sem', 'Sem responsável'], ...estado.perfis.filter(x => x.ativo).map(x => [x.id, x.nome])]); $('#dp-resp').value = r || '';
-  if (!dp.base && !dp.erro) { $('#dp-lista').innerHTML = '<div class="vazio" style="padding:12px">Carregando…</div>'; await dpCarregar(); }
-  dpAtualizar();
+  if (!estado.base && !estado.baseErro) { $('#dp-lista').innerHTML = '<div class="vazio" style="padding:12px">Carregando…</div>'; await dpCarregar(); }
+  dpAtualizar(); dpCampanhas();
 }
 function dpAtualizar(){
   document.querySelectorAll('#dp-fonte button').forEach(b => b.classList.toggle('ativo', b.dataset.fonte === dp.fonte));
   $('#dp-crm').classList.toggle('oculto', dp.fonte !== 'crm'); $('#dp-colar').classList.toggle('oculto', dp.fonte !== 'lista');
   if (dp.fonte === 'crm') {
-    if (dp.erro) { $('#dp-lista').innerHTML = erroCarga(dp.erro); $('#dp-cont').textContent = ''; }
+    if (estado.baseErro) { $('#dp-lista').innerHTML = erroCarga(estado.baseErro); $('#dp-cont').textContent = ''; }
     else {
       const f = dpCRM();
       $('#dp-lista').innerHTML = f.slice(0, 400).map(l => `<label class="dp-lin"><input type="checkbox" data-id="${esc(l.id)}" ${dp.fora.has(l.id) ? '' : 'checked'}><span>${esc(l.nome)}</span><small>${esc(rotulo(ETAPAS, l.etapa))} · ${esc(l.telefone)}</small></label>`).join('')
@@ -1579,7 +1766,7 @@ function dpDesenharFila(){
   if (dp.pos >= dp.fila.length) { box.innerHTML = `<div class="dp-vez"><h3>Fila terminada ✅</h3><p class="dica">${dp.fila.filter(x => x.feito).length} abertos no WhatsApp · ${dp.fila.filter(x => x.pulado).length} pulados.</p><button class="btn sec" type="button" data-dp="parar">Fechar</button></div>`; return; }
   const a = dp.fila[dp.pos], falta = Math.max(0, Math.ceil((dp.esperaAte - Date.now()) / 1000));
   box.innerHTML = `<div class="dp-vez"><p class="dica" style="margin-top:0">${dp.pos + 1} de ${dp.fila.length}${falta ? ` · próximo liberado em <b>${falta}s</b>` : ''}</p>
-    <h3>${esc(a.nome || 'Sem nome')}</h3><p class="dica" style="margin:0 0 8px">${esc(a.telefone)}</p><pre class="texto" id="dp-vez-texto"></pre>
+    <h3>${esc(a.nome || 'Sem nome')}</h3>${dp.img ? '<p class="dica" style="margin:0 0 6px">📎 Com imagem: ao abrir, aperte Ctrl+V no WhatsApp.</p>' : ''}<p class="dica" style="margin:0 0 8px">${esc(a.telefone)}</p><pre class="texto" id="dp-vez-texto"></pre>
     <div class="acoes"><a class="btn ${falta ? 'espera' : ''}" data-dp="abrir" href="${linkZap(a.telefone)}?text=${encodeURIComponent(a.texto)}" target="_blank" rel="noopener">${falta ? `Aguarde ${falta}s` : 'Abrir no WhatsApp'}</a>
       <button class="btn sec" type="button" data-dp="pular">Pular</button><button class="btn perigo" type="button" data-dp="parar">Parar</button></div></div>`;
   $('#dp-vez-texto').textContent = a.texto;
@@ -1694,9 +1881,28 @@ document.querySelectorAll('.lado [data-ver]').forEach(b => b.addEventListener('c
 $('#mes-ant').addEventListener('click', () => { estado.mesRef = D.mover('mes', estado.mesRef, -1); desenhar(); });
 $('#mes-prox').addEventListener('click', () => { estado.mesRef = D.mover('mes', estado.mesRef, 1); desenhar(); });
 $('#btn-fechamento').addEventListener('click', () => { estado.rel = { modo:'mes', ref:new Date(estado.mesRef) }; ir('relatorios'); });
-$('#rel-modo').addEventListener('click', e => { const b = e.target.closest('[data-modo]'); if (!b) return; estado.rel = { modo:b.dataset.modo, ref:new Date() }; desenhar(); });
-$('#rel-ant').addEventListener('click', () => { estado.rel.ref = D.mover(estado.rel.modo, estado.rel.ref, -1); desenhar(); });
-$('#rel-prox').addEventListener('click', () => { estado.rel.ref = D.mover(estado.rel.modo, estado.rel.ref, 1); desenhar(); });
+$('#rel-modo').addEventListener('click', e => { const b = e.target.closest('[data-modo]'); if (!b) return; estado.rel = { modo:b.dataset.modo, ref:new Date() }; $('#rel-livre').classList.add('oculto'); desenhar(); });
+$('#rel-ant').addEventListener('click', () => relMover(-1));
+$('#rel-prox').addEventListener('click', () => relMover(1));
+$('#rel-atalho').addEventListener('change', e => {
+  const v = e.target.value, hoje = new Date(); e.target.value = '';
+  if (v === 'livre') { const f = relFaixa(), ult = new Date(f.fim); ult.setDate(ult.getDate() - 1); $('#rel-de').value = ymdLocal(f.ini); $('#rel-ate').value = ymdLocal(ult); $('#rel-livre').classList.remove('oculto'); $('#rel-de').focus(); return; }
+  if (v === 'hoje') estado.rel = { modo:'dia', ref:hoje };
+  else if (v === 'ontem') estado.rel = { modo:'dia', ref:D.mover('dia', hoje, -1) };
+  else if (v === 'semana') estado.rel = { modo:'semana', ref:hoje };
+  else if (v === 'mes') estado.rel = { modo:'mes', ref:hoje };
+  else if (v === 'mesant') estado.rel = { modo:'mes', ref:D.mover('mes', hoje, -1) };
+  else if (Number(v)) estado.rel = { modo:'livre', de:D.mover('dia', hoje, -(Number(v) - 1)), ate:hoje };
+  else return;
+  $('#rel-livre').classList.add('oculto'); desenhar();
+});
+$('#rel-aplicar').addEventListener('click', () => {
+  const a = $('#rel-de').value, b = $('#rel-ate').value; if (!a || !b) { toast('Escolha as duas datas.'); return; }
+  const de = new Date(a + 'T00:00:00'), ate = new Date(b + 'T00:00:00');
+  if (ate < de) { toast('A data final vem antes da inicial.'); return; }
+  if ((ate - de) / 86400000 > 366) { toast('No máximo 1 ano por relatório.'); return; }
+  estado.rel = { modo:'livre', de, ate }; desenhar();
+});
 
 // ficha
 $('#btn-novo').addEventListener('click', () => abrirFicha(null));
@@ -1760,13 +1966,33 @@ $('#dp-recarregar').addEventListener('click', async () => { await dpCarregar(); 
 $('#dp-colado').addEventListener('input', e => { dp.lista = dpLerLista(e.target.value); dpAtualizar(); });
 $('#dp-arquivo').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $('#dp-colado').value = String(r.result); dp.lista = dpLerLista(String(r.result)); dpAtualizar(); }; r.readAsText(f); e.target.value = ''; });
 $('#dp-codigos').addEventListener('click', e => { const b = e.target.closest('[data-cod]'); if (!b) return; const t = $('#dp-msg'), i = t.selectionStart ?? t.value.length; t.setRangeText(b.dataset.cod, i, t.selectionEnd ?? i, 'end'); t.focus(); dpAtualizar(); });
-$('#dp-iniciar').addEventListener('click', () => {
+function dpImagem(blob){
+  dp.img = blob; const pv = $('#dp-img-previa'); if (pv.src) URL.revokeObjectURL(pv.src);
+  if (blob) pv.src = URL.createObjectURL(blob); else pv.removeAttribute('src');
+  pv.classList.toggle('oculto', !blob); $('#dp-img-tirar').classList.toggle('oculto', !blob);
+}
+$('#dp-img').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    // vira PNG (único formato que a área de transferência aceita), no máximo 1600px
+    const bmp = await createImageBitmap(f), m = Math.min(1, 1600 / Math.max(bmp.width, bmp.height)), c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * m); c.height = Math.round(bmp.height * m); c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    dpImagem(await new Promise(r => c.toBlob(r, 'image/png')));
+  } catch { toast('Não consegui ler essa imagem.'); }
+});
+$('#dp-img-tirar').addEventListener('click', () => dpImagem(null));
+$('#dp-iniciar').addEventListener('click', async () => {
   const alvos = dpAlvos(), modelo = $('#dp-msg').value.trim(), erro = $('#dp-erro'); erro.textContent = '';
   if (!alvos.length) { erro.textContent = 'Ninguém selecionado.'; return; }
+  const nomeCamp = $('#dp-titulo').value.replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+  if (nomeCamp.length < 2) { erro.textContent = 'Dê um nome pra campanha (é ele que marca quem recebeu).'; $('#dp-titulo').focus(); return; }
   if (modelo.length < 10) { erro.textContent = 'Escreva a mensagem.'; return; }
   if (Number($('#dp-max').value) < Number($('#dp-min').value)) { erro.textContent = 'O tempo "até" precisa ser maior que o "de".'; return; }
   if (!confirm(`Montar a fila com ${alvos.length} ${alvos.length === 1 ? 'pessoa' : 'pessoas'}?`)) return;
-  dp.fila = alvos.map(a => ({ ...a, texto: dpTexto(modelo, a.nome) })); dp.pos = 0; dp.esperaAte = 0; dpDesenharFila();
+  try { dp.camp = await api.criarCampanha({ nome:nomeCamp, texto:modelo, total:alvos.length }); } catch (e) { erro.textContent = traduzErro(e); return; }
+  // lista colada: quem já é lead no CRM (mesmos 8 últimos dígitos) também ganha a etiqueta
+  const porTel = new Map((estado.base || []).filter(l => l.telefone).map(l => [l.telefone.slice(-8), l.id]));
+  dp.fila = alvos.map(a => ({ ...a, id: a.id || porTel.get(a.telefone.slice(-8)) || null, texto: dpTexto(modelo, a.nome) })); dp.pos = 0; dp.esperaAte = 0; dp.camps = null; dpDesenharFila(); dpCampanhas();
   $('#dp-fila').scrollIntoView({ behavior:'smooth', block:'nearest' });
 });
 $('#dp-fila').addEventListener('click', e => {
@@ -1775,7 +2001,17 @@ $('#dp-fila').addEventListener('click', e => {
   if (acao === 'pular') { a.pulado = true; dp.pos++; dpDesenharFila(); return; }
   // abrir: o link abre sozinho; aqui só registra e segura o próximo por um tempo sorteado
   a.feito = true;
-  if (a.id) api.anotar(a.id, `Disparo aberto no WhatsApp: "${$('#dp-titulo').value.trim() || 'sem nome'}"`, estado.usuario.id).catch(() => {});
+  if (dp.img) {
+    try { navigator.clipboard.write([new ClipboardItem({ 'image/png': dp.img })]).then(() => toast('Imagem copiada: no WhatsApp aperte Ctrl+V.'), () => toast('⚠️ Não consegui copiar a imagem. Anexe na mão.')); }
+    catch { toast('⚠️ Este aparelho não copia imagem. Anexe na mão.'); }
+  }
+  const camp = dp.camp;
+  if (camp) api.registrarEnvio({ campanha_id:camp.id, lead_id:a.id || null, nome:a.nome || null, telefone:a.telefone }).then(() => { dp.camps = null; dpCampanhas(); }).catch(() => toast('⚠️ Não consegui registrar esse envio na campanha.'));
+  if (a.id) {
+    api.anotar(a.id, `Disparo aberto no WhatsApp: campanha "${camp ? camp.nome : 'sem nome'}"`, estado.usuario.id).catch(() => {});
+    const l = (estado.base || []).find(x => x.id === a.id), tag = camp && etqCamp(camp.nome);
+    if (l && tag && !(l.etiquetas || []).includes(tag)) { l.etiquetas = [...(l.etiquetas || []), tag]; api.mudar(a.id, { etiquetas:l.etiquetas }).catch(() => toast('⚠️ Não consegui pôr a etiqueta em ' + (a.nome || a.telefone))); }
+  }
   const min = Math.max(0, Number($('#dp-min').value) || 0), max = Math.max(min, Number($('#dp-max').value) || 0);
   dp.esperaAte = Date.now() + (min + Math.random() * (max - min)) * 1000; dp.pos++;
   setTimeout(dpDesenharFila, 50);
