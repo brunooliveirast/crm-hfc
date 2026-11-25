@@ -866,17 +866,18 @@ if (!MODO_DEMO) {
   const eu = { id:'u1', email:'demo@coninho.local' };
   let CFG = { distribuicao:'peso' };
   let P = [{id:'u1',nome:'Gestão',papel:'gestor',ativo:true,peso:0,setor:'comercial'},{id:'u2',nome:'Aline',papel:'vendedor',ativo:true,peso:50,setor:'comercial'},
-           {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true,peso:30,setor:'comercial'},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true,peso:20,setor:'reservas'}];
+           {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true,peso:30,setor:'comercial'},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true,peso:20,setor:'reservas'},
+           {id:'u5',nome:'Rene',papel:'vendedor',ativo:true,peso:25,setor:'comercial'},{id:'u6',nome:'Juliana',papel:'vendedor',ativo:true,peso:25,setor:'comercial'}];
   let s = 11; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647, pick = a => a[Math.floor(rnd() * a.length)];
   const agora = Date.now(), iniM = Math.min(D.ini('mes', new Date()).getTime(), agora - 20 * 86400000);
   const iso = t => new Date(t).toISOString(), ymd = t => iso(t).slice(0, 10);
   let L = [], H = [], hid = 1;
   const PASSOS = ['cobrar resposta do orçamento','mandar fotos dos quartos','confirmar pagamento','ligar pra fechar a data','enviar link da reserva'];
-  for (let i = 1; i <= 54; i++) {
+  for (let i = 1; i <= 96; i++) {
     const criado = iniM + rnd() * (agora - iniM);
     const etapa = pick(['novo','novo','novo','atendimento','atendimento','atendimento','atendimento','orcamento','orcamento','orcamento','orcamento','orcamento','negociando','negociando','negociando','ganho','ganho','ganho','ganho','ganho','ganho','perdido','perdido','perdido','perdido']);
     const tipo = pick(['dayuse','dayuse','dayuse','hospedagem','hospedagem','grupo']);
-    const resp = etapa === 'novo' && rnd() < .5 ? null : pick(['u2','u2','u3','u3','u4']);
+    const resp = etapa === 'novo' && rnd() < .5 ? null : pick(['u2','u2','u2','u3','u3','u3','u4','u4','u5','u5','u5','u6','u6']);
     const desde = etapa === 'novo' ? criado : criado + rnd() * (agora - criado);
     const temValor = ['orcamento','negociando','ganho'].includes(etapa);
     const base = { dayuse:[150,700], hospedagem:[600,2400], grupo:[2000,6000] }[tipo];
