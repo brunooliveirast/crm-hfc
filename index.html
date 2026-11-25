@@ -235,6 +235,24 @@ label.marcar input{width:auto}
 .janela{position:fixed;inset:0;background:rgba(15,25,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30}
 .janela .cx{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:420px;box-shadow:var(--sombra)}
 .janela h3{margin:0 0 4px;font-size:18px;color:var(--vinho)}
+/* ---------- disparos ---------- */
+.dp-filtros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.dp-lista{max-height:300px;overflow-y:auto;border:1px solid var(--linha);border-radius:12px}
+.dp-lin{display:flex;gap:10px;align-items:center;padding:7px 12px;border-bottom:1px solid var(--linha);font-size:14px;margin:0;color:var(--texto)}
+.dp-lin:last-child{border-bottom:0}
+.dp-lin input{width:auto;flex-shrink:0}
+.dp-lin span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dp-lin small{color:var(--suave);white-space:nowrap}
+.dp-pe{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:14px}
+.dp-pe b{margin-right:auto}
+.dp-codigos{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.dp-codigos button{border:1px dashed var(--verde);background:var(--verde-claro);color:var(--verde-esc);border-radius:8px;padding:3px 9px;font-size:13px}
+.dp-tempo{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.dp-tempo div{width:130px}
+.dp-vez{border:2px solid var(--sol-2);border-radius:14px;padding:14px;margin-top:14px}
+.dp-vez h3{margin:0 0 2px;font-size:18px}
+.btn.espera{opacity:.5;pointer-events:none}
+
 /* ---------- chat da equipe ---------- */
 #ver-equipe{display:flex;flex-direction:column;overflow:hidden;padding-bottom:16px}
 .chat{flex:1;min-height:0;display:grid;grid-template-columns:260px 1fr;gap:14px}
@@ -311,6 +329,7 @@ label.marcar input{width:auto}
   .metas-grade{grid-template-columns:1fr 1fr}
   .lin-equipe{grid-template-columns:1fr 1fr}
   .filtros #btn-pegar{order:-1}
+  .dp-filtros{grid-template-columns:1fr 1fr}
   .chat{grid-template-columns:1fr}
   .chat .chat-conv{display:none}
   .chat.aberta .chat-conv{display:flex}
@@ -349,6 +368,7 @@ label.marcar input{width:auto}
     <button data-ver="followup"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Follow-up<span class="pino oculto" id="pino-fu"></span></button>
     <button data-ver="relatorios"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h5M10 16h5"/></svg>Relatórios</button>
     <button data-ver="equipe"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Equipe<span class="pino oculto" id="pino-chat"></span></button>
+    <button data-ver="disparos" id="nav-disparos" class="oculto"><svg viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>Disparos</button>
     <button data-ver="ajustes" id="nav-ajustes" class="oculto"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Ajustes</button>
   </nav>
 
@@ -418,6 +438,57 @@ label.marcar input{width:auto}
           <div class="chat-sobre oculto" id="chat-sobre"></div>
           <form class="chat-form" id="chat-form"><textarea id="chat-texto" placeholder="Escreva pra equipe…" maxlength="2000" aria-label="Mensagem"></textarea><button class="btn" type="submit">Enviar</button></form>
         </div>
+      </div>
+    </div>
+
+    <!-- DISPAROS (gestor) -->
+    <div class="ver oculto" id="ver-disparos">
+      <div class="cartela">
+        <h2>1. Pra quem</h2>
+        <p class="sub">Quem tem a etiqueta <b>não enviar</b> fica de fora sempre. Telefone repetido só recebe uma vez.</p>
+        <div class="barra-ver"><div class="seg" id="dp-fonte"><button data-fonte="crm" class="ativo">Leads do CRM</button><button data-fonte="lista">Lista colada ou arquivo</button></div></div>
+        <div id="dp-crm">
+          <div class="dp-filtros">
+            <input id="dp-busca" type="search" placeholder="Nome ou telefone…" aria-label="Buscar">
+            <select id="dp-tipo" aria-label="Tipo"></select><select id="dp-etapa" aria-label="Etapa"></select>
+            <select id="dp-resp" aria-label="Vendedor"></select><select id="dp-etq" aria-label="Etiqueta"></select><select id="dp-setor" aria-label="Setor"></select>
+          </div>
+          <div class="dp-lista" id="dp-lista"></div>
+          <div class="dp-pe"><b id="dp-cont"></b><button class="btn sec mini" type="button" id="dp-todos">Marcar todos</button><button class="btn sec mini" type="button" id="dp-nenhum">Desmarcar todos</button><button class="btn sec mini" type="button" id="dp-recarregar">Atualizar lista</button></div>
+        </div>
+        <div id="dp-colar" class="oculto">
+          <label for="dp-colado">Uma pessoa por linha: nome e telefone com DDD, separados por vírgula, ponto e vírgula ou tab</label>
+          <textarea id="dp-colado" rows="6" placeholder="Maria Silva; 31 99999-8888"></textarea>
+          <div class="dp-pe"><b id="dp-lidos"></b><label class="btn sec mini" style="margin:0;color:var(--texto)">Abrir arquivo .csv<input id="dp-arquivo" type="file" accept=".csv,.txt" hidden></label></div>
+        </div>
+      </div>
+      <div class="cartela">
+        <h2>2. Mensagem</h2>
+        <p class="sub">Cada pessoa recebe um texto um pouco diferente. Toque num código pra inserir.</p>
+        <label for="dp-titulo">Nome do disparo (só pra você, fica no histórico do lead)</label>
+        <input id="dp-titulo" placeholder="Ex.: Reveillon, base de dezembro">
+        <label for="dp-msg">Texto</label>
+        <textarea id="dp-msg" rows="6">[Oi|Olá|Oii], {nome}! {saudacao}, [tudo bem?|como você tá?|tudo certo por aí?]
+
+</textarea>
+        <div class="dp-codigos" id="dp-codigos">
+          <button type="button" data-cod="{nome}">{nome} primeiro nome</button>
+          <button type="button" data-cod="{saudacao}">{saudacao} bom dia / boa tarde / boa noite</button>
+          <button type="button" data-cod="[opção 1|opção 2|opção 3]">[a|b|c] sorteia uma</button>
+        </div>
+        <label>Como vai chegar (3 exemplos sorteados)</label>
+        <div id="dp-previa"></div>
+      </div>
+      <div class="cartela">
+        <h2>3. Envio</h2>
+        <p class="sub">Hoje o envio é <b>assistido</b>: o CRM abre o WhatsApp com o texto pronto, você aperta enviar, e ele segura o próximo por um tempo sorteado. Envio 100% automático depende de ligar um número ao CRM.</p>
+        <div class="dp-tempo">
+          <div><label for="dp-min">Esperar de (segundos)</label><input id="dp-min" type="number" min="0" value="20" inputmode="numeric"></div>
+          <div><label for="dp-max">até (segundos)</label><input id="dp-max" type="number" min="0" value="60" inputmode="numeric"></div>
+          <button class="btn" type="button" id="dp-iniciar">Montar fila de envio</button>
+        </div>
+        <div class="erro" id="dp-erro"></div>
+        <div id="dp-fila"></div>
       </div>
     </div>
 
@@ -606,11 +677,11 @@ const ORIGENS = [['instagram','Instagram'],['facebook','Facebook'],['anuncio','A
   ['indicacao','Indicação'],['cliente','Já é cliente'],['whatsapp','WhatsApp direto'],['booking','Booking'],
   ['planne','Loja Planne'],['site','Site (outro)'],['outro','Outro']];
 const MOTIVOS = ['','Preço','Não respondeu o orçamento','Sem vaga na data','Sumiu / não respondeu','Fechou em outro lugar','Só pesquisando','Outro'];
-const ETIQUETAS_RAPIDAS = ['aniversário','feriado','casal','família com crianças','excursão','VIP','cupom','retornar em 5 dias'];
+const ETIQUETAS_RAPIDAS = ['aniversário','feriado','casal','família com crianças','excursão','VIP','cupom','retornar em 5 dias','não enviar'];
 const PARADO_DIAS = { novo:1, atendimento:2, orcamento:2, negociando:3 }; // card fica vermelho depois disso
 const FECHADAS = ['ganho','perdido'];
 const SETORES = [['comercial','Comercial'],['reservas','Reservas'],['financeiro','Financeiro']];
-const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', followup:'Follow-up', relatorios:'Relatórios', equipe:'Equipe', ajustes:'Ajustes' };
+const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', followup:'Follow-up', relatorios:'Relatórios', equipe:'Equipe', disparos:'Disparos', ajustes:'Ajustes' };
 const rotulo = (lista, v) => (lista.find(x => x[0] === v) || [, v])[1];
 
 /* ---------- utilidades ---------- */
@@ -702,6 +773,7 @@ if (!MODO_DEMO) {
       res.forEach(r => { if (r.error) throw r.error; r.data.forEach(l => porId.set(l.id, l)); }); return [...porId.values()];
     },
     async lead(id){ const { data } = await sb.from('leads').select('*').eq('id', id).maybeSingle(); return data; },
+    async comTelefone(){ return todas(() => sb.from('leads').select('id,nome,telefone,tipo,etapa,responsavel,etiquetas,setor').eq('arquivado', false).not('telefone', 'is', null)); },
     async criar(l){ const { data, error } = await sb.from('leads').insert(l).select().single(); if (error) throw error; return data; },
     async mudar(id, l){ const { data, error } = await sb.from('leads').update(l).eq('id', id).select().single(); if (error) throw error; return data; },
     async porTelefone(tel){ const { data } = await sb.from('leads').select('*').eq('telefone', tel).eq('arquivado', false).maybeSingle(); return data; },
@@ -782,6 +854,7 @@ if (!MODO_DEMO) {
     async quadro(){ return vivos(); },
     async periodo(){ return { leads:vivos(), eventos:H.filter(e => e.tipo === 'etapa' || e.tipo === 'followup').map(e => ({...e})) }; },
     async buscar(){ return []; },
+    async comTelefone(){ return vivos().filter(l => l.telefone); },
     async lead(id){ const l = L.find(x => x.id === id); return l ? {...l} : null; },
     async criar(l){ const t = new Date().toISOString(); const n = { ...l, id:'n' + Date.now(), etiquetas:l.etiquetas || [], arquivado:false, criado_em:t, etapa_desde:t };
       if (n.telefone) n.telefone = soDigitos(n.telefone); valida(n);
@@ -876,13 +949,13 @@ async function iniciar(){
   try {
     await carregarPerfis();
     $('#quem').textContent = (estado.meu?.nome || estado.usuario.email) + (ehGestor() ? ' · gestão' : '');
-    $('#nav-ajustes').classList.toggle('oculto', !ehGestor());
+    $('#nav-ajustes').classList.toggle('oculto', !ehGestor()); $('#nav-disparos').classList.toggle('oculto', !ehGestor());
     await carregarRespostas();
     await recarregar(true);
     await carregarMsgs();
     api.aoMensagem(async m => { await carregarMsgs(); if (m && m.autor !== estado.usuario.id && !(estado.ver === 'equipe' && chaveConv(m) === estado.conversa)) toast('Mensagem de ' + (nomeDe(m.autor) || 'equipe')); if (estado.ver === 'equipe') desenharEquipe(); atualizarPinoChat(); });
     const salva = guarda.ler('ver');
-    ir(TITULOS[salva] && (salva !== 'ajustes' || ehGestor()) ? salva : (ehGestor() ? 'painel' : 'funil'));
+    ir(TITULOS[salva] && (!['ajustes','disparos'].includes(salva) || ehGestor()) ? salva : (ehGestor() ? 'painel' : 'funil'));
     api.aoMudar(() => { clearTimeout(iniciar.t); iniciar.t = setTimeout(() => recarregar(), 400); });
   } catch (e) { toast(traduzErro(e)); }
 }
@@ -915,7 +988,7 @@ function ir(v){
   desenhar();
 }
 function desenhar(){
-  ({ painel:desenharPainel, funil:desenharFunil, followup:desenharFollow, relatorios:desenharRel, equipe:desenharEquipe, ajustes:desenharAjustes })[estado.ver]();
+  ({ painel:desenharPainel, funil:desenharFunil, followup:desenharFollow, relatorios:desenharRel, equipe:desenharEquipe, disparos:desenharDisparos, ajustes:desenharAjustes })[estado.ver]();
   atualizarPinoChat();
   const meus = estado.leads.filter(l => !FECHADAS.includes(l.etapa) && l.responsavel === estado.usuario.id && ['atrasado','hoje'].includes(situacao(l))).length;
   $('#pino-fu').textContent = meus; $('#pino-fu').classList.toggle('oculto', !meus);
@@ -1429,6 +1502,90 @@ async function enviarChat(){
   catch (e) { toast(traduzErro(e)); }
 }
 
+/* =====================================================================
+   DISPAROS (gestor) — lista, texto variado e fila de envio assistido
+   ===================================================================== */
+const dp = { fonte:'crm', base:null, erro:null, pronto:false, fora:new Set(), lista:[], fila:[], pos:0, esperaAte:0, timer:null };
+const NAO_ENVIAR = 'não enviar';
+const dpSaudacao = () => { const h = new Date().getHours(); return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'; };
+// {nome} = primeiro nome · {saudacao} = pela hora · [a|b|c] = sorteia uma opção
+function dpTexto(modelo, nome){
+  const primeiro = String(nome || '').trim().split(/\s+/)[0] || '';
+  return modelo.replace(/\[([^\[\]]*\|[^\[\]]*)\]/g, (_, o) => { const ops = o.split('|'); return ops[Math.floor(Math.random() * ops.length)]; })
+    .replace(/\{nome\}/gi, primeiro).replace(/\{sauda(c|ç)(a|ã)o\}/gi, dpSaudacao()).replace(/ +([,!?.])/g, '$1').replace(/[ \t]{2,}/g, ' ').trim();
+}
+function dpLerLista(txt){
+  const vistos = new Set(), out = [];
+  txt.split(/\r?\n/).forEach(lin => {
+    const partes = lin.split(/[;,\t]/).map(x => x.trim()).filter(Boolean); if (!partes.length) return;
+    const it = partes.findIndex(x => !/[a-zA-ZÀ-ú]/.test(x) && soDigitos(x).length >= 10 && soDigitos(x).length <= 13); if (it < 0) return;
+    const tel = soDigitos(partes[it]); if (vistos.has(tel)) return; vistos.add(tel);
+    out.push({ nome: partes.find((x, i) => i !== it) || '', telefone: tel });
+  });
+  return out;
+}
+function dpCRM(){
+  const b = $('#dp-busca').value.trim().toLowerCase(), bd = soDigitos(b), tipo = $('#dp-tipo').value, etapa = $('#dp-etapa').value, resp = $('#dp-resp').value, etq = $('#dp-etq').value, setor = $('#dp-setor').value;
+  const vistos = new Set();
+  return (dp.base || []).filter(l => l.telefone && soDigitos(l.telefone).length >= 10 &&
+    !(l.etiquetas || []).some(e => e.toLowerCase() === NAO_ENVIAR) &&
+    (!tipo || l.tipo === tipo) && (!etapa || (etapa === '__abertos' ? !FECHADAS.includes(l.etapa) : l.etapa === etapa)) &&
+    (!resp || (resp === '__sem' ? !l.responsavel : l.responsavel === resp)) && (!etq || (l.etiquetas || []).includes(etq)) &&
+    (!setor || (l.setor || 'comercial') === setor) &&
+    (!b || (l.nome || '').toLowerCase().includes(b) || (bd.length >= 3 && l.telefone.includes(bd))) &&
+    !vistos.has(l.telefone) && vistos.add(l.telefone));
+}
+const dpAlvos = () => dp.fonte === 'crm' ? dpCRM().filter(l => !dp.fora.has(l.id)).map(l => ({ id:l.id, nome:l.nome, telefone:l.telefone })) : dp.lista;
+
+async function dpCarregar(){
+  dp.erro = null;
+  try { dp.base = await api.comTelefone(); } catch (e) { dp.base = null; dp.erro = e; }
+  const etqs = [...new Set((dp.base || []).flatMap(l => l.etiquetas || []))].filter(e => e.toLowerCase() !== NAO_ENVIAR).sort();
+  const atual = $('#dp-etq').value; preencher($('#dp-etq'), [['', 'Qualquer etiqueta'], ...etqs.map(e => [e, e])]); $('#dp-etq').value = etqs.includes(atual) ? atual : '';
+}
+async function desenharDisparos(){
+  if (!dp.pronto) {
+    dp.pronto = true;
+    preencher($('#dp-tipo'), [['', 'Qualquer tipo'], ...TIPOS]);
+    preencher($('#dp-etapa'), [['', 'Qualquer etapa'], ['__abertos', 'Só em aberto'], ...ETAPAS]);
+    preencher($('#dp-setor'), [['', 'Qualquer setor'], ...SETORES]);
+    preencher($('#dp-etq'), [['', 'Qualquer etiqueta']]);
+  }
+  const r = $('#dp-resp').value;
+  preencher($('#dp-resp'), [['', 'Qualquer vendedor'], ['__sem', 'Sem responsável'], ...estado.perfis.filter(x => x.ativo).map(x => [x.id, x.nome])]); $('#dp-resp').value = r || '';
+  if (!dp.base && !dp.erro) { $('#dp-lista').innerHTML = '<div class="vazio" style="padding:12px">Carregando…</div>'; await dpCarregar(); }
+  dpAtualizar();
+}
+function dpAtualizar(){
+  document.querySelectorAll('#dp-fonte button').forEach(b => b.classList.toggle('ativo', b.dataset.fonte === dp.fonte));
+  $('#dp-crm').classList.toggle('oculto', dp.fonte !== 'crm'); $('#dp-colar').classList.toggle('oculto', dp.fonte !== 'lista');
+  if (dp.fonte === 'crm') {
+    if (dp.erro) { $('#dp-lista').innerHTML = erroCarga(dp.erro); $('#dp-cont').textContent = ''; }
+    else {
+      const f = dpCRM();
+      $('#dp-lista').innerHTML = f.slice(0, 400).map(l => `<label class="dp-lin"><input type="checkbox" data-id="${esc(l.id)}" ${dp.fora.has(l.id) ? '' : 'checked'}><span>${esc(l.nome)}</span><small>${esc(rotulo(ETAPAS, l.etapa))} · ${esc(l.telefone)}</small></label>`).join('')
+        + (f.length > 400 ? `<div class="vazio" style="padding:10px 12px">… e mais ${f.length - 400} (todos entram no disparo)</div>` : '') || '<div class="vazio" style="padding:12px">Ninguém com telefone nesse filtro.</div>';
+      $('#dp-cont').textContent = `${dpAlvos().length} de ${f.length} vão receber`;
+    }
+  } else $('#dp-lidos').textContent = dp.lista.length ? `${dp.lista.length} ${dp.lista.length === 1 ? 'pessoa lida' : 'pessoas lidas'}` : 'Nenhum telefone válido ainda';
+  const alvos = dpAlvos(), modelo = $('#dp-msg').value, amostra = alvos.length ? alvos.slice(0, 3) : [{ nome:'Maria' }];
+  $('#dp-previa').innerHTML = [0, 1, 2].map(i => `<pre class="texto" style="margin-bottom:8px"></pre>`).join('');
+  document.querySelectorAll('#dp-previa pre').forEach((el, i) => el.textContent = dpTexto(modelo, amostra[i % amostra.length].nome));
+  dpDesenharFila();
+}
+function dpDesenharFila(){
+  clearTimeout(dp.timer);
+  const box = $('#dp-fila'); if (!dp.fila.length) { box.innerHTML = ''; return; }
+  if (dp.pos >= dp.fila.length) { box.innerHTML = `<div class="dp-vez"><h3>Fila terminada ✅</h3><p class="dica">${dp.fila.filter(x => x.feito).length} abertos no WhatsApp · ${dp.fila.filter(x => x.pulado).length} pulados.</p><button class="btn sec" type="button" data-dp="parar">Fechar</button></div>`; return; }
+  const a = dp.fila[dp.pos], falta = Math.max(0, Math.ceil((dp.esperaAte - Date.now()) / 1000));
+  box.innerHTML = `<div class="dp-vez"><p class="dica" style="margin-top:0">${dp.pos + 1} de ${dp.fila.length}${falta ? ` · próximo liberado em <b>${falta}s</b>` : ''}</p>
+    <h3>${esc(a.nome || 'Sem nome')}</h3><p class="dica" style="margin:0 0 8px">${esc(a.telefone)}</p><pre class="texto" id="dp-vez-texto"></pre>
+    <div class="acoes"><a class="btn ${falta ? 'espera' : ''}" data-dp="abrir" href="${linkZap(a.telefone)}?text=${encodeURIComponent(a.texto)}" target="_blank" rel="noopener">${falta ? `Aguarde ${falta}s` : 'Abrir no WhatsApp'}</a>
+      <button class="btn sec" type="button" data-dp="pular">Pular</button><button class="btn perigo" type="button" data-dp="parar">Parar</button></div></div>`;
+  $('#dp-vez-texto').textContent = a.texto;
+  if (falta) dp.timer = setTimeout(dpDesenharFila, 1000);
+}
+
 /* ---------- etiquetas rápidas ---------- */
 function lerEtiquetas(){ return [...new Set($('#c-etiquetas').value.split(',').map(s => s.trim()).filter(Boolean))]; }
 function desenharRapidas(){
@@ -1592,6 +1749,37 @@ document.querySelectorAll('.chip[data-tipo]').forEach(b => b.addEventListener('c
   estado.filtroTipo = b.dataset.tipo; desenharFunil();
 }));
 $('#chip-hoje').addEventListener('click', () => { estado.quente = !estado.quente; $('#chip-hoje').classList.toggle('ativo', estado.quente); desenharFunil(); });
+
+// disparos
+$('#dp-fonte').addEventListener('click', e => { const b = e.target.closest('[data-fonte]'); if (!b) return; dp.fonte = b.dataset.fonte; dpAtualizar(); });
+['#dp-busca','#dp-tipo','#dp-etapa','#dp-resp','#dp-etq','#dp-setor','#dp-msg'].forEach(q => $(q).addEventListener('input', dpAtualizar));
+$('#dp-lista').addEventListener('change', e => { const c = e.target.closest('[data-id]'); if (!c) return; if (c.checked) dp.fora.delete(c.dataset.id); else dp.fora.add(c.dataset.id); $('#dp-cont').textContent = `${dpAlvos().length} de ${dpCRM().length} vão receber`; });
+$('#dp-todos').addEventListener('click', () => { dpCRM().forEach(l => dp.fora.delete(l.id)); dpAtualizar(); });
+$('#dp-nenhum').addEventListener('click', () => { dpCRM().forEach(l => dp.fora.add(l.id)); dpAtualizar(); });
+$('#dp-recarregar').addEventListener('click', async () => { await dpCarregar(); dpAtualizar(); toast('Lista atualizada.'); });
+$('#dp-colado').addEventListener('input', e => { dp.lista = dpLerLista(e.target.value); dpAtualizar(); });
+$('#dp-arquivo').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $('#dp-colado').value = String(r.result); dp.lista = dpLerLista(String(r.result)); dpAtualizar(); }; r.readAsText(f); e.target.value = ''; });
+$('#dp-codigos').addEventListener('click', e => { const b = e.target.closest('[data-cod]'); if (!b) return; const t = $('#dp-msg'), i = t.selectionStart ?? t.value.length; t.setRangeText(b.dataset.cod, i, t.selectionEnd ?? i, 'end'); t.focus(); dpAtualizar(); });
+$('#dp-iniciar').addEventListener('click', () => {
+  const alvos = dpAlvos(), modelo = $('#dp-msg').value.trim(), erro = $('#dp-erro'); erro.textContent = '';
+  if (!alvos.length) { erro.textContent = 'Ninguém selecionado.'; return; }
+  if (modelo.length < 10) { erro.textContent = 'Escreva a mensagem.'; return; }
+  if (Number($('#dp-max').value) < Number($('#dp-min').value)) { erro.textContent = 'O tempo "até" precisa ser maior que o "de".'; return; }
+  if (!confirm(`Montar a fila com ${alvos.length} ${alvos.length === 1 ? 'pessoa' : 'pessoas'}?`)) return;
+  dp.fila = alvos.map(a => ({ ...a, texto: dpTexto(modelo, a.nome) })); dp.pos = 0; dp.esperaAte = 0; dpDesenharFila();
+  $('#dp-fila').scrollIntoView({ behavior:'smooth', block:'nearest' });
+});
+$('#dp-fila').addEventListener('click', e => {
+  const b = e.target.closest('[data-dp]'); if (!b) return; const acao = b.dataset.dp, a = dp.fila[dp.pos];
+  if (acao === 'parar') { dp.fila = []; dpDesenharFila(); return; }
+  if (acao === 'pular') { a.pulado = true; dp.pos++; dpDesenharFila(); return; }
+  // abrir: o link abre sozinho; aqui só registra e segura o próximo por um tempo sorteado
+  a.feito = true;
+  if (a.id) api.anotar(a.id, `Disparo aberto no WhatsApp: "${$('#dp-titulo').value.trim() || 'sem nome'}"`, estado.usuario.id).catch(() => {});
+  const min = Math.max(0, Number($('#dp-min').value) || 0), max = Math.max(min, Number($('#dp-max').value) || 0);
+  dp.esperaAte = Date.now() + (min + Math.random() * (max - min)) * 1000; dp.pos++;
+  setTimeout(dpDesenharFila, 50);
+});
 
 // transferir e chat
 $('#btn-transferir').addEventListener('click', abrirTransferir);
