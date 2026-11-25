@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>CRM Coninho</title>
+<style>
+:root{
+  --verde:#2f6b3f; --verde-esc:#1f4a2b; --verde-claro:#e8f2ea;
+  --fundo:#f4f5f2; --card:#fff; --texto:#1d2420; --suave:#66706a; --linha:#dde2dc;
+  --vermelho:#c0392b; --vermelho-claro:#fdecea; --amarelo:#b7791f; --amarelo-claro:#fdf4e3;
+  --azul:#2b6cb0; --azul-claro:#e8f0fa; --roxo:#6b46c1; --roxo-claro:#f0ebfb;
+  --raio:10px; --sombra:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--fundo);color:var(--texto)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.oculto{display:none!important}
+
+/* ---------- login ---------- */
+#tela-login{min-height:100%;display:flex;align-items:center;justify-content:center;padding:16px}
+.caixa-login{background:var(--card);border-radius:14px;box-shadow:var(--sombra);padding:28px 24px;width:100%;max-width:360px}
+.caixa-login h1{margin:0 0 4px;font-size:22px;color:var(--verde-esc)}
+.caixa-login p{margin:0 0 20px;color:var(--suave)}
+label{display:block;font-size:13px;color:var(--suave);margin:12px 0 4px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--linha);border-radius:8px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--verde);outline-offset:-1px;border-color:transparent}
+.btn{border:0;border-radius:8px;padding:9px 14px;background:var(--verde);color:#fff;font-weight:600}
+.btn:hover{background:var(--verde-esc)}
+.btn.sec{background:#fff;color:var(--texto);border:1px solid var(--linha)}
+.btn.sec:hover{background:var(--fundo)}
+.btn.perigo{background:#fff;color:var(--vermelho);border:1px solid var(--linha)}
+.btn.cheio{width:100%;margin-top:18px;padding:11px}
+.erro{color:var(--vermelho);font-size:14px;margin-top:10px;min-height:1em}
+
+/* ---------- topo ---------- */
+#app{display:flex;flex-direction:column;height:100%}
+.topo{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--verde-esc);color:#fff;flex-wrap:wrap}
+.marca{font-weight:700;font-size:17px;white-space:nowrap}
+.marca small{font-weight:400;opacity:.75}
+.topo .busca{flex:1;min-width:160px;max-width:340px;border:0;background:rgba(255,255,255,.14);color:#fff}
+.topo .busca::placeholder{color:rgba(255,255,255,.7)}
+.topo .direita{margin-left:auto;display:flex;align-items:center;gap:8px}
+.topo .quem{font-size:13px;opacity:.85}
+.topo .btn.sec{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+.faixa-demo{background:var(--amarelo-claro);color:var(--amarelo);font-size:13px;padding:6px 16px;text-align:center}
+.filtros{display:flex;gap:8px;padding:10px 16px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--linha);background:#fff}
+.chip{white-space:nowrap;flex-shrink:0;border:1px solid var(--linha);background:#fff;border-radius:999px;padding:5px 12px;font-size:13px}
+.chip.ativo{background:var(--verde);border-color:var(--verde);color:#fff}
+.filtros select{width:auto;padding:5px 8px;font-size:13px}
+.filtros .resumo{margin-left:auto;font-size:13px;color:var(--suave)}
+.filtros .resumo b{color:var(--texto)}
+
+/* ---------- funil ---------- */
+.quadro{flex:1;display:flex;gap:12px;padding:14px 16px;overflow-x:auto;align-items:flex-start;scroll-snap-type:x mandatory}
+.coluna{flex:0 0 272px;background:#eceee9;border-radius:var(--raio);display:flex;flex-direction:column;max-height:100%;scroll-snap-align:start}
+.coluna.alvo{outline:2px dashed var(--verde);outline-offset:-2px}
+.cab-col{padding:10px 12px 6px;display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.cab-col h2{margin:0;font-size:14px}
+.cab-col .qtd{font-size:12px;color:var(--suave)}
+.cab-col .soma{font-size:12px;color:var(--suave);padding:0 12px 6px}
+.lista{padding:4px 8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;min-height:60px}
+.cartao{background:var(--card);border-radius:8px;box-shadow:var(--sombra);padding:10px;cursor:pointer;border-left:4px solid transparent}
+.cartao:hover{box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.cartao.arrastando{opacity:.4}
+.cartao .nome{font-weight:600;margin-bottom:4px;word-break:break-word}
+.cartao .linha{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--suave)}
+.cartao .rodape{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:var(--suave)}
+.selo{font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px}
+.selo.dayuse{background:var(--verde-claro);color:var(--verde-esc)}
+.selo.hospedagem{background:var(--azul-claro);color:var(--azul)}
+.selo.grupo{background:var(--roxo-claro);color:var(--roxo)}
+.selo.atraso{background:var(--vermelho-claro);color:var(--vermelho)}
+.selo.hoje{background:var(--amarelo-claro);color:var(--amarelo)}
+.avatar{width:24px;height:24px;border-radius:50%;background:var(--verde);color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.avatar.vazio{background:#ccd2cb}
+.parado{color:var(--vermelho);font-weight:600}
+.vazio-col{font-size:13px;color:var(--suave);text-align:center;padding:14px 0}
+
+/* ---------- ficha ---------- */
+.fundo-ficha{position:fixed;inset:0;background:rgba(20,30,24,.45);display:flex;justify-content:flex-end;z-index:20}
+.ficha{background:#fff;width:100%;max-width:520px;height:100%;overflow-y:auto;display:flex;flex-direction:column}
+.cab-ficha{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--linha);padding:14px 16px;display:flex;gap:8px;align-items:center;z-index:1}
+.cab-ficha h3{margin:0;font-size:17px;flex:1;word-break:break-word}
+.fechar{border:0;background:none;font-size:24px;line-height:1;padding:0 4px;color:var(--suave)}
+.corpo-ficha{padding:4px 16px 16px}
+.grade{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.grade .inteira{grid-column:1/-1}
+.acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.acoes .btn{flex:1;min-width:120px}
+.secao{margin-top:22px;border-top:1px solid var(--linha);padding-top:14px}
+.secao h4{margin:0 0 8px;font-size:14px}
+.nota-nova{display:flex;gap:8px}
+.nota-nova textarea{min-height:40px;resize:vertical}
+.hist{list-style:none;margin:10px 0 0;padding:0}
+.hist li{padding:8px 0;border-bottom:1px solid var(--fundo);font-size:13px}
+.hist .q{color:var(--suave);font-size:12px}
+.hist .t{white-space:pre-wrap;word-break:break-word}
+.aviso{background:var(--amarelo-claro);color:var(--amarelo);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--texto);color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;z-index:50;max-width:calc(100% - 32px)}
+
+@media (max-width:640px){
+  .topo{padding:10px 12px}
+  .topo .busca{order:3;flex-basis:100%;max-width:none}
+  .topo .quem{display:none}
+  .filtros{padding:8px 12px;flex-wrap:nowrap;overflow-x:auto}
+  .filtros .resumo{display:none}
+  .quadro{padding:12px}
+  .coluna{flex-basis:84vw}
+  .grade{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<section id="tela-login" class="oculto">
+  <form class="caixa-login" id="form-login">
+    <h1>CRM Coninho</h1>
+    <p>Entre com o e-mail e a senha que a gestão te passou.</p>
+    <label for="l-email">E-mail</label>
+    <input id="l-email" type="email" autocomplete="username" required>
+    <label for="l-senha">Senha</label>
+    <input id="l-senha" type="password" autocomplete="current-password" required>
+    <button class="btn cheio" type="submit">Entrar</button>
+    <div class="erro" id="l-erro"></div>
+  </form>
+</section>
+
+<!-- ================= APP ================= -->
+<section id="app" class="oculto">
+  <div class="faixa-demo oculto" id="faixa-demo">Modo demonstração: dados de exemplo, nada é salvo. Para usar de verdade, preencha a conexão com o Supabase no arquivo.</div>
+  <header class="topo">
+    <div class="marca">Coninho <small>· CRM</small></div>
+    <input class="busca" id="busca" type="search" placeholder="Buscar nome, telefone, e-mail…">
+    <div class="direita">
+      <span class="quem" id="quem"></span>
+      <button class="btn" id="btn-novo">+ Lead</button>
+      <button class="btn sec" id="btn-sair">Sair</button>
+    </div>
+  </header>
+  <div class="filtros">
+    <button class="chip ativo" data-tipo="">Todos</button>
+    <button class="chip" data-tipo="dayuse">Day Use</button>
+    <button class="chip" data-tipo="hospedagem">Hospedagem</button>
+    <button class="chip" data-tipo="grupo">Grupo/evento</button>
+    <select id="f-resp" aria-label="Responsável"><option value="">Toda a equipe</option></select>
+    <div class="resumo" id="resumo"></div>
+  </div>
+  <main class="quadro" id="quadro"></main>
+</section>
+
+<!-- ================= FICHA ================= -->
+<div class="fundo-ficha oculto" id="fundo-ficha">
+  <aside class="ficha" role="dialog" aria-modal="true" aria-labelledby="f-titulo">
+    <div class="cab-ficha">
+      <h3 id="f-titulo">Lead</h3>
+      <button class="fechar" id="btn-fechar" aria-label="Fechar">×</button>
+    </div>
+    <form class="corpo-ficha" id="form-ficha" novalidate>
+      <div class="grade">
+        <div class="inteira"><label for="c-nome">Nome *</label><input id="c-nome" required></div>
+        <div><label for="c-telefone">WhatsApp (com DDD)</label><input id="c-telefone" inputmode="tel" placeholder="31 99999-8888"></div>
+        <div><label for="c-email">E-mail</label><input id="c-email" type="email"></div>
+        <div><label for="c-tipo">Interesse</label><select id="c-tipo"></select></div>
+        <div><label for="c-origem">Como chegou</label><select id="c-origem"></select></div>
+        <div><label for="c-etapa">Etapa</label><select id="c-etapa"></select></div>
+        <div><label for="c-resp">Responsável</label><select id="c-resp"></select></div>
+        <div><label for="c-visita" id="lbl-visita">Data do Day Use</label><input id="c-visita" type="date"></div>
+        <div id="box-saida"><label for="c-saida">Check-out</label><input id="c-saida" type="date"></div>
+        <div><label for="c-adultos">Adultos</label><input id="c-adultos" type="number" min="0" inputmode="numeric"></div>
+        <div><label for="c-criancas">Crianças</label><input id="c-criancas" type="number" min="0" inputmode="numeric"></div>
+        <div><label for="c-valor">Valor (R$)</label><input id="c-valor" inputmode="decimal" placeholder="0,00"></div>
+        <div><label for="c-proximo">Próximo contato</label><input id="c-proximo" type="datetime-local"></div>
+        <div class="inteira" id="box-motivo"><label for="c-motivo">Motivo da perda *</label><select id="c-motivo"></select></div>
+        <div class="inteira"><label for="c-etiquetas">Etiquetas (separe por vírgula)</label><input id="c-etiquetas" placeholder="aniversário, voltou, VIP"></div>
+        <div class="inteira"><label for="c-obs">Observações</label><textarea id="c-obs" rows="3"></textarea></div>
+      </div>
+      <div class="erro" id="f-erro"></div>
+      <div class="acoes">
+        <button class="btn" type="submit">Salvar</button>
+        <a class="btn sec" id="btn-zap" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Abrir WhatsApp</a>
+      </div>
+      <div class="secao" id="secao-hist">
+        <h4>Anotações e histórico</h4>
+        <div class="nota-nova">
+          <textarea id="nota" placeholder="O que foi conversado?"></textarea>
+          <button class="btn sec" type="button" id="btn-nota">Anotar</button>
+        </div>
+        <ul class="hist" id="hist"></ul>
+        <div class="acoes"><button class="btn perigo" type="button" id="btn-arquivar">Arquivar lead</button></div>
+      </div>
+    </form>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* =====================================================================
+   CONEXÃO — cole aqui a URL e a chave PÚBLICA (anon) do Supabase.
+   Supabase > Project Settings > API. NUNCA a service_role.
+   Deixando vazio (ou abrindo com ?demo), o painel roda com dados de exemplo.
+   ===================================================================== */
+const SUPABASE_URL = 'https://ywwibovxfkwnulhmcjpu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_XQd5Hh-6TddaW88RFfPd0g_eEaDj1Tj'; // chave publicável (pública por natureza)
+
+/* ---------- dicionários ---------- */
+const ETAPAS = [
+  ['novo','Novo'],['atendimento','Em atendimento'],['orcamento','Orçamento enviado'],
+  ['negociando','Negociando'],['ganho','Vendido'],['perdido','Perdido']
+];
+const TIPOS = [['dayuse','Day Use'],['hospedagem','Hospedagem'],['grupo','Grupo/evento']];
+const ORIGENS = [['anuncio','Anúncio'],['instagram','Instagram'],['whatsapp','WhatsApp direto'],
+  ['site','Site'],['indicacao','Indicação'],['cliente','Já é cliente'],['outro','Outro']];
+const MOTIVOS = ['','Preço','Sem vaga na data','Sumiu / não respondeu','Fechou em outro lugar','Só pesquisando','Outro'];
+const PARADO_DIAS = { novo:1, atendimento:2, orcamento:2, negociando:3 }; // card fica vermelho depois disso
+const rotulo = (lista, v) => (lista.find(x => x[0] === v) || [, v])[1];
+
+/* ---------- utilidades ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const brl = v => v == null ? '' : Number(v).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const dataBR = d => d ? d.slice(8,10) + '/' + d.slice(5,7) : '';
+const soDigitos = s => String(s || '').replace(/\D/g, '');
+const iniciais = n => String(n || '?').trim().split(/\s+/).slice(0,2).map(p => p[0]).join('').toUpperCase();
+const diasDesde = iso => Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+function toast(msg){ const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.append(t); setTimeout(() => t.remove(), 3200); }
+function preencher(sel, lista){ sel.innerHTML = lista.map(([v, r]) => `<option value="${esc(v)}">${esc(r)}</option>`).join(''); }
+function isoParaLocal(iso){ if(!iso) return ''; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
+
+/* =====================================================================
+   DADOS — mesma interface para Supabase e demonstração
+   ===================================================================== */
+const MODO_DEMO = !SUPABASE_URL || new URLSearchParams(location.search).has('demo');
+let api;
+
+if (!MODO_DEMO) {
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  api = {
+    async sessao(){ const { data } = await sb.auth.getSession(); return data.session?.user || null; },
+    async entrar(email, senha){ const { data, error } = await sb.auth.signInWithPassword({ email, password: senha }); if (error) throw error; return data.user; },
+    async sair(){ await sb.auth.signOut(); },
+    async perfis(){ const { data, error } = await sb.from('perfis').select('id,nome,papel,ativo').order('nome'); if (error) throw error; return data; },
+    async leads(){ const { data, error } = await sb.from('leads').select('*').eq('arquivado', false).order('etapa_desde', { ascending:false }); if (error) throw error; return data; },
+    async criar(l){ const { data, error } = await sb.from('leads').insert(l).select().single(); if (error) throw error; return data; },
+    async mudar(id, l){ const { data, error } = await sb.from('leads').update(l).eq('id', id).select().single(); if (error) throw error; return data; },
+    async porTelefone(tel){ const { data } = await sb.from('leads').select('*').eq('telefone', tel).eq('arquivado', false).maybeSingle(); return data; },
+    async historico(id){ const { data, error } = await sb.from('historico').select('*').eq('lead_id', id).order('criado_em', { ascending:false }); if (error) throw error; return data; },
+    async anotar(id, texto, autor){ const { error } = await sb.from('historico').insert({ lead_id:id, tipo:'nota', texto, autor }); if (error) throw error; },
+    aoMudar(fn){ sb.channel('leads').on('postgres_changes', { event:'*', schema:'public', table:'leads' }, fn).subscribe(); }
+  };
+} else {
+  // Dados de exemplo (fictícios). Ficam só na memória desta aba.
+  const eu = { id:'u1', email:'demo@coninho.local' };
+  const P = [{id:'u1',nome:'Gestão',papel:'gestor',ativo:true},{id:'u2',nome:'Aline',papel:'vendedor',ativo:true},
+             {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true}];
+  const h = n => new Date(Date.now() - n * 3600000).toISOString();
+  const dia = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+  let L = [
+    {nome:'Família Teste Souza',telefone:'31900000001',tipo:'dayuse',origem:'anuncio',etapa:'novo',responsavel:null,data_visita:dia(4),adultos:2,criancas:2,etapa_desde:h(30)},
+    {nome:'Exemplo Carla Mendes',telefone:'31900000002',tipo:'hospedagem',origem:'instagram',etapa:'atendimento',responsavel:'u2',data_visita:dia(12),data_saida:dia(14),adultos:2,etapa_desde:h(5)},
+    {nome:'Grupo Igreja (exemplo)',telefone:'31900000003',tipo:'grupo',origem:'indicacao',etapa:'orcamento',responsavel:'u3',valor:4200,data_visita:dia(20),adultos:35,criancas:10,etapa_desde:h(70),proximo_contato:h(2)},
+    {nome:'Exemplo Rafael Lima',telefone:'31900000004',tipo:'hospedagem',origem:'site',etapa:'negociando',responsavel:'u2',valor:1380,data_visita:dia(6),data_saida:dia(8),adultos:2,criancas:1,etapa_desde:h(20),etiquetas:['aniversário']},
+    {nome:'Exemplo Juliana Prado',telefone:'31900000005',tipo:'dayuse',origem:'whatsapp',etapa:'ganho',responsavel:'u4',valor:579.6,data_visita:dia(3),adultos:4,etapa_desde:h(10),ganho_em:h(10)},
+    {nome:'Exemplo Pedro Alves',telefone:'31900000006',tipo:'dayuse',origem:'anuncio',etapa:'perdido',responsavel:'u3',motivo_perda:'Preço',etapa_desde:h(50),perdido_em:h(50)},
+    {nome:'Exemplo Marcos Dias',telefone:'31900000007',tipo:'dayuse',origem:'anuncio',etapa:'novo',responsavel:null,adultos:2,etapa_desde:h(1)}
+  ].map((l, i) => ({ id:'d'+i, email:null, valor:null, data_saida:null, criancas:null, proximo_contato:null, motivo_perda:null, observacoes:null, etiquetas:[], arquivado:false, criado_em:l.etapa_desde, ...l }));
+  let H = L.map((l, i) => ({ id:i, lead_id:l.id, autor:'u1', tipo:'criado', para:l.etapa, criado_em:l.criado_em }));
+  let logado = null;
+  const valida = l => {
+    if (l.etapa === 'ganho' && l.valor == null) throw { message:'ganho_tem_valor' };
+    if (l.etapa === 'perdido' && !l.motivo_perda) throw { message:'perdido_tem_motivo' };
+    if (l.telefone && L.some(x => x.telefone === l.telefone && x.id !== l.id && !x.arquivado)) throw { code:'23505', message:'duplicate' };
+  };
+  api = {
+    async sessao(){ return logado; },
+    async entrar(){ logado = eu; return eu; },
+    async sair(){ logado = null; },
+    async perfis(){ return P; },
+    async leads(){ return L.filter(l => !l.arquivado).map(l => ({...l})); },
+    async criar(l){ const n = { ...l, id:'n'+Date.now(), etiquetas:l.etiquetas||[], arquivado:false, criado_em:new Date().toISOString(), etapa_desde:new Date().toISOString() };
+      if (n.telefone) n.telefone = soDigitos(n.telefone); valida(n); L.push(n);
+      H.push({ id:Date.now(), lead_id:n.id, autor:eu.id, tipo:'criado', para:n.etapa, criado_em:n.criado_em }); return {...n}; },
+    async mudar(id, l){ const i = L.findIndex(x => x.id === id); const a = L[i]; const n = { ...a, ...l };
+      if (n.telefone) n.telefone = soDigitos(n.telefone); valida(n);
+      const agora = new Date().toISOString();
+      if (n.etapa !== a.etapa){ n.etapa_desde = agora; if (n.etapa==='ganho') n.ganho_em = agora; if (n.etapa==='perdido') n.perdido_em = agora;
+        H.push({ id:Date.now(), lead_id:id, autor:eu.id, tipo:'etapa', de:a.etapa, para:n.etapa, criado_em:agora }); }
+      if (n.responsavel !== a.responsavel) H.push({ id:Date.now()+1, lead_id:id, autor:eu.id, tipo:'responsavel', de:a.responsavel, para:n.responsavel, criado_em:agora });
+      L[i] = n; return {...n}; },
+    async porTelefone(tel){ return L.find(x => x.telefone === tel && !x.arquivado) || null; },
+    async historico(id){ return H.filter(x => x.lead_id === id).sort((a, b) => b.criado_em.localeCompare(a.criado_em)); },
+    async anotar(id, texto){ H.push({ id:Date.now(), lead_id:id, autor:eu.id, tipo:'nota', texto, criado_em:new Date().toISOString() }); },
+    aoMudar(){}
+  };
+}
+
+/* =====================================================================
+   ESTADO E TELA
+   ===================================================================== */
+const estado = { usuario:null, perfis:[], leads:[], filtroTipo:'', filtroResp:'', busca:'', aberto:null };
+const nomeDe = id => estado.perfis.find(p => p.id === id)?.nome || '';
+
+function traduzErro(e){
+  const m = (e && (e.message || e.error_description)) || String(e);
+  if (e?.code === '23505' || /duplicate|leads_telefone_unico/.test(m)) return 'Esse telefone já tem um card aberto.';
+  if (/ganho_tem_valor/.test(m)) return 'Para marcar como Vendido, preencha o valor.';
+  if (/perdido_tem_motivo/.test(m)) return 'Para marcar como Perdido, escolha o motivo.';
+  if (/Invalid login/i.test(m)) return 'E-mail ou senha errados.';
+  if (/row-level security|permission/i.test(m)) return 'Seu usuário não tem permissão. Fale com a gestão.';
+  return 'Não deu certo: ' + m;
+}
+
+async function iniciar(){
+  $('#faixa-demo').classList.toggle('oculto', !MODO_DEMO);
+  if (MODO_DEMO) await api.entrar();
+  estado.usuario = await api.sessao();
+  if (!estado.usuario){ $('#tela-login').classList.remove('oculto'); $('#app').classList.add('oculto'); return; }
+  $('#tela-login').classList.add('oculto'); $('#app').classList.remove('oculto');
+  try {
+    estado.perfis = await api.perfis();
+    const meu = estado.perfis.find(p => p.id === estado.usuario.id);
+    $('#quem').textContent = meu?.nome || estado.usuario.email;
+    const ativos = estado.perfis.filter(p => p.ativo).map(p => [p.id, p.nome]);
+    preencher($('#f-resp'), [['', 'Toda a equipe'], ['__sem', 'Sem responsável'], ...ativos]);
+    preencher($('#c-resp'), [['', '— ninguém ainda —'], ...ativos]);
+    await recarregar();
+    api.aoMudar(() => recarregar());
+  } catch (e) { toast(traduzErro(e)); }
+}
+
+async function recarregar(){
+  estado.leads = await api.leads();
+  desenhar();
+}
+
+function filtrados(){
+  const b = estado.busca.trim().toLowerCase(), bd = soDigitos(b);
+  return estado.leads.filter(l =>
+    (!estado.filtroTipo || l.tipo === estado.filtroTipo) &&
+    (!estado.filtroResp || (estado.filtroResp === '__sem' ? !l.responsavel : l.responsavel === estado.filtroResp)) &&
+    (!b || (l.nome || '').toLowerCase().includes(b) || (l.email || '').toLowerCase().includes(b) || (bd.length >= 3 && (l.telefone || '').includes(bd)))
+  );
+}
+
+function desenhar(){
+  const lista = filtrados();
+  const abertos = lista.filter(l => !['ganho','perdido'].includes(l.etapa));
+  const naMesa = lista.filter(l => ['orcamento','negociando'].includes(l.etapa)).reduce((s, l) => s + Number(l.valor || 0), 0);
+  $('#resumo').innerHTML = `<b>${abertos.length}</b> em aberto · <b>${brl(naMesa)}</b> em orçamento/negociação`;
+
+  $('#quadro').innerHTML = ETAPAS.map(([etapa, nome]) => {
+    const cards = lista.filter(l => l.etapa === etapa);
+    const soma = cards.reduce((s, l) => s + Number(l.valor || 0), 0);
+    return `<section class="coluna" data-etapa="${etapa}">
+      <div class="cab-col"><h2>${nome}</h2><span class="qtd">${cards.length}</span></div>
+      ${soma ? `<div class="soma">${brl(soma)}</div>` : ''}
+      <div class="lista">${cards.length ? cards.map(cartao).join('') : '<div class="vazio-col">Nenhum lead</div>'}</div>
+    </section>`;
+  }).join('');
+}
+
+function cartao(l){
+  const dias = diasDesde(l.etapa_desde);
+  const parado = PARADO_DIAS[l.etapa] != null && dias >= PARADO_DIAS[l.etapa];
+  let follow = '';
+  if (l.proximo_contato && !['ganho','perdido'].includes(l.etapa)){
+    const t = new Date(l.proximo_contato).getTime(), hoje = new Date(); hoje.setHours(23,59,59,999);
+    if (t < Date.now()) follow = '<span class="selo atraso">retorno atrasado</span>';
+    else if (t <= hoje.getTime()) follow = '<span class="selo hoje">retornar hoje</span>';
+  }
+  const pessoas = [l.adultos ? l.adultos + ' ad' : '', l.criancas ? l.criancas + ' cr' : ''].filter(Boolean).join(' + ');
+  const quando = l.data_visita ? (l.tipo === 'hospedagem' && l.data_saida ? `${dataBR(l.data_visita)}→${dataBR(l.data_saida)}` : dataBR(l.data_visita)) : '';
+  const resp = nomeDe(l.responsavel);
+  return `<article class="cartao" draggable="true" data-id="${esc(l.id)}" style="border-left-color:${parado ? 'var(--vermelho)' : 'transparent'}">
+    <div class="nome">${esc(l.nome)}</div>
+    <div class="linha"><span class="selo ${esc(l.tipo)}">${esc(rotulo(TIPOS, l.tipo))}</span>${quando ? `<span>📅 ${quando}</span>` : ''}${pessoas ? `<span>${pessoas}</span>` : ''}${follow}</div>
+    ${l.etapa === 'perdido' && l.motivo_perda ? `<div class="linha" style="margin-top:4px">${esc(l.motivo_perda)}</div>` : ''}
+    <div class="rodape">
+      <span>${l.valor != null ? `<b style="color:var(--texto)">${brl(l.valor)}</b> · ` : ''}<span class="${parado ? 'parado' : ''}">${dias === 0 ? 'hoje' : dias + 'd'} na etapa</span></span>
+      <span class="avatar ${resp ? '' : 'vazio'}" title="${esc(resp || 'Sem responsável')}">${resp ? esc(iniciais(resp)) : '?'}</span>
+    </div>
+  </article>`;
+}
+
+/* ---------- ficha ---------- */
+function ajustarCampos(){
+  const tipo = $('#c-tipo').value, etapa = $('#c-etapa').value;
+  $('#lbl-visita').textContent = tipo === 'hospedagem' ? 'Check-in' : tipo === 'grupo' ? 'Data do evento' : 'Data do Day Use';
+  $('#box-saida').classList.toggle('oculto', tipo !== 'hospedagem');
+  $('#box-motivo').classList.toggle('oculto', etapa !== 'perdido');
+  const tel = soDigitos($('#c-telefone').value);
+  const zap = $('#btn-zap');
+  if (tel.length >= 10){ zap.href = 'https://wa.me/' + (tel.startsWith('55') ? tel : '55' + tel); zap.classList.remove('oculto'); }
+  else zap.classList.add('oculto');
+}
+
+async function abrirFicha(lead, etapaForcada){
+  estado.aberto = lead || null;
+  const l = lead || { etapa:'novo', tipo:'dayuse', origem:'whatsapp', responsavel:estado.usuario.id, etiquetas:[] };
+  $('#f-titulo').textContent = lead ? lead.nome : 'Novo lead';
+  $('#c-nome').value = l.nome || '';
+  $('#c-telefone').value = l.telefone || '';
+  $('#c-email').value = l.email || '';
+  $('#c-tipo').value = l.tipo;
+  $('#c-origem').value = l.origem;
+  $('#c-etapa').value = etapaForcada || l.etapa;
+  $('#c-resp').value = l.responsavel || '';
+  $('#c-visita').value = l.data_visita || '';
+  $('#c-saida').value = l.data_saida || '';
+  $('#c-adultos').value = l.adultos ?? '';
+  $('#c-criancas').value = l.criancas ?? '';
+  $('#c-valor').value = l.valor != null ? String(l.valor).replace('.', ',') : '';
+  $('#c-proximo').value = isoParaLocal(l.proximo_contato);
+  $('#c-motivo').value = l.motivo_perda || '';
+  $('#c-etiquetas').value = (l.etiquetas || []).join(', ');
+  $('#c-obs').value = l.observacoes || '';
+  $('#f-erro').textContent = '';
+  $('#nota').value = '';
+  $('#secao-hist').classList.toggle('oculto', !lead);
+  ajustarCampos();
+  $('#fundo-ficha').classList.remove('oculto');
+  if (etapaForcada === 'ganho') { $('#f-erro').textContent = 'Confirme o valor da venda e salve.'; $('#c-valor').focus(); }
+  else if (etapaForcada === 'perdido') { $('#f-erro').textContent = 'Escolha o motivo da perda e salve.'; $('#c-motivo').focus(); }
+  else if (!lead) $('#c-nome').focus();
+  if (lead) desenharHistorico(lead.id);
+}
+
+function fecharFicha(){ $('#fundo-ficha').classList.add('oculto'); estado.aberto = null; }
+
+async function desenharHistorico(id){
+  const itens = await api.historico(id);
+  const quando = iso => new Date(iso).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+  $('#hist').innerHTML = itens.map(h => {
+    const quem = nomeDe(h.autor) || 'sistema';
+    let t;
+    if (h.tipo === 'nota') t = esc(h.texto);
+    else if (h.tipo === 'criado') t = `Lead criado em <b>${esc(rotulo(ETAPAS, h.para))}</b>`;
+    else if (h.tipo === 'etapa') t = `${esc(rotulo(ETAPAS, h.de))} → <b>${esc(rotulo(ETAPAS, h.para))}</b>`;
+    else t = `Responsável: ${esc(nomeDe(h.de) || 'ninguém')} → <b>${esc(nomeDe(h.para) || 'ninguém')}</b>`;
+    return `<li><div class="q">${quando(h.criado_em)} · ${esc(quem)}</div><div class="t">${t}</div></li>`;
+  }).join('') || '<li class="q">Nada ainda.</li>';
+}
+
+function lerFicha(){
+  const num = v => v === '' ? null : Number(v);
+  const valorTxt = $('#c-valor').value.trim().replace(/[R$\s.]/g, '').replace(',', '.');
+  const etapa = $('#c-etapa').value, tipo = $('#c-tipo').value;
+  return {
+    nome: $('#c-nome').value.trim(),
+    telefone: soDigitos($('#c-telefone').value) || null,
+    email: $('#c-email').value.trim() || null,
+    tipo, origem: $('#c-origem').value, etapa,
+    responsavel: $('#c-resp').value || null,
+    data_visita: $('#c-visita').value || null,
+    data_saida: tipo === 'hospedagem' ? ($('#c-saida').value || null) : null,
+    adultos: num($('#c-adultos').value), criancas: num($('#c-criancas').value),
+    valor: valorTxt === '' || isNaN(Number(valorTxt)) ? null : Number(valorTxt),
+    proximo_contato: $('#c-proximo').value ? new Date($('#c-proximo').value).toISOString() : null,
+    motivo_perda: etapa === 'perdido' ? ($('#c-motivo').value || null) : null,
+    etiquetas: $('#c-etiquetas').value.split(',').map(s => s.trim()).filter(Boolean),
+    observacoes: $('#c-obs').value.trim() || null
+  };
+}
+
+async function salvarFicha(ev){
+  ev.preventDefault();
+  const l = lerFicha(), erro = $('#f-erro');
+  if (!l.nome) { erro.textContent = 'Preencha o nome.'; return; }
+  if (l.telefone && l.telefone.length < 10) { erro.textContent = 'Telefone precisa ter DDD (10 ou 11 números).'; return; }
+  if (l.etapa === 'ganho' && l.valor == null) { erro.textContent = 'Para marcar como Vendido, preencha o valor.'; return; }
+  if (l.etapa === 'perdido' && !l.motivo_perda) { erro.textContent = 'Para marcar como Perdido, escolha o motivo.'; return; }
+  try {
+    if (estado.aberto) await api.mudar(estado.aberto.id, l);
+    else await api.criar(l);
+    toast(estado.aberto ? 'Salvo.' : 'Lead criado.');
+    fecharFicha(); await recarregar();
+  } catch (e) {
+    const msg = traduzErro(e);
+    erro.textContent = msg;
+    if (/telefone já tem/.test(msg)) {
+      const outro = await api.porTelefone(l.telefone);
+      if (outro && confirm(`${msg}\n\nÉ de: ${outro.nome}. Abrir esse card?`)) abrirFicha(outro);
+    }
+  }
+}
+
+/* ---------- arrastar e soltar (computador) ---------- */
+let arrastado = null;
+document.addEventListener('dragstart', e => { const c = e.target.closest?.('.cartao'); if (!c) return; arrastado = c.dataset.id; c.classList.add('arrastando'); e.dataTransfer.effectAllowed = 'move'; });
+document.addEventListener('dragend', e => { e.target.closest?.('.cartao')?.classList.remove('arrastando'); document.querySelectorAll('.coluna.alvo').forEach(c => c.classList.remove('alvo')); });
+document.addEventListener('dragover', e => { const col = e.target.closest('.coluna'); if (!col || !arrastado) return; e.preventDefault(); document.querySelectorAll('.coluna.alvo').forEach(c => c !== col && c.classList.remove('alvo')); col.classList.add('alvo'); });
+document.addEventListener('drop', async e => {
+  const col = e.target.closest('.coluna'); if (!col || !arrastado) return; e.preventDefault();
+  const id = arrastado; arrastado = null; col.classList.remove('alvo');
+  const lead = estado.leads.find(l => l.id === id), etapa = col.dataset.etapa;
+  if (!lead || lead.etapa === etapa) return;
+  if ((etapa === 'ganho' && lead.valor == null) || (etapa === 'perdido' && !lead.motivo_perda)) { abrirFicha(lead, etapa); return; }
+  try { await api.mudar(id, { etapa }); await recarregar(); toast(`${lead.nome} → ${rotulo(ETAPAS, etapa)}`); }
+  catch (err) { toast(traduzErro(err)); }
+});
+
+/* ---------- ligações ---------- */
+preencher($('#c-tipo'), TIPOS); preencher($('#c-origem'), ORIGENS); preencher($('#c-etapa'), ETAPAS);
+preencher($('#c-motivo'), MOTIVOS.map(m => [m, m || '— escolha —']));
+$('#form-login').addEventListener('submit', async e => {
+  e.preventDefault(); $('#l-erro').textContent = '';
+  try { await api.entrar($('#l-email').value.trim(), $('#l-senha').value); await iniciar(); }
+  catch (err) { $('#l-erro').textContent = traduzErro(err); }
+});
+$('#btn-sair').addEventListener('click', async () => { await api.sair(); location.reload(); });
+$('#btn-novo').addEventListener('click', () => abrirFicha(null));
+$('#btn-fechar').addEventListener('click', fecharFicha);
+$('#fundo-ficha').addEventListener('click', e => { if (e.target.id === 'fundo-ficha') fecharFicha(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#fundo-ficha').classList.contains('oculto')) fecharFicha(); });
+$('#form-ficha').addEventListener('submit', salvarFicha);
+['#c-tipo','#c-etapa','#c-telefone'].forEach(s => $(s).addEventListener('input', ajustarCampos));
+$('#quadro').addEventListener('click', e => { const c = e.target.closest('.cartao'); if (c) abrirFicha(estado.leads.find(l => l.id === c.dataset.id)); });
+$('#busca').addEventListener('input', e => { estado.busca = e.target.value; desenhar(); });
+$('#f-resp').addEventListener('change', e => { estado.filtroResp = e.target.value; desenhar(); });
+document.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('ativo')); b.classList.add('ativo');
+  estado.filtroTipo = b.dataset.tipo; desenhar();
+}));
+$('#btn-nota').addEventListener('click', async () => {
+  const t = $('#nota').value.trim(); if (!t || !estado.aberto) return;
+  try { await api.anotar(estado.aberto.id, t, estado.usuario.id); $('#nota').value = ''; desenharHistorico(estado.aberto.id); }
+  catch (e) { toast(traduzErro(e)); }
+});
+$('#btn-arquivar').addEventListener('click', async () => {
+  if (!estado.aberto || !confirm(`Arquivar ${estado.aberto.nome}? Some do funil, mas continua guardado no banco.`)) return;
+  try { await api.mudar(estado.aberto.id, { arquivado:true }); fecharFicha(); await recarregar(); toast('Arquivado.'); }
+  catch (e) { toast(traduzErro(e)); }
+});
+
+iniciar();
+</script>
+</body>
+</html>
