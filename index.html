@@ -533,6 +533,7 @@ label.marcar input{width:auto}
 #bot-lado label.chk{display:flex;gap:8px;align-items:center;font-weight:500;margin-top:10px}
 #bot-lado label.chk input{width:auto;margin:0}
 @media (max-width:420px){.st-on b{display:none}.st-on{padding:0 11px}}
+.bot-previa{display:block;width:100%;max-width:200px;border-radius:10px;margin:6px 0}
 </style>
 </head>
 <body>
@@ -2705,8 +2706,8 @@ $('#c-itens').addEventListener('click', e => { const b = e.target.closest('.it-t
    O motor (bot-motor.js) é o MESMO que roda no servidor.
    ===================================================================== */
 const bt = { fluxos:[], atual:null, sel:null, selLig:null, cam:{ x:30, y:30, z:1 }, sim:null, mudou:false, carregado:false, centrar:false };
-const BOT_ICONE = { inicio:'▶', mensagem:'💬', menu:'☰', pergunta:'❓', horario:'🕘', acao:'⚙', humano:'🙋', fim:'⏹' };
-const BOT_PADRAO = { mensagem:{ texto:'Escreva a mensagem aqui' }, menu:{ titulo:'Menu', texto:'Escolha uma opção:', opcoes:['Opção 1', 'Opção 2'] },
+const BOT_ICONE = { inicio:'▶', mensagem:'💬', midia:'🖼️', menu:'☰', pergunta:'❓', horario:'🕘', acao:'⚙', humano:'🙋', fim:'⏹' };
+const BOT_PADRAO = { mensagem:{ texto:'Escreva a mensagem aqui' }, midia:{ formato:'gif', url:'', legenda:'' }, menu:{ titulo:'Menu', texto:'Escolha uma opção:', opcoes:['Opção 1', 'Opção 2'] },
   pergunta:{ texto:'Qual é o seu nome?', campo:'nome' }, horario:{ dias:[0,1,2,3,4,5,6], ini:'08:00', fim:'18:00' }, acao:{ etapa:'atendimento' },
   humano:{ texto:'Já vou te passar pra um atendente. 🙂' }, fim:{ texto:'' } };
 const DIAS_SEM = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -2722,6 +2723,7 @@ function botResumo(no){
   if (no.tipo === 'acao') return [no.etapa && 'Etapa: ' + rotulo(ETAPAS, no.etapa), no.tipoLead && 'Interesse: ' + rotulo(TIPOS, no.tipoLead), no.setor && 'Setor: ' + rotulo(SETORES, no.setor), no.etiqueta && 'Etiqueta: ' + no.etiqueta].filter(Boolean).join('\n') || 'Nada configurado';
   if (no.tipo === 'humano') return (no.texto || '') + (no.setor ? '\n→ setor ' + rotulo(SETORES, no.setor) : '') + (no.distribuir !== false ? '\n→ atendente Online' : '');
   if (no.tipo === 'fim') return no.texto || '(encerra sem mensagem)';
+  if (no.tipo === 'midia') return (no.url ? ({ gif:'GIF', imagem:'Imagem', video:'Vídeo' }[no.formato || 'gif']) + ': ' + String(no.url).split('/').pop() : 'Falta o link do arquivo') + (no.legenda ? '\n' + no.legenda : '');
   return no.texto || '';
 }
 function rotSaida(no, sd){
@@ -2859,6 +2861,12 @@ function botLado(){
     if (no.gatilho === 'sem_conversa') h += bCampo('dias', 'Dias sem conversa', no.dias ?? 7, false, 'type="number" min="1" max="365" inputmode="numeric"');
     h += bCampo('palavras', 'Palavras-chave (separe por vírgula)', no.palavras || '', false, 'placeholder="menu, oi bot"') + '<p class="dica">Quem escrever uma delas recomeça o bot a qualquer hora (menos se um atendente falou com ele nas últimas 12h).</p>';
   } else if (no.tipo === 'mensagem') h += bCampo('texto', 'Mensagem', no.texto, true);
+  else if (no.tipo === 'midia') {
+    h += bSel('formato', 'Tipo', no.formato || 'gif', [['gif', 'GIF (vídeo curto que toca sozinho, sem som)'], ['imagem', 'Imagem'], ['video', 'Vídeo']]) +
+      bCampo('url', 'Link do arquivo (https://…)', no.url || '') + bCampo('legenda', 'Texto junto (opcional)', no.legenda, true) +
+      (/^https:\/\//.test(no.url || '') ? (no.formato === 'imagem' ? `<img class="bot-previa" src="${esc(no.url)}" alt="">` : `<video class="bot-previa" src="${esc(no.url)}" autoplay loop muted playsinline></video>`) : '') +
+      '<p class="dica">GIF no WhatsApp é um vídeo .mp4 curtinho: ele toca sozinho, em loop.</p>';
+  }
   else if (no.tipo === 'menu') {
     h += bCampo('titulo', 'Nome do menu (só pra você)', no.titulo || '') + bCampo('texto', 'Pergunta', no.texto, true) + '<label>Opções (o cliente responde o número ou o nome)</label>' +
       (no.opcoes || []).map((o, i) => `<div class="op"><input data-k="opcao" data-i="${i}" value="${esc(o)}" aria-label="Opção ${i + 1}"><button class="btn sec mini" type="button" data-bl="op-tirar" data-i="${i}" aria-label="Tirar opção">×</button></div>`).join('') +
@@ -2942,7 +2950,7 @@ $('#bot-simular').addEventListener('click', () => botSimIniciar());
 function botSimIniciar(){ bt.sim = { sessao:null, linhas:[{ q:'info', t:'Teste: nada é enviado de verdade. Escreva como se fosse o cliente.' }], set:{}, total:0 }; bt.sel = null; bt.selLig = null; botMarcarSel(); botSimDesenhar(); setTimeout(() => $('#sim-tx')?.focus(), 0); }
 function botSimDesenhar(){
   const s = bt.sim;
-  $('#bot-lado').innerHTML = `<h3>▶ Testar o bot</h3><div class="sim-msgs" id="sim-msgs">${s.linhas.map(l => `<div class="m ${l.q}">${esc(l.t)}</div>`).join('')}</div>
+  $('#bot-lado').innerHTML = `<h3>▶ Testar o bot</h3><div class="sim-msgs" id="sim-msgs">${s.linhas.map(l => `<div class="m ${l.q}">${l.midia ? (l.img ? `<img class="bot-previa" src="${esc(l.midia.replace(/#gif$/, ''))}" alt="">` : `<video class="bot-previa" src="${esc(l.midia.replace(/#gif$/, ''))}" autoplay loop muted playsinline></video>`) : ''}${esc(l.t)}</div>`).join('')}</div>
     <form id="sim-form" style="display:flex;gap:6px"><input id="sim-tx" placeholder="Mensagem do cliente" autocomplete="off" aria-label="Mensagem do cliente"><button class="btn">Enviar</button></form>
     <div class="acoes"><button class="btn sec mini" type="button" data-bl="sim-reiniciar">Recomeçar</button><button class="btn sec mini" type="button" data-bl="sim-fechar">Fechar teste</button></div>`;
   const m = $('#sim-msgs'); m.scrollTop = m.scrollHeight;
@@ -2956,7 +2964,7 @@ function botSimEnviar(txt){
   else {
     const r = BM.passo(reg, s.sessao, lead, txt, null, d === 'comecar');
     const quem = (estado.perfis || []).find(p => p.ativo && p.online && p.papel !== 'gestor'), at = quem ? 'a *' + quem.nome.split(' ')[0] + '*' : 'a nossa equipe';
-    r.msgs.forEach(t => s.linhas.push({ q:'bot', t: t.split('{atendente}').join(at) })); s.total += r.msgs.length;
+    r.msgs.forEach(t => s.linhas.push(typeof t === 'object' ? { q:'bot', midia:t.midia, img:t.tipo === 'imagem', t:(t.texto || '').split('{atendente}').join(at) } : { q:'bot', t: t.split('{atendente}').join(at) })); s.total += r.msgs.length;
     s.sessao = { ...r.sessao, atualizado_em:new Date().toISOString() }; Object.assign(s.set, r.set);
     const ver = { etapa:v => rotulo(ETAPAS, v), tipo:v => rotulo(TIPOS, v), setor:v => rotulo(SETORES, v), data_visita:v => String(v).split('-').reverse().join('/') };
     const sets = Object.entries(r.set).filter(([k]) => k !== 'nota' && k !== 'distribuir').map(([k, v]) => (BM.CAMPOS[k] || { etapa:'Etapa', tipo:'Interesse', setor:'Setor', etiqueta:'Etiqueta' }[k] || k) + ': ' + (ver[k] ? ver[k](v) : v));
