@@ -566,14 +566,26 @@ label.marcar input{width:auto}
   <form class="caixa-login" id="form-login">
     <img data-marca="logo" alt="Hotel Fazenda Coninho">
     <h1>Central de vendas</h1>
-    <p>Entre com o e-mail e a senha que a gestão te passou.</p>
+    <p id="l-texto">Entre com o seu e-mail e senha.</p>
+    <div id="l-nome-cx" class="oculto"><label for="l-nome">Seu nome</label>
+    <input id="l-nome" autocomplete="name" maxlength="60"></div>
     <label for="l-email">E-mail</label>
     <input id="l-email" type="email" autocomplete="username" required>
     <label for="l-senha">Senha</label>
     <input id="l-senha" type="password" autocomplete="current-password" required>
-    <button class="btn cheio" type="submit">Entrar</button>
+    <div id="l-senha2-cx" class="oculto"><label for="l-senha2">Repita a senha</label>
+    <input id="l-senha2" type="password" autocomplete="new-password"></div>
+    <button class="btn cheio" type="submit" id="l-botao">Entrar</button>
     <div class="erro" id="l-erro"></div>
+    <button class="btn sec" type="button" id="l-trocar" style="margin-top:6px">Primeira vez? Criar minha conta</button>
   </form>
+  <div class="caixa-login oculto" id="l-espera">
+    <img data-marca="logo" alt="Hotel Fazenda Coninho">
+    <h1>Cadastro feito ✓</h1>
+    <p id="l-espera-txt">Falta a gestão liberar o seu acesso. Assim que liberar, é só tocar em "Já liberou, entrar".</p>
+    <button class="btn cheio" type="button" id="l-reentrar">Já liberou, entrar</button>
+    <button class="btn sec" type="button" id="l-sair2" style="margin-top:6px">Sair</button>
+  </div>
 </section>
 
 <!-- ================= APP ================= -->
@@ -852,7 +864,7 @@ label.marcar input{width:auto}
       </div>
       <div class="cartela">
         <h2>Equipe</h2>
-        <p class="sub">Quem entra no CRM. Usuário novo é criado no Supabase (Authentication → Users) e aparece aqui pra você dar nome e papel. O <b>peso</b> é a fatia de leads de cada um no sorteio (60 e 40 = 60% e 40%; zero = não recebe). O sorteio e a fila respeitam o <b>setor</b>.</p>
+        <p class="sub">Quem entra no CRM. Quem é novo cria a própria conta na tela de entrada ("Primeira vez? Criar minha conta") e aparece aqui <b>esperando liberação</b>: marque Ativo e salve. O <b>peso</b> é a fatia de leads de cada um no sorteio (60 e 40 = 60% e 40%; zero = não recebe). O sorteio e a fila respeitam o <b>setor</b>.</p>
         <div id="aj-equipe"></div>
       </div>
       <div class="cartela">
@@ -1126,7 +1138,8 @@ if (!MODO_DEMO) {
     async sessao(){ const { data } = await sb.auth.getSession(); return data.session?.user || null; },
     async entrar(email, senha){ const { data, error } = await sb.auth.signInWithPassword({ email, password: senha }); if (error) throw error; return data.user; },
     async sair(){ await sb.auth.signOut(); },
-    async perfis(){ const { data, error } = await sb.from('perfis').select('id,nome,papel,ativo,peso,setor,online,online_desde,visto_em').order('nome'); if (error) throw error; return data; },
+    async cadastrar(nome, email, senha){ const { data, error } = await sb.auth.signUp({ email, password: senha, options:{ data:{ nome } } }); if (error) throw error; return data; },
+    async perfis(){ const { data, error } = await sb.from('perfis').select('id,nome,papel,ativo,peso,setor,online,online_desde,visto_em,criado_em').order('nome'); if (error) throw error; return data; },
     async salvarPerfil(id, p){ const { error } = await sb.from('perfis').update(p).eq('id', id); if (error) throw error; },
     // Quadro: tudo que está aberto + vendidos/perdidos do mês atual
     async quadro(){
@@ -1294,6 +1307,7 @@ if (!MODO_DEMO) {
     async sessao(){ return logado; },
     async entrar(){ logado = eu; return eu; },
     async sair(){ logado = null; },
+    async cadastrar(){ return { session:null, demo:true }; },
     async perfis(){ return P.map(p => ({...p})); },
     async salvarPerfil(id, p){ Object.assign(P.find(x => x.id === id), p); },
     async quadro(){ return vivos(); },
@@ -1404,6 +1418,12 @@ function traduzErro(e){
   if (/ganho_tem_valor/.test(m)) return 'Para marcar como Vendido, preencha o valor.';
   if (/perdido_tem_motivo/.test(m)) return 'Para marcar como Perdido, escolha o motivo.';
   if (/Invalid login/i.test(m)) return 'E-mail ou senha errados.';
+  if (/already registered|already been registered/i.test(m)) return 'Esse e-mail já tem conta. Toque em "Já tenho conta" e entre com a sua senha.';
+  if (/Signups not allowed|signup_disabled/i.test(m)) return 'O cadastro está fechado. Fale com a gestão.';
+  if (/Password should be|at least 6/i.test(m)) return 'A senha precisa de pelo menos 6 caracteres.';
+  if (/Email not confirmed/i.test(m)) return 'Falta confirmar o e-mail. Fale com a gestão.';
+  if (/invalid.*email|Unable to validate email/i.test(m)) return 'Esse e-mail não parece certo. Confira.';
+  if (/rate limit/i.test(m)) return 'Muitas tentativas. Espere um minuto e tente de novo.';
   if (/row-level security|permission/i.test(m)) return 'Seu usuário não tem permissão. Fale com a gestão.';
   if (/Failed to fetch|NetworkError/i.test(m)) return 'Sem conexão com o servidor. Confira a internet e tente de novo.';
   return 'Não deu certo: ' + m;
@@ -1427,6 +1447,12 @@ async function iniciar(){
   $('#tela-login').classList.add('oculto'); $('#app').classList.remove('oculto');
   try {
     await carregarPerfis();
+    if (!MODO_DEMO && !estado.meu?.ativo) {
+      $('#app').classList.add('oculto'); $('#tela-login').classList.remove('oculto');
+      $('#form-login').classList.add('oculto'); $('#l-espera').classList.remove('oculto');
+      $('#l-espera-txt').textContent = (estado.meu?.nome ? 'Oi, ' + estado.meu.nome.split(' ')[0] + '! ' : '') + 'Falta a gestão liberar o seu acesso. Assim que liberar, é só tocar em "Já liberou, entrar".';
+      return;
+    }
     $('#quem').textContent = (estado.meu?.nome || estado.usuario.email) + (ehGestor() ? ' · gestão' : '');
     $('#nav-ajustes').classList.toggle('oculto', !ehGestor()); $('#nav-disparos').classList.toggle('oculto', !ehGestor()); $('#nav-bot').classList.toggle('oculto', !ehGestor());
     await carregarRespostas();
@@ -2051,7 +2077,8 @@ async function desenharAjustes(){
   $('#aj-dist').value = modo;
   $('#aj-dist-info').textContent = modo === 'peso' ? (total ? 'Hoje: ' + comPeso.map(p => `${p.nome} ${Math.round(p.peso / total * 100)}%`).join(' · ') + '. É sorteio: em poucos leads varia, em muitos fecha na proporção.' : '⚠️ Ninguém tem peso ainda: defina os pesos na Equipe, senão o lead continua sem dono.')
     : modo === 'fila' ? 'O botão "Pegar próximo lead" aparece no Funil e entrega o lead sem dono mais antigo pra quem clicou.' : 'O lead sem dono aparece no filtro "Sem responsável" e no sino.';
-  $('#aj-equipe').innerHTML = estado.perfis.map(p => { const eu = p.id === estado.usuario.id; return `
+  const espera = estado.perfis.filter(p => !p.ativo &&Date.now() - new Date(p.criado_em || 0) < 30 * 864e5);
+  $('#aj-equipe').innerHTML = (espera.length ? `<p class="sub" style="color:var(--texto)">🆕 <b>${espera.length} ${espera.length > 1 ? 'pessoas esperando' : 'pessoa esperando'} liberação.</b> Confira o nome e o setor, marque <b>Ativo</b> e toque em Salvar.</p>` : '') + [...estado.perfis].sort((a, b) => (espera.includes(b) ? 1 : 0) - (espera.includes(a) ? 1 : 0)).map(p => { const eu = p.id === estado.usuario.id; return `
     <div class="lin-equipe" data-id="${esc(p.id)}">
       <input class="e-nome" value="${esc(p.nome)}" aria-label="Nome">
       <select class="e-papel" aria-label="Papel" ${eu ? 'disabled' : ''}><option value="vendedor" ${p.papel === 'vendedor' ? 'selected' : ''}>Atendente</option><option value="gestor" ${p.papel === 'gestor' ? 'selected' : ''}>Gestor</option></select>
@@ -3065,11 +3092,39 @@ aplicarTema(guarda.ler('tema') || (matchMedia('(prefers-color-scheme: dark)').ma
 preencher($('#c-tipo'), TIPOS); preencher($('#c-origem'), ORIGENS); preencher($('#c-etapa'), ETAPAS);
 preencher($('#c-motivo'), MOTIVOS.map(m => [m, m || '— escolha —']));
 
+let criando = false;
+$('#l-trocar').addEventListener('click', () => {
+  criando = !criando; $('#l-erro').textContent = '';
+  $('#l-nome-cx').classList.toggle('oculto', !criando); $('#l-nome').required = criando;
+  $('#l-senha2-cx').classList.toggle('oculto', !criando); $('#l-senha2').required = criando; $('#l-senha2').value = '';
+  $('#l-texto').textContent = criando ? 'Crie sua conta. Depois a gestão libera o seu acesso.' : 'Entre com o seu e-mail e senha.';
+  $('#l-botao').textContent = criando ? 'Criar minha conta' : 'Entrar';
+  $('#l-trocar').textContent = criando ? 'Já tenho conta' : 'Primeira vez? Criar minha conta';
+  $('#l-senha').autocomplete = criando ? 'new-password' : 'current-password';
+  $('#l-senha').minLength = criando ? 6 : 0;
+  (criando ? $('#l-nome') : $('#l-email')).focus();
+});
 $('#form-login').addEventListener('submit', async e => {
   e.preventDefault(); $('#l-erro').textContent = '';
-  try { await api.entrar($('#l-email').value.trim(), $('#l-senha').value); await iniciar(); }
+  const email = $('#l-email').value.trim(), senha = $('#l-senha').value, botao = $('#l-botao');
+  botao.disabled = true;
+  try {
+    if (criando) {
+      const nome = $('#l-nome').value.trim().replace(/\s+/g, ' ');
+      if (nome.length < 2) { $('#l-erro').textContent = 'Escreva o seu nome.'; return; }
+      if (senha.length < 6) { $('#l-erro').textContent = 'A senha precisa de pelo menos 6 caracteres.'; return; }
+      if (senha !== $('#l-senha2').value) { $('#l-erro').textContent = 'As duas senhas não são iguais. Digite de novo.'; $('#l-senha2').value = ''; $('#l-senha2').focus(); return; }
+      const r = await api.cadastrar(nome, email, senha);
+      if (r.demo) { $('#l-erro').textContent = 'No modo demonstração o cadastro não é salvo.'; return; }
+      if (!r.session) { await api.entrar(email, senha).catch(() => {}); }
+    } else await api.entrar(email, senha);
+    await iniciar();
+  }
   catch (err) { $('#l-erro').textContent = traduzErro(err); }
+  finally { botao.disabled = false; }
 });
+$('#l-reentrar').addEventListener('click', () => location.reload());
+$('#l-sair2').addEventListener('click', async () => { await api.sair(); location.reload(); });
 $('#btn-sair').addEventListener('click', async () => { await api.sair(); location.reload(); });
 $('#btn-tema').addEventListener('click', () => aplicarTema(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
 document.querySelectorAll('.lado [data-ver]').forEach(b => b.addEventListener('click', () => ir(b.dataset.ver)));
