@@ -349,7 +349,13 @@ label.marcar input{width:auto}
 .wa-anexo{display:flex;align-items:center;gap:10px;padding:8px 14px 0;font-size:13px}
 .wa-anexo img,.wa-anexo video{width:54px;height:54px;object-fit:cover;border-radius:8px}
 .wa-anexo span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wa-anexo button{border:0;background:none;color:var(--vermelho);font-size:20px;line-height:1;padding:0 6px}
+.wa-anexo .tirar{border:0;background:none;color:var(--vermelho);font-size:20px;line-height:1;padding:0 6px}
+.wa-anexo audio{flex:1;min-width:0;height:40px}
+.wa-anexo .gravando{color:var(--vermelho);font-weight:700}
+.wa-anexo .gravando::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--vermelho);margin-right:7px;animation:pisca 1s infinite}
+@keyframes pisca{50%{opacity:.25}}
+#wa-gravar.ativo{background:var(--vermelho);color:#fff;border-color:var(--vermelho)}
+@media (max-width:640px){.chat-form{gap:6px;padding:10px}.chat-form .btn{padding-left:11px;padding-right:11px}}
 #wa-anexar{padding:0 12px;font-size:18px;flex-shrink:0}
 .chat-cab .selo{flex-shrink:0}
 .chat{flex:1;min-height:0;display:grid;grid-template-columns:260px 1fr;gap:14px}
@@ -544,7 +550,7 @@ label.marcar input{width:auto}
           <div class="wa-janela oculto" id="wa-janela"></div>
           <div class="wa-rapidas" id="wa-rapidas"></div>
           <div class="wa-anexo oculto" id="wa-anexo"></div>
-          <form class="chat-form" id="wa-form"><button class="btn sec" type="button" id="wa-anexar" title="Mandar imagem ou vídeo" aria-label="Mandar imagem ou vídeo">📎</button><input type="file" id="wa-arquivo" accept="image/*,video/*" hidden><textarea id="wa-texto" placeholder="Mensagem" maxlength="4000" aria-label="Mensagem pro cliente"></textarea><button class="btn" type="submit" id="wa-enviar">Enviar</button></form>
+          <form class="chat-form" id="wa-form"><button class="btn sec" type="button" id="wa-anexar" title="Mandar imagem, vídeo ou áudio" aria-label="Mandar imagem, vídeo ou áudio">📎</button><input type="file" id="wa-arquivo" accept="image/*,video/*,audio/*" hidden><button class="btn sec" type="button" id="wa-gravar" title="Gravar áudio" aria-label="Gravar áudio">🎤</button><textarea id="wa-texto" placeholder="Mensagem" maxlength="4000" aria-label="Mensagem pro cliente"></textarea><button class="btn" type="submit" id="wa-enviar">Enviar</button></form>
         </div>
       </div>
     </div>
@@ -1001,7 +1007,7 @@ if (!MODO_DEMO) {
     async waEnviar(id, texto, arq){
       let tipo = 'texto', midia = null;
       if (arq) {
-        tipo = arq.type.startsWith('video') ? 'video' : 'imagem';
+        tipo = tipoArq(arq);
         const ext = (arq.name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'bin';
         const caminho = 'out/' + new Date().toISOString().slice(0, 7) + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 10) + '.' + ext;
         const up = await sb.storage.from('wa-midia').upload(caminho, arq, { contentType: arq.type });
@@ -1122,8 +1128,8 @@ if (!MODO_DEMO) {
     async conversas(){ return vivos().filter(l => l.ultima_msg_em).sort((a, b) => b.ultima_msg_em.localeCompare(a.ultima_msg_em)); },
     async waMensagens(id){ return WA.filter(m => m.lead_id === id).map(m => ({...m})); },
     async waEnviar(id, texto, arq){
-      const grava = (direcao, tx, a) => { const tipo = a ? (a.type.startsWith('video') ? 'video' : 'imagem') : 'texto'; const m = { id:waId++, lead_id:id, direcao, tipo, midia_url: a ? URL.createObjectURL(a) : null, texto:tx, status: direcao === 'saida' ? 'entregue' : 'lida', autor: direcao === 'saida' ? eu.id : null, criado_em:new Date().toISOString() };
-        WA.push(m); const l = L.find(x => x.id === id); l.ultima_msg_em = m.criado_em; l.ultima_msg = tx || (tipo === 'video' ? '🎬 Vídeo' : '📷 Imagem'); if (direcao === 'entrada') l.nao_lidas = (l.nao_lidas || 0) + 1; return m; };
+      const grava = (direcao, tx, a) => { const tipo = a ? tipoArq(a) : 'texto'; const m = { id:waId++, lead_id:id, direcao, tipo, midia_url: a ? URL.createObjectURL(a) : null, texto:tx, status: direcao === 'saida' ? 'entregue' : 'lida', autor: direcao === 'saida' ? eu.id : null, criado_em:new Date().toISOString() };
+        WA.push(m); const l = L.find(x => x.id === id); l.ultima_msg_em = m.criado_em; l.ultima_msg = tx || (tipo === 'audio' ? '🎤 Áudio' : tipo === 'video' ? '🎬 Vídeo' : '📷 Imagem'); if (direcao === 'entrada') l.nao_lidas = (l.nao_lidas || 0) + 1; return m; };
       grava('saida', texto, arq);
       setTimeout(() => { const m = grava('entrada', 'Recebi, obrigado! (resposta automática do modo demonstração)'); if (waCb) waCb(m); }, 2500);
     },
@@ -1914,6 +1920,9 @@ async function enviarChat(){
    ===================================================================== */
 const waLigado = () => estado.config.whatsapp === 'ligado';
 const waConv = id => estado.wa.convs.find(c => c.id === id) || (estado.wa.extra?.id === id ? estado.wa.extra : null) || estado.leads.find(l => l.id === id) || null;
+const grav = { rec:null, pedacos:[], t0:0, timer:null, cancel:false, lead:null };
+const tipoArq = a => a.type.startsWith('audio') ? 'audio' : a.type.startsWith('video') ? 'video' : 'imagem';
+const rotuloMsg = t => ({ '[audio]':'🎤 Áudio', '[imagem]':'📷 Imagem', '[video]':'🎬 Vídeo', '[documento]':'📄 Documento' })[t] || t;
 const waHora = iso => { const d = new Date(iso), h = new Date(); return d.toDateString() === h.toDateString() ? d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }) : d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' }); };
 async function waCarregar(){
   try { estado.wa.convs = await api.conversas(); estado.wa.erro = null; } catch (e) { estado.wa.erro = e; }
@@ -1941,7 +1950,7 @@ function waListaHTML(){
   const todas = [...(estado.wa.extra ? [estado.wa.extra] : []), ...estado.wa.convs].filter(c => !b || (c.nome || '').toLowerCase().includes(b) || (bd.length >= 3 && (c.telefone || '').includes(bd)));
   return todas.map(c => `<button class="chat-item ${c.id === estado.wa.lead ? 'ativo' : ''} ${c.nao_lidas ? 'nova' : ''}" type="button" data-wa="${esc(c.id)}">
       <span class="avatar">${esc(iniciais(c.nome))}</span>
-      <span class="tx"><b>${esc(c.nome)}</b><span>${esc(c.ultima_msg || 'Conversa nova')}</span></span>
+      <span class="tx"><b>${esc(c.nome)}</b><span>${esc(rotuloMsg(c.ultima_msg || 'Conversa nova'))}</span></span>
       <span class="wa-lado"><small>${c.ultima_msg_em ? waHora(c.ultima_msg_em) : ''}</small>${c.nao_lidas ? `<span class="pino">${c.nao_lidas}</span>` : ''}</span></button>`).join('')
     || `<p class="dica" style="margin:10px 8px">${b ? 'Nenhuma conversa com esse nome.' : 'Nenhuma conversa ainda.'}</p>`;
 }
@@ -1968,17 +1977,17 @@ function desenharConversas(){
   const ultEntrada = [...w.msgs].reverse().find(m => m.direcao === 'entrada'), fora = c && (!ultEntrada || Date.now() - new Date(ultEntrada.criado_em).getTime() > 24 * 3600000);
   $('#wa-janela').classList.add('oculto');
   $('#wa-rapidas').innerHTML = c && ligado ? '<span class="rot">Respostas prontas</span>' + estado.respostas.map(r => `<button type="button" data-rapida="${esc(r.id)}">${esc(r.titulo)}</button>`).join('') + '<button type="button" class="editar" data-rapida-editar>✎ Criar ou editar</button>' : '';
-  const pode = !!c && ligado; $('#wa-texto').disabled = !pode; $('#wa-enviar').disabled = !pode; $('#wa-anexar').disabled = !pode;
-  const arq = w.arquivo, ax = $('#wa-anexo'); ax.classList.toggle('oculto', !arq);
+  const pode = !!c && ligado; $('#wa-texto').disabled = !pode; $('#wa-enviar').disabled = !pode; $('#wa-anexar').disabled = !pode; $('#wa-gravar').disabled = !pode; $('#wa-gravar').classList.toggle('ativo', !!grav.rec);
+  const arq = w.arquivo, ax = $('#wa-anexo'); ax.classList.toggle('oculto', !arq && !grav.rec);
   if (arq && ax.dataset.nome !== arq.name + arq.size) { ax.dataset.nome = arq.name + arq.size; const u = URL.createObjectURL(arq);
-    ax.innerHTML = (arq.type.startsWith('video') ? `<video src="${u}" muted></video>` : `<img src="${u}" alt="">`) + `<span>${esc(arq.name)} · ${(arq.size / 1048576).toFixed(1).replace('.', ',')} MB</span><button type="button" id="wa-tirar-anexo" aria-label="Tirar anexo">×</button>`; }
-  if (!arq) { ax.innerHTML = ''; ax.dataset.nome = ''; }
+    ax.innerHTML = tipoArq(arq) === 'audio' ? `<audio src="${u}" controls></audio><span style="flex:0 0 auto">🎤 Áudio</span><button type="button" class="tirar" id="wa-tirar-anexo" aria-label="Apagar áudio">×</button>` : (arq.type.startsWith('video') ? `<video src="${u}" muted></video>` : `<img src="${u}" alt="">`) + `<span>${esc(arq.name)} · ${(arq.size / 1048576).toFixed(1).replace('.', ',')} MB</span><button type="button" class="tirar" id="wa-tirar-anexo" aria-label="Tirar anexo">×</button>`; }
+  if (!arq && !grav.rec) { ax.innerHTML = ''; ax.dataset.nome = ''; }
   $('#wa-texto').placeholder = pode ? 'Mensagem' : (ligado ? 'Escolha uma conversa' : 'Número não conectado');
 }
 async function waEnviarMsg(){
-  const w = estado.wa, texto = $('#wa-texto').value.trim(), arq = w.arquivo; if ((!texto && !arq) || !w.lead || !waLigado()) return;
-  const id = w.lead, prov = { direcao:'saida', tipo: arq ? (arq.type.startsWith('video') ? 'video' : 'imagem') : 'texto', midia_url: arq ? URL.createObjectURL(arq) : null, texto, status:'pendente', autor:estado.usuario.id, criado_em:new Date().toISOString() };
-  w.msgs.push(prov); $('#wa-texto').value = ''; w.arquivo = null; desenharConversas();
+  const w = estado.wa, arq = w.arquivo, voz = !!arq && tipoArq(arq) === 'audio', texto = voz ? '' : $('#wa-texto').value.trim(); if (grav.rec) { toast('Pare a gravação antes de enviar.'); return; } if ((!texto && !arq) || !w.lead || !waLigado()) return;
+  const id = w.lead, prov = { direcao:'saida', tipo: arq ? tipoArq(arq) : 'texto', midia_url: arq ? URL.createObjectURL(arq) : null, texto, status:'pendente', autor:estado.usuario.id, criado_em:new Date().toISOString() };
+  w.msgs.push(prov); if (!voz) $('#wa-texto').value = ''; w.arquivo = null; desenharConversas();
   try { await api.waEnviar(id, texto, arq);
     // Respondeu um lead que estava em Novo: ele já foi atendido, então sai do Novo e fica com quem respondeu
     const l = waConv(id);
@@ -1997,13 +2006,45 @@ $('#wa-texto').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.sh
 $('#wa-anexar').addEventListener('click', () => $('#wa-arquivo').click());
 $('#wa-arquivo').addEventListener('change', e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-  const video = f.type.startsWith('video'), img = f.type.startsWith('image');
-  if (!video && !img) { toast('Só imagem ou vídeo.'); return; }
+  const video = f.type.startsWith('video'), img = f.type.startsWith('image'), audio = f.type.startsWith('audio');
+  if (!video && !img && !audio) { toast('Só imagem, vídeo ou áudio.'); return; }
+  if (audio) { if (f.size > 16 * 1048576) { toast('Áudio muito grande: até 16 MB.'); return; } estado.wa.arquivo = f; desenharConversas(); return; }
   // limites do WhatsApp: imagem até 5 MB, vídeo até 16 MB
   if (f.size > (video ? 16 : 5) * 1048576) { toast(video ? 'Vídeo muito grande: o WhatsApp aceita até 16 MB.' : 'Imagem muito grande: o WhatsApp aceita até 5 MB.'); return; }
   estado.wa.arquivo = f; desenharConversas(); $('#wa-texto').placeholder = 'Legenda (opcional)'; $('#wa-texto').focus();
 });
-$('#wa-anexo').addEventListener('click', e => { if (e.target.closest('#wa-tirar-anexo')) { estado.wa.arquivo = null; desenharConversas(); } });
+$('#wa-anexo').addEventListener('click', e => {
+  if (e.target.closest('#wa-tirar-anexo')) { estado.wa.arquivo = null; desenharConversas(); }
+  if (e.target.closest('#wa-grav-cancelar')) { grav.cancel = true; grav.rec?.stop(); }
+  if (e.target.closest('#wa-grav-parar')) grav.rec?.stop();
+});
+// ---------- gravar áudio (mensagem de voz) ----------
+function gravTempo(){ const s = Math.floor((Date.now() - grav.t0) / 1000), el = $('#wa-grav-t'); if (el) el.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+async function gravIniciar(){
+  if (grav.rec) { grav.rec.stop(); return; }
+  if (!estado.wa.lead || !waLigado()) return;
+  if (DEMO_SEM_MIC()) { toast('Este navegador não grava áudio. Use o 📎 pra mandar um arquivo de áudio.'); return; }
+  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio:true }); } catch { toast('Libere o microfone pra este site nas permissões do navegador.'); return; }
+  const mime = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+  const rec = new MediaRecorder(stream, mime ? { mimeType:mime, audioBitsPerSecond:48000 } : undefined);
+  Object.assign(grav, { rec, pedacos:[], t0:Date.now(), cancel:false, lead:estado.wa.lead });
+  rec.ondataavailable = e => { if (e.data.size) grav.pedacos.push(e.data); };
+  rec.onstop = () => {
+    clearInterval(grav.timer); stream.getTracks().forEach(t => t.stop());
+    const tipo = rec.mimeType || mime || 'audio/webm', blob = new Blob(grav.pedacos, { type:tipo }), curto = Date.now() - grav.t0 < 900;
+    const vale = !grav.cancel && !curto && blob.size > 0 && estado.wa.lead === grav.lead; grav.rec = null; grav.pedacos = [];
+    if (vale) estado.wa.arquivo = new File([blob], 'audio-' + Date.now() + (tipo.includes('mp4') ? '.m4a' : tipo.includes('ogg') ? '.ogg' : '.webm'), { type:tipo });
+    else if (!grav.cancel && curto) toast('Áudio muito curto.');
+    $('#wa-anexo').dataset.nome = ''; if (estado.ver === 'conversas') desenharConversas();
+  };
+  rec.start(); estado.wa.arquivo = null;
+  const ax = $('#wa-anexo'); ax.dataset.nome = 'gravando'; ax.classList.remove('oculto');
+  ax.innerHTML = '<span><span class="gravando">Gravando</span> <b id="wa-grav-t">0:00</b></span><button type="button" class="btn mini sec" id="wa-grav-cancelar">Cancelar</button><button type="button" class="btn mini" id="wa-grav-parar">Parar e ouvir</button>';
+  $('#wa-gravar').classList.add('ativo');
+  grav.timer = setInterval(() => { if (Date.now() - grav.t0 > 300000) rec.stop(); else gravTempo(); }, 500);
+}
+const DEMO_SEM_MIC = () => !navigator.mediaDevices?.getUserMedia || !window.MediaRecorder;
+$('#wa-gravar').addEventListener('click', gravIniciar);
 $('#wa-rapidas').addEventListener('click', e => { if (e.target.closest('[data-rapida-editar]')) { $('#btn-minhas-resp').click(); return; } const b = e.target.closest('[data-rapida]'); if (!b) return; const r = estado.respostas.find(x => String(x.id) === b.dataset.rapida), c = waConv(estado.wa.lead); if (!r) return;
   $('#wa-texto').value = r.texto.replace(/\{nome\}/gi, String(c?.nome || '').trim().split(/\s+/)[0] || ''); $('#wa-texto').focus(); });
 // Com número ligado, o botão do WhatsApp (card, follow-up, ficha) abre a conversa aqui dentro em vez do aplicativo
