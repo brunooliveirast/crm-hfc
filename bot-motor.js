@@ -1,7 +1,8 @@
 /* Motor do bot de pré-atendimento do CRM.
    O MESMO arquivo roda no navegador (simulador do editor) e no conector da VPS (conversa de verdade).
    Fluxo = { nos: { <id>: { tipo, x, y, ...config } }, ligacoes: [ { de, saida, para } ] }
-   Tipos: inicio · mensagem · menu · pergunta · horario · acao · humano · fim */
+   Tipos: inicio · mensagem · midia · menu · pergunta · horario · acao · humano · fim
+   Mensagem de mídia sai como objeto { tipo: 'imagem'|'video', midia: url (+ '#gif' = toca como GIF), texto } */
 (function (g) {
   'use strict';
   const MAX_PASSOS = 30;
@@ -10,6 +11,7 @@
   const TIPOS = {
     inicio:   { nome: 'Início',              saidas: ['saida'] },
     mensagem: { nome: 'Mensagem',            saidas: ['saida'] },
+    midia:    { nome: 'Imagem ou GIF',       saidas: ['saida'] },
     menu:     { nome: 'Menu de opções',      saidas: null },           // op0..opN + invalido
     pergunta: { nome: 'Pergunta',            saidas: ['saida'] },
     horario:  { nome: 'Horário de atendimento', saidas: ['dentro', 'fora'] },
@@ -195,6 +197,10 @@
       if (atual === '__humano') { paraHumano({ texto: 'Vou te passar pra um atendente, tá? Já já alguém te responde. 🙂' }, 'cliente não escolheu opção válida'); break; }
       const no = nos[atual]; if (!no) break;
       s.no = atual;
+      if (no.tipo === 'midia') {
+        if (no.url) out.msgs.push({ tipo: no.formato === 'imagem' ? 'imagem' : 'video', midia: String(no.url).trim() + (no.formato === 'imagem' || no.formato === 'video' ? '' : '#gif'), texto: texto(no.legenda || '', ctxTxt, agora) });
+        atual = prox(atual, 'saida'); continue;
+      }
       if (no.tipo === 'mensagem') { const t = texto(no.texto, ctxTxt, agora); if (t) out.msgs.push(t); atual = prox(atual, 'saida'); continue; }
       if (no.tipo === 'menu') { out.msgs.push(textoMenu(no, ctxTxt, agora)); s.esperando = true; s.tentativas = 0; return fechar(); }
       if (no.tipo === 'pergunta') { out.msgs.push(texto(no.texto, ctxTxt, agora)); s.esperando = true; s.tentativas = 0; return fechar(); }
@@ -248,6 +254,7 @@
   function modelo() {
     return {
       nos: {
+        n13: { tipo: 'midia', x: 300, y: 40, titulo: 'Ju dando tchau', formato: 'gif', url: 'https://brunooliveirast.com.br/coninho/ju-tchau.mp4', legenda: '' },
         n1: { tipo: 'inicio', x: 40, y: 220, gatilho: 'sem_conversa', dias: 30, palavras: 'menu, ju' },
         n2: { tipo: 'mensagem', x: 300, y: 220, texto: 'Olá, {saudacao}! 😊 Eu sou a *Ju*, do *Hotel Fazenda Coninho*.\n\nVou fazer o seu atendimento inicial e já te passo para uma das nossas atendentes.' },
         n3: { tipo: 'menu', x: 560, y: 200, titulo: 'Assunto', texto: 'Hoje você busca atendimento para:', opcoes: ['Day Use', 'Hospedagem', 'Outro assunto'], invalido: 'Não entendi 😅 Me responde só com o número da opção:' },
@@ -262,7 +269,7 @@
         n12: { tipo: 'humano', x: 860, y: 480, texto: 'Certo! Estou te transferindo para {atendente}, que vai te ajudar com isso. 😊', distribuir: true },
       },
       ligacoes: [
-        { de: 'n1', saida: 'saida', para: 'n2' }, { de: 'n2', saida: 'saida', para: 'n3' },
+        { de: 'n1', saida: 'saida', para: 'n13' }, { de: 'n13', saida: 'saida', para: 'n2' }, { de: 'n2', saida: 'saida', para: 'n3' },
         { de: 'n3', saida: 'op0', para: 'n4' }, { de: 'n3', saida: 'op1', para: 'n7' }, { de: 'n3', saida: 'op2', para: 'n12' }, { de: 'n3', saida: 'invalido', para: 'n12' },
         { de: 'n4', saida: 'saida', para: 'n5' }, { de: 'n5', saida: 'saida', para: 'n6' }, { de: 'n6', saida: 'saida', para: 'n10' },
         { de: 'n7', saida: 'saida', para: 'n8' }, { de: 'n8', saida: 'saida', para: 'n9' }, { de: 'n9', saida: 'saida', para: 'n10' },
