@@ -367,6 +367,17 @@ label.marcar input{width:auto}
 .chat-item .tx{flex:1;min-width:0}
 .chat-item .tx b{display:block;font-weight:600}
 .chat-item .tx span{display:block;font-size:12px;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.av-canal{position:relative;flex:0 0 auto;display:inline-flex}
+.canal-ico{position:absolute;right:-5px;bottom:-4px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--card);box-sizing:content-box}
+.canal-ico svg{width:10px;height:10px;fill:#fff}
+.canal-ico.inline{position:static;border:0;width:16px;height:16px;vertical-align:-3px;margin-right:4px;display:inline-flex}
+.canal-whatsapp{background:#25D366}.canal-instagram{background:linear-gradient(45deg,#F58529,#DD2A7B 55%,#8134AF)}.canal-facebook{background:#1877F2}
+.wa-canais{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 4px}
+.wa-canais button{border:1px solid var(--borda);background:var(--card);color:var(--texto);border-radius:999px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:4px}
+.wa-canais button.ativo{background:var(--btn);color:var(--btn-texto);border-color:var(--btn)}
+.rede-l{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--borda)}
+.rede-l .canal-ico{position:static;width:28px;height:28px;border:0}.rede-l .canal-ico svg{width:16px;height:16px}
+.rede-l .tx{flex:1;min-width:0}.rede-l .tx b{display:block}.rede-l .tx small{color:var(--suave)}
 .chat-item .pino{min-width:18px;height:18px;border-radius:9px;background:#D7392E;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}
 .chat-conv{background:var(--card);border:1px solid var(--linha);border-radius:16px;display:flex;flex-direction:column;min-height:0;min-width:0}
 .chat-cab{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--linha)}
@@ -597,6 +608,7 @@ label.marcar input{width:auto}
       <div class="chat" id="wa">
         <div class="wa-col">
           <input id="wa-busca" type="search" placeholder="Buscar conversa…" aria-label="Buscar conversa">
+          <div class="wa-canais" id="wa-canais" role="group" aria-label="Filtrar por canal"></div>
           <div class="chat-lista" id="wa-lista"></div>
         </div>
         <div class="chat-conv">
@@ -785,6 +797,12 @@ label.marcar input{width:auto}
         <label class="marcar"><input type="checkbox" id="aj-capi"> Enviar conversões pro pixel do hotel</label>
         <p class="dica">Manda <b>Lead</b> quando o card nasce e <b>Purchase</b> quando vira Vendido com "pago direto com o hotel". Venda da loja online não sai daqui: a Planne já manda (senão conta duas vezes). Telefone e e-mail vão criptografados.</p>
         <p class="dica" id="aj-capi-st"></p>
+      </div>
+      <div class="cartela">
+        <h2>Instagram e Facebook</h2>
+        <p class="sub">Direct do Instagram e Messenger do Facebook caindo na mesma fila das Conversas, com o ícone da rede em cada conversa. A resposta sai por onde o cliente escreveu.</p>
+        <div id="aj-redes"></div>
+        <p class="dica">Pra conectar precisa do acesso de administrador da página do Facebook e do Instagram profissional do hotel. Comentários em posts e anúncios ficam pra uma próxima etapa.</p>
       </div>
       <div class="cartela">
         <h2>Bot de pré-atendimento</h2>
@@ -1159,7 +1177,7 @@ if (!MODO_DEMO) {
 } else {
   // Dados de exemplo (fictícios, gerados). Ficam só na memória desta aba.
   const eu = { id:'u1', email:'demo@coninho.local' };
-  let CFG = { distribuicao:'peso', whatsapp:'ligado', whatsapp_numero:'31900000000', whatsapp_nome:'Hotel (exemplo)', escopo:'todos', assinatura:'desligado', capi:'desligado',
+  let CFG = { distribuicao:'peso', whatsapp:'ligado', whatsapp_numero:'31900000000', whatsapp_nome:'Hotel (exemplo)', escopo:'todos', assinatura:'desligado', capi:'desligado', redes:'{"instagram":{"ativo":true,"conta":"@exemplo"},"facebook":{"ativo":true,"conta":"Página de exemplo"}}',
     cadencia:'{"ativo":false,"dias":{"atendimento":2,"orcamento":2,"negociando":3}}', automacoes:'{"orcamento":{"dias":1,"texto":"cobrar resposta do orçamento"}}' };
   let P = [{id:'u1',nome:'Gestão',papel:'gestor',ativo:true,peso:0,setor:'comercial'},{id:'u2',nome:'Aline',papel:'vendedor',ativo:true,peso:50,setor:'comercial'},
            {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true,peso:30,setor:'comercial'},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true,peso:20,setor:'reservas'},
@@ -1211,6 +1229,8 @@ if (!MODO_DEMO) {
   L.slice(0, 18).forEach((l, i) => { const n = 1 + (i % 6), t0 = agora - (i * 53 + 4) * 60000 - n * 240000;
     for (let k = 0; k < n; k++) WA.push({ id:waId++, lead_id:l.id, direcao:FALAS[k][0], tipo:'texto', texto:FALAS[k][1], status:'lida', autor: FALAS[k][0] === 'saida' ? (l.responsavel || 'u1') : null, criado_em:iso(t0 + k * 240000) });
     const u = WA[WA.length - 1]; l.ultima_msg_em = u.criado_em; l.ultima_msg = u.texto; l.nao_lidas = u.direcao === 'entrada' ? 1 : 0; });
+  [[1, 'instagram', 'exemplo.familia'], [4, 'instagram', 'exemplo.viagens'], [7, 'facebook'], [10, 'instagram', 'exemplo.ana'], [13, 'facebook']].forEach(([i, c, u]) => {
+    const l = L[i]; l.canal = c; if (u) l.ig_usuario = u; if (l.origem !== 'anuncio') l.origem = c; WA.filter(m => m.lead_id === l.id).forEach(m => m.canal = c); });
   let logado = null;
   const valida = l => {
     if (l.etapa === 'ganho' && l.valor == null) throw { message:'ganho_tem_valor' };
@@ -1680,7 +1700,7 @@ function cartao(l){
   const resp = nomeDe(l.responsavel);
   const etq = (l.etiquetas || []).slice(0, 3).map(e => `<span class="selo etq">${esc(e)}</span>`).join('');
   return `<article class="cartao" draggable="true" data-id="${esc(l.id)}" style="border-left-color:${parado ? 'var(--vermelho)' : 'transparent'}">
-    <div class="nome">${bola(l)}<span>${esc(l.nome)}</span></div>
+    <div class="nome">${bola(l)}<span>${canalDe(l) !== 'whatsapp' ? canalIco(canalDe(l), 'inline') : ''}${esc(l.nome)}</span></div>
     <div class="linha"><span class="selo ${esc(l.tipo)}">${esc(rotulo(TIPOS, l.tipo))}</span>${l.setor && l.setor !== 'comercial' ? `<span class="selo setor">${esc(rotulo(SETORES, l.setor))}</span>` : ''}${quando ? `<span>📅 ${quando}</span>` : ''}${pessoas ? `<span>${pessoas}</span>` : ''}${l.pets ? '<span title="Vai levar pet">🐾</span>' : ''}${follow}</div>
     ${aberto && l.proximo_passo ? `<div class="linha" style="margin-top:4px">→ ${esc(l.proximo_passo)}</div>` : ''}
     ${etq ? `<div class="linha" style="margin-top:4px">${etq}</div>` : ''}
@@ -2092,6 +2112,14 @@ async function enviarChat(){
    CONVERSAS — WhatsApp dentro do CRM (precisa de número ligado; o demo simula)
    ===================================================================== */
 const waLigado = () => estado.config.whatsapp === 'ligado';
+const CANAIS = {
+  whatsapp:{ nome:'WhatsApp', svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>' },
+  instagram:{ nome:'Instagram', svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm5.3-3.3a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>' },
+  facebook:{ nome:'Facebook', svg:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8.2h2.8l.4-3.2h-3.2v-2c0-.9.3-1.6 1.6-1.6h1.7V4.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.4H7.3v3.2h2.8V22h3.4z"/></svg>' } };
+const canalDe = l => CANAIS[l?.canal] ? l.canal : 'whatsapp';
+const canalIco = (c, cls = '') => `<span class="canal-ico canal-${c} ${cls}" title="${CANAIS[c].nome}" aria-label="${CANAIS[c].nome}">${CANAIS[c].svg}</span>`;
+const redesCfg = () => jsonCfg(estado.config.redes, {});
+const canalLigado = c => c === 'whatsapp' ? waLigado() : !!(redesCfg()[c] || {}).ativo;
 const waConv = id => estado.wa.convs.find(c => c.id === id) || (estado.wa.extra?.id === id ? estado.wa.extra : null) || estado.leads.find(l => l.id === id) || null;
 const grav = { rec:null, pedacos:[], t0:0, timer:null, cancel:false, lead:null };
 const tipoArq = a => a.type.startsWith('audio') ? 'audio' : a.type.startsWith('video') ? 'video' : 'imagem';
@@ -2120,12 +2148,16 @@ function irConversa(lead, texto){
 }
 function waListaHTML(){
   const b = $('#wa-busca').value.trim().toLowerCase(), bd = soDigitos(b);
-  const todas = [...(estado.wa.extra ? [estado.wa.extra] : []), ...estado.wa.convs].filter(c => !b || (c.nome || '').toLowerCase().includes(b) || (bd.length >= 3 && (c.telefone || '').includes(bd)));
+  const fc = estado.wa.canal || '', todas = [...(estado.wa.extra ? [estado.wa.extra] : []), ...estado.wa.convs].filter(c => (!fc || canalDe(c) === fc) && (!b || (c.nome || '').toLowerCase().includes(b) || (c.ig_usuario || '').toLowerCase().includes(b.replace(/^@/, '')) || (bd.length >= 3 && (c.telefone || '').includes(bd))));
   return todas.map(c => `<button class="chat-item ${c.id === estado.wa.lead ? 'ativo' : ''} ${c.nao_lidas ? 'nova' : ''}" type="button" data-wa="${esc(c.id)}">
-      <span class="avatar">${esc(iniciais(c.nome))}</span>
+      <span class="av-canal"><span class="avatar">${esc(iniciais(c.nome))}</span>${canalIco(canalDe(c))}</span>
       <span class="tx"><b>${esc(c.nome)}</b><span>${esc(rotuloMsg(c.ultima_msg || 'Conversa nova'))}</span></span>
       <span class="wa-lado"><small>${c.ultima_msg_em ? waHora(c.ultima_msg_em) : ''}</small>${c.nao_lidas ? `<span class="pino">${c.nao_lidas}</span>` : ''}</span></button>`).join('')
-    || `<p class="dica" style="margin:10px 8px">${b ? 'Nenhuma conversa com esse nome.' : 'Nenhuma conversa ainda.'}</p>`;
+    || `<p class="dica" style="margin:10px 8px">${b ? 'Nenhuma conversa com esse nome.' : fc ? 'Nenhuma conversa pelo ' + CANAIS[fc].nome + ' ainda.' + (canalLigado(fc) ? '' : ' (não conectado)') : 'Nenhuma conversa ainda.'}</p>`;
+}
+function waCanaisHTML(){
+  const fc = estado.wa.canal || '', n = c => estado.wa.convs.filter(x => canalDe(x) === c && x.nao_lidas > 0).length;
+  return `<button type="button" data-canal="" class="${!fc ? 'ativo' : ''}">Todas</button>` + Object.keys(CANAIS).map(c => `<button type="button" data-canal="${c}" class="${fc === c ? 'ativo' : ''}">${canalIco(c, 'inline')}${CANAIS[c].nome}${n(c) ? ' · ' + n(c) : ''}</button>`).join('');
 }
 function desenharConversas(){
   const w = estado.wa, ligado = waLigado(), largo = matchMedia('(min-width:641px)').matches;
@@ -2134,10 +2166,11 @@ function desenharConversas(){
   else if (!ligado) av.innerHTML = '<b class="st">⚠️ Nenhum número de WhatsApp conectado.</b><br>É nesta tela que a equipe atende: as conversas dos clientes aparecem aqui e a resposta sai daqui, sem abrir o WhatsApp. Pra começar, conecte o número da empresa (leva 1 minuto, com o celular na mão).<br><button class="btn mini" type="button" data-zap-acao="abrir" style="margin-top:8px">Conectar WhatsApp</button>';
 
   if (largo && !w.lead && w.convs.length) { waAbrir(w.convs[0].id); return; }
-  $('#wa-lista').innerHTML = waListaHTML();
+  $('#wa-lista').innerHTML = waListaHTML(); $('#wa-canais').innerHTML = waCanaisHTML();
   $('#wa').classList.toggle('aberta', w.aberto && !!w.lead);
   const c = w.lead ? waConv(w.lead) : null;
-  $('#wa-titulo').textContent = c ? c.nome : (ligado ? 'Escolha uma conversa' : 'Conversas');
+  const cn = c ? canalDe(c) : 'whatsapp', ok = canalLigado(cn);
+  $('#wa-titulo').innerHTML = c ? canalIco(cn, 'inline') + esc(c.nome) + (c.ig_usuario ? ' <small style="font-weight:400">@' + esc(c.ig_usuario) + '</small>' : '') : (ligado ? 'Escolha uma conversa' : 'Conversas');
   $('#wa-ficha').classList.toggle('oculto', !c); $('#wa-info').classList.toggle('oculto', !c);
   if (c) { preencher($('#wa-etapa'), ETAPAS); $('#wa-etapa').value = c.etapa;
     $('#wa-info-tx').innerHTML = [esc(rotulo(TIPOS, c.tipo)), c.responsavel ? 'com <b>' + esc(nomeDe(c.responsavel)) + '</b>' : '<b>sem responsável</b>', c.valor != null ? esc(brl0(c.valor)) : '', c.proximo_contato ? 'retorno ' + esc(dataBR(c.proximo_contato)) : ''].filter(Boolean).join(' · '); }
@@ -2149,16 +2182,17 @@ function desenharConversas(){
   $('#wa-msgs').scrollTop = $('#wa-msgs').scrollHeight;
   const ultEntrada = [...w.msgs].reverse().find(m => m.direcao === 'entrada'), fora = c && (!ultEntrada || Date.now() - new Date(ultEntrada.criado_em).getTime() > 24 * 3600000);
   $('#wa-janela').classList.add('oculto');
-  $('#wa-rapidas').innerHTML = c && ligado ? '<span class="rot">Respostas prontas</span>' + estado.respostas.map(r => `<button type="button" data-rapida="${esc(r.id)}">${esc(r.titulo)}</button>`).join('') + '<button type="button" class="editar" data-rapida-editar>✎ Criar ou editar</button>' : '';
-  const pode = !!c && ligado; $('#wa-texto').disabled = !pode; $('#wa-enviar').disabled = !pode; $('#wa-anexar').disabled = !pode; $('#wa-gravar').disabled = !pode; $('#wa-gravar').classList.toggle('ativo', !!grav.rec);
+  $('#wa-rapidas').innerHTML = c && ok ? '<span class="rot">Respostas prontas</span>' + estado.respostas.map(r => `<button type="button" data-rapida="${esc(r.id)}">${esc(r.titulo)}</button>`).join('') + '<button type="button" class="editar" data-rapida-editar>✎ Criar ou editar</button>' : '';
+  const pode = !!c && ok; $('#wa-texto').disabled = !pode; $('#wa-enviar').disabled = !pode; $('#wa-anexar').disabled = !pode; $('#wa-gravar').disabled = !pode || cn !== 'whatsapp'; $('#wa-gravar').classList.toggle('ativo', !!grav.rec);
   const arq = w.arquivo, ax = $('#wa-anexo'); ax.classList.toggle('oculto', !arq && !grav.rec);
   if (arq && ax.dataset.nome !== arq.name + arq.size) { ax.dataset.nome = arq.name + arq.size; const u = URL.createObjectURL(arq);
     ax.innerHTML = tipoArq(arq) === 'audio' ? `<audio src="${u}" controls></audio><span style="flex:0 0 auto">🎤 Áudio</span><button type="button" class="tirar" id="wa-tirar-anexo" aria-label="Apagar áudio">×</button>` : (arq.type.startsWith('video') ? `<video src="${u}" muted></video>` : `<img src="${u}" alt="">`) + `<span>${esc(arq.name)} · ${(arq.size / 1048576).toFixed(1).replace('.', ',')} MB</span><button type="button" class="tirar" id="wa-tirar-anexo" aria-label="Tirar anexo">×</button>`; }
   if (!arq && !grav.rec) { ax.innerHTML = ''; ax.dataset.nome = ''; }
-  $('#wa-texto').placeholder = pode ? 'Mensagem' : (ligado ? 'Escolha uma conversa' : 'Número não conectado');
+  $('#wa-texto').placeholder = pode ? 'Mensagem pelo ' + CANAIS[cn].nome : !c ? (ligado ? 'Escolha uma conversa' : 'Número não conectado') : cn === 'whatsapp' ? 'Número não conectado' : CANAIS[cn].nome + ' não conectado';
 }
 async function waEnviarMsg(){
-  const w = estado.wa, arq = w.arquivo, voz = !!arq && tipoArq(arq) === 'audio', texto = voz ? '' : $('#wa-texto').value.trim(); if (grav.rec) { toast('Pare a gravação antes de enviar.'); return; } if ((!texto && !arq) || !w.lead || !waLigado()) return;
+  const w = estado.wa, arq = w.arquivo, voz = !!arq && tipoArq(arq) === 'audio', texto = voz ? '' : $('#wa-texto').value.trim(); if (grav.rec) { toast('Pare a gravação antes de enviar.'); return; } if ((!texto && !arq) || !w.lead || !canalLigado(canalDe(waConv(w.lead)))) return;
+  if (arq && canalDe(waConv(w.lead)) !== 'whatsapp' && tipoArq(arq) !== 'imagem') { toast('No ' + CANAIS[canalDe(waConv(w.lead))].nome + ' por enquanto só vai texto e imagem.'); return; }
   const id = w.lead, prov = { direcao:'saida', tipo: arq ? tipoArq(arq) : 'texto', midia_url: arq ? URL.createObjectURL(arq) : null, texto, status:'pendente', autor:estado.usuario.id, criado_em:new Date().toISOString() };
   w.msgs.push(prov); if (!voz) $('#wa-texto').value = ''; w.arquivo = null; desenharConversas();
   try { await api.waEnviar(id, texto, arq);
@@ -2173,6 +2207,7 @@ async function waEnviarMsg(){
 }
 $('#wa-lista').addEventListener('click', e => { const b = e.target.closest('[data-wa]'); if (b) waAbrir(b.dataset.wa); });
 $('#wa-busca').addEventListener('input', () => { $('#wa-lista').innerHTML = waListaHTML(); });
+$('#wa-canais').addEventListener('click', e => { const b = e.target.closest('[data-canal]'); if (!b) return; estado.wa.canal = b.dataset.canal; $('#wa-lista').innerHTML = waListaHTML(); $('#wa-canais').innerHTML = waCanaisHTML(); });
 $('#wa-etapa').addEventListener('change', async e => { const c = waConv(estado.wa.lead), etapa = e.target.value; if (!c) return; e.target.value = c.etapa; await moverEtapa(await api.lead(c.id) || c, etapa); });
 $('#wa-voltar').addEventListener('click', () => { estado.wa.aberto = false; desenharConversas(); });
 $('#wa-ficha').addEventListener('click', async () => { const c = waConv(estado.wa.lead); if (c) abrirFicha(await api.lead(c.id) || c); });
@@ -2197,7 +2232,7 @@ $('#wa-anexo').addEventListener('click', e => {
 function gravTempo(){ const s = Math.floor((Date.now() - grav.t0) / 1000), el = $('#wa-grav-t'); if (el) el.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 async function gravIniciar(){
   if (grav.rec) { grav.rec.stop(); return; }
-  if (!estado.wa.lead || !waLigado()) return;
+  if (!estado.wa.lead || !waLigado() || canalDe(waConv(estado.wa.lead)) !== 'whatsapp') return;
   if (DEMO_SEM_MIC()) { toast('Este navegador não grava áudio. Use o 📎 pra mandar um arquivo de áudio.'); return; }
   let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio:true }); } catch { toast('Libere o microfone pra este site nas permissões do navegador.'); return; }
   const mime = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus'].find(t => MediaRecorder.isTypeSupported(t)) || '';
@@ -2484,7 +2519,14 @@ async function moverEtapa(lead, etapa){
    AJUSTES NOVOS — atendimento, regras automáticas, produtos, conversões, bot
    ===================================================================== */
 const ETAPAS_ABERTAS = ETAPAS.filter(e => !FECHADAS.includes(e[0]));
+function desenharRedes(){
+  const r = redesCfg();
+  $('#aj-redes').innerHTML = ['instagram', 'facebook'].map(c => { const on = !!(r[c] || {}).ativo;
+    return `<div class="rede-l">${canalIco(c)}<span class="tx"><b>${CANAIS[c].nome}</b><small>${on ? '✅ Conectado' + (MODO_DEMO ? ' (demonstração)' : '') + (r[c].conta ? ' · ' + esc(r[c].conta) : '') : 'Não conectado ainda'}</small></span>
+      <button class="btn sec mini" type="button" disabled title="Em breve">${on ? 'Conectado' : 'Conectar (em breve)'}</button></div>`; }).join('');
+}
 async function desenharAjustesNovos(){
+  desenharRedes();
   const cfg = estado.config, au = regrasAuto(), cad = jsonCfg(cfg.cadencia, {});
   $('#aj-assin').checked = cfg.assinatura === 'ligado';
   $('#aj-escopo').value = cfg.escopo === 'meus' ? 'meus' : 'todos';
