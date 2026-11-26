@@ -518,6 +518,21 @@ label.marcar input{width:auto}
   .item-fu{grid-template-columns:1fr}
   .item-fu .ac{justify-content:flex-end}
 }
+.st-on{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--linha);background:var(--card);color:var(--suave);font:600 13px var(--sans);cursor:pointer;white-space:nowrap}
+.st-on i{width:9px;height:9px;border-radius:50%;background:var(--suave);flex:none}
+.st-on.on{border-color:var(--verde);color:var(--verde)}
+.st-on.on i{background:#2E9E5B;box-shadow:0 0 0 3px rgba(46,158,91,.18)}
+.on-menu{position:absolute;right:0;top:44px;z-index:60;background:var(--card);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);padding:6px;min-width:210px;display:flex;flex-direction:column}
+.on-menu button{background:none;border:0;text-align:left;padding:10px 12px;border-radius:8px;font:500 14px var(--sans);color:var(--texto);cursor:pointer}
+.on-menu button:hover{background:var(--card2)}
+.on-wrap{position:relative}
+.eq-st{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 12px}
+.eq-st span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--card2);font-size:13px}
+.eq-st span i{width:8px;height:8px;border-radius:50%;background:var(--suave)}
+.eq-st span.on i{background:#2E9E5B}
+#bot-lado label.chk{display:flex;gap:8px;align-items:center;font-weight:500;margin-top:10px}
+#bot-lado label.chk input{width:auto;margin:0}
+@media (max-width:420px){.st-on b{display:none}.st-on{padding:0 11px}}
 </style>
 </head>
 <body>
@@ -559,6 +574,7 @@ label.marcar input{width:auto}
     <header class="topo">
       <div class="tit"><h1 id="titulo-ver">Painel</h1><div class="quem" id="quem"></div></div>
       <div class="direita">
+        <div class="on-wrap"><button class="st-on" id="btn-online" type="button" aria-label="Meu status de atendimento" title="Seu status: só quem está Online recebe os clientes que a Ju passa"><i></i><b>Pausa</b></button><div class="on-menu oculto" id="on-menu"></div></div>
         <button class="icone" id="btn-sino" aria-label="Avisos" title="Avisos"><svg viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="pino oculto" id="pino-sino"></span></button>
         <button class="icone" id="btn-tema" aria-label="Claro ou escuro" title="Claro ou escuro"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
         <button class="btn sol" id="btn-novo">+ Lead</button>
@@ -1086,7 +1102,7 @@ if (!MODO_DEMO) {
     async sessao(){ const { data } = await sb.auth.getSession(); return data.session?.user || null; },
     async entrar(email, senha){ const { data, error } = await sb.auth.signInWithPassword({ email, password: senha }); if (error) throw error; return data.user; },
     async sair(){ await sb.auth.signOut(); },
-    async perfis(){ const { data, error } = await sb.from('perfis').select('id,nome,papel,ativo,peso,setor').order('nome'); if (error) throw error; return data; },
+    async perfis(){ const { data, error } = await sb.from('perfis').select('id,nome,papel,ativo,peso,setor,online,online_desde,visto_em').order('nome'); if (error) throw error; return data; },
     async salvarPerfil(id, p){ const { error } = await sb.from('perfis').update(p).eq('id', id); if (error) throw error; },
     // Quadro: tudo que está aberto + vendidos/perdidos do mês atual
     async quadro(){
@@ -1159,6 +1175,9 @@ if (!MODO_DEMO) {
       const { error } = await sb.rpc('wa_enviar', { p_lead:id, p_texto:texto, p_tipo:tipo, p_midia:midia }); if (error) throw error;
     },
     async waSessao(){ const { data, error } = await sb.from('wa_sessao').select('*').eq('id', 1).maybeSingle(); if (error) throw error; return data; },
+    async ficarOnline(on, motivo){ const { data, error } = await sb.rpc('ficar_online', { p_on:on, p_motivo:motivo || 'pausa' }); if (error) throw error; return data; },
+    async estouAqui(){ const { data, error } = await sb.rpc('estou_aqui'); if (error) throw error; return !!data; },
+    async jornada(ini, fim){ const { data, error } = await sb.from('jornada').select('perfil,inicio,fim,motivo_fim').gte('inicio', ini.toISOString()).lt('inicio', fim.toISOString()).order('inicio'); if (error) throw error; return data; },
     async waPedir(acao, numero){ const { error } = await sb.rpc('wa_pedir', { p_acao:acao, p_numero:numero || null }); if (error) throw error; },
     aoSessao(fn){ sb.channel('wa-sessao').on('postgres_changes', { event:'*', schema:'public', table:'wa_sessao' }, x => fn(x.new)).subscribe(); },
     aoWhats(fn){ sb.channel('wa').on('postgres_changes', { event:'*', schema:'public', table:'wa_mensagens' }, p => fn(p.new)).subscribe(); },
@@ -1182,6 +1201,15 @@ if (!MODO_DEMO) {
   let P = [{id:'u1',nome:'Gestão',papel:'gestor',ativo:true,peso:0,setor:'comercial'},{id:'u2',nome:'Aline',papel:'vendedor',ativo:true,peso:50,setor:'comercial'},
            {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true,peso:30,setor:'comercial'},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true,peso:20,setor:'reservas'},
            {id:'u5',nome:'Rene',papel:'vendedor',ativo:true,peso:25,setor:'comercial'},{id:'u6',nome:'Juliana',papel:'vendedor',ativo:true,peso:25,setor:'comercial'}];
+  // atendimento de exemplo: Aline e Leticia online agora; jornadas de hoje e ontem
+  const JORN = (() => { const h = new Date(), d0 = new Date(h.getFullYear(), h.getMonth(), h.getDate()), t = (dia, hh, mm) => new Date(d0.getTime() - dia * 864e5 + (hh * 60 + mm) * 6e4).toISOString(), j = [];
+    const add = (p, dia, a, b, mot) => j.push({ perfil:p, inicio:t(dia, ...a), fim: b ? t(dia, ...b) : null, motivo_fim: b ? mot : null });
+    add('u2', 1, [8, 2], [12, 0], 'pausa'); add('u2', 1, [13, 5], [18, 1], 'fim do expediente');
+    add('u3', 1, [9, 40], [17, 10], 'saiu sem pausar'); add('u6', 1, [8, 0], [16, 55], 'fim do expediente');
+    add('u2', 0, [8, 4], [8, 50], 'pausa'); add('u2', 0, [9, 10], null); add('u3', 0, [8, 31], null);
+    add('u6', 0, [8, 0], [11, 30], 'pausa');
+    return j.filter(x => new Date(x.inicio) <= h).map(x => (x.fim && new Date(x.fim) > h) ? { ...x, fim:null, motivo_fim:null } : x); })();
+  JORN.filter(x => !x.fim).forEach(x => { const p = P.find(q => q.id === x.perfil); if (p) Object.assign(p, { online:true, online_desde:x.inicio, visto_em:new Date().toISOString() }); });
   let s = 11; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647, pick = a => a[Math.floor(rnd() * a.length)];
   const agora = Date.now(), iniM = Math.min(D.ini('mes', new Date()).getTime(), agora - 20 * 86400000);
   const iso = t => new Date(t).toISOString(), ymd = t => iso(t).slice(0, 10);
@@ -1296,6 +1324,12 @@ if (!MODO_DEMO) {
     aoWhats(fn){ waCb = fn; },
     async waSessao(){ return { estado:'conectado', numero:'5531999990000', nome:'Demonstração', batida_em:new Date().toISOString(), conectado_desde:new Date(Date.now() - 3 * 86400000).toISOString() }; },
     async waPedir(){ throw { message:'no modo demonstração a conexão é só de exemplo' }; },
+    async ficarOnline(on, motivo){ const p = P.find(q => q.id === eu.id), agora = new Date().toISOString();
+      if (on && !p.online) { Object.assign(p, { online:true, online_desde:agora, visto_em:agora }); JORN.push({ perfil:p.id, inicio:agora, fim:null, motivo_fim:null }); }
+      else if (!on && p.online) { Object.assign(p, { online:false, online_desde:null }); JORN.filter(x => x.perfil === p.id && !x.fim).forEach(x => { x.fim = agora; x.motivo_fim = motivo === 'fim do expediente' ? motivo : 'pausa'; }); }
+      return { online:p.online, online_desde:p.online_desde }; },
+    async estouAqui(){ const p = P.find(q => q.id === eu.id); p.visto_em = new Date().toISOString(); return !!p.online; },
+    async jornada(ini, fim){ return JORN.filter(x => new Date(x.inicio) >= ini && new Date(x.inicio) < fim).map(x => ({ ...x })); },
     aoSessao(){},
     async produtos(){ return PROD.map(p => ({...p})); },
     async salvarProduto(p){ if (p.id) Object.assign(PROD.find(x => x.id === p.id), p); else PROD.push({ ...p, id:Date.now() }); },
@@ -1377,6 +1411,7 @@ async function iniciar(){
     await carregarMsgs();
     await waCarregar();
     waSessaoCarregar(); api.aoSessao(x => waSessaoChegou(x)); setInterval(waSessaoCarregar, 30000);
+    onDesenhar(); onBater(); setInterval(onBater, 60000);
     api.aoWhats(async m => {
       await waCarregar();
       const vendo = estado.ver === 'conversas' && m && estado.wa.lead === m.lead_id && (estado.wa.aberto || matchMedia('(min-width:641px)').matches);
@@ -1390,6 +1425,30 @@ async function iniciar(){
     api.aoMudar(() => { clearTimeout(iniciar.t); iniciar.t = setTimeout(() => recarregar(), 400); });
   } catch (e) { toast(traduzErro(e)); }
 }
+
+// ---------- meu status de atendimento (Online / Pausa) ----------
+function onDesenhar(){
+  const b = $('#btn-online'); if (!b) return; const on = !!estado.meu?.online;
+  b.classList.toggle('on', on); b.querySelector('b').textContent = on ? 'Online' : 'Pausa';
+  b.title = on ? 'Você está Online desde ' + hora(estado.meu.online_desde) + ': recebe os clientes que a Ju passa' : 'Você está em pausa: a Ju não te passa clientes. Clique pra ficar Online.';
+}
+const hora = v => v ? new Date(v).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }) : '—';
+async function onMudar(on, motivo){
+  try { const r = await api.ficarOnline(on, motivo); if (estado.meu) Object.assign(estado.meu, r); onDesenhar(); toast(on ? 'Você está Online: a Ju já pode te passar clientes.' : motivo === 'fim do expediente' ? 'Expediente encerrado. Até amanhã!' : 'Pausa registrada. A Ju não te passa clientes agora.'); }
+  catch (e) { toast(traduzErro(e)); }
+}
+async function onBater(){
+  if (!estado.meu || document.hidden && !estado.meu.online) return;
+  try { const ainda = await api.estouAqui(); if (estado.meu.online && !ainda) { estado.meu.online = false; estado.meu.online_desde = null; onDesenhar(); toast('Você ficou um tempo sem o CRM aberto e entrou em pausa. Clique em Pausa pra voltar a ficar Online.'); } } catch {}
+}
+$('#btn-online').addEventListener('click', e => {
+  e.stopPropagation(); const m = $('#on-menu');
+  if (!estado.meu?.online) { m.classList.add('oculto'); onMudar(true); return; }
+  m.innerHTML = '<button type="button" data-on="pausa">⏸️ Fazer uma pausa</button><button type="button" data-on="fim do expediente">🏁 Encerrar o expediente</button>';
+  m.classList.toggle('oculto');
+});
+$('#on-menu').addEventListener('click', e => { const b = e.target.closest('[data-on]'); if (!b) return; $('#on-menu').classList.add('oculto'); onMudar(false, b.dataset.on); });
+document.addEventListener('click', e => { if (!e.target.closest('.on-wrap')) $('#on-menu').classList.add('oculto'); });
 
 async function carregarPerfis(){
   estado.perfis = await api.perfis();
@@ -1557,6 +1616,7 @@ async function desenharPainel(){
         ${barras(c.motivos, Math.max(1, ...c.motivos.map(o => o.n)), o => o.n, 'vinho')}</section>
     </div>
     ${c.anuncios.length ? `<section class="cartela"><h2>Por anúncio</h2><p class="sub">Leads que chegaram clicando num anúncio de WhatsApp. O CRM lê sozinho de qual anúncio veio.</p>${barras(c.anuncios, Math.max(1, ...c.anuncios.map(o => o.n)), o => `${o.n} leads · ${o.vendas} vendas · ${brl0(o.valor)}`)}</section>` : ''}
+    ${ehGestor() ? '<section class="cartela" id="eq-atend"><h2>Atendimento da equipe</h2><p class="sub">Carregando…</p></section>' : ''}
     <section class="cartela"><h2>Texto pronto pro WhatsApp</h2><p class="sub">Relatório de ${esc(rot)}. Copie e cole no grupo: já sai com o negrito do WhatsApp.</p>
       <pre class="texto" id="rel-texto"></pre><button class="btn" id="btn-copiar">Copiar relatório</button></section>`;
   $('#rel-texto').textContent = texto;
@@ -1565,6 +1625,31 @@ async function desenharPainel(){
     catch { const x = document.createRange(); x.selectNodeContents($('#rel-texto')); const g = getSelection(); g.removeAllRanges(); g.addRange(x); toast('Selecionei o texto: aperte Ctrl+C.'); }
   });
   $('#lk-metas')?.addEventListener('click', e => { e.preventDefault(); ir('ajustes'); });
+  if (ehGestor()) desenharEquipeAtend(ini, fim, rot, vez);
+}
+// quem está online agora + entrada, saída, pausas e tempo online de cada atendente por dia
+async function desenharEquipeAtend(ini, fim, rot, vez){
+  const el = () => $('#eq-atend'); let pf, j;
+  try { pf = await api.perfis(); j = await api.jornada(ini, fim); }
+  catch (e) { if (el()) el().innerHTML = '<h2>Atendimento da equipe</h2><p class="sub">⚠️ Não consegui carregar os horários agora (' + esc(traduzErro(e)) + '). Rode o SQL 11 se ainda não rodou.</p>'; return; }
+  if (vez !== fichaPainel || !el()) return;
+  const gente = pf.filter(p => p.ativo && p.papel !== 'gestor');
+  const agora = Date.now(), dur = ms => { const m = Math.round(ms / 6e4); return m < 60 ? m + ' min' : Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0'); };
+  const st = gente.map(p => `<span class="${p.online ? 'on' : ''}"><i></i>${esc(p.nome)} · ${p.online ? 'online desde ' + hora(p.online_desde) : 'em pausa'}</span>`).join('');
+  const dias = {}; j.forEach(x => { const k = new Date(x.inicio).toLocaleDateString('pt-BR'); ((dias[k] = dias[k] || {})[x.perfil] = dias[k][x.perfil] || []).push(x); });
+  const nomeP = id => (pf.find(p => p.id === id) || {}).nome || '—';
+  const linhas = Object.keys(dias).sort((a, b) => b.split('/').reverse().join('').localeCompare(a.split('/').reverse().join(''))).flatMap(dia => Object.entries(dias[dia]).map(([pid, tr]) => {
+    tr.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+    const tot = tr.reduce((s, x) => s + ((x.fim ? new Date(x.fim).getTime() : agora) - new Date(x.inicio).getTime()), 0);
+    const ult = tr[tr.length - 1], pausas = tr.filter(x => x.motivo_fim === 'pausa' && x !== ult).length;
+    const saiu = !ult.fim ? '<b>online agora</b>' : hora(ult.fim) + (ult.motivo_fim === 'saiu sem pausar' ? ' ⚠️' : ult.motivo_fim === 'pausa' ? ' (pausa)' : '');
+    const pTxt = tr.slice(0, -1).map((x, i) => hora(x.fim) + '–' + hora(tr[i + 1].inicio)).join(', ');
+    return `<tr><td>${dia.slice(0, 5)}</td><td>${esc(nomeP(pid))}</td><td>${hora(tr[0].inicio)}</td><td>${saiu}</td><td>${dur(tot)}</td><td style="white-space:normal">${pausas ? pausas + ' · ' + pTxt : '—'}</td></tr>`;
+  })).join('');
+  el().innerHTML = `<h2>Atendimento da equipe</h2><p class="sub">Só quem está <b>Online</b> recebe os clientes que a Ju passa. Horários de ${esc(rot)}.</p>
+    <div class="eq-st">${st || '<span>Nenhum atendente cadastrado.</span>'}</div>
+    ${linhas ? `<div class="rolagem"><table class="tab num" style="min-width:560px"><thead><tr><th>Dia</th><th>Atendente</th><th>Entrou</th><th>Saiu</th><th>Tempo online</th><th>Pausas</th></tr></thead><tbody>${linhas}</tbody></table></div>
+    <p class="sub" style="margin-top:8px">⚠️ = fechou o CRM sem pausar: a saída conta a última vez que o CRM estava aberto.</p>` : '<p class="sub">Ninguém ficou Online neste período.</p>'}`;
 }
 
 /* =====================================================================
@@ -1840,14 +1925,27 @@ function zapDesenhar(){
   else if (ja && ['desconectado', 'qr', 'codigo'].includes(sit)) txt = '⚠️ <b>WhatsApp desconectado.</b> Nenhuma conversa foi perdida: reconecte pra voltar a receber e enviar. <button class="btn mini" type="button" data-zap-acao="abrir">Reconectar</button>';
   else if (ja && sit === 'fora') txt = '⚠️ <b>Sem sinal do servidor do WhatsApp.</b> As conversas estão salvas. <button class="btn mini sec" type="button" data-zap-acao="abrir">Ver</button>';
   f.classList.toggle('oculto', !txt); f.classList.toggle('leve', leve); if (f.dataset.t !== txt) { f.dataset.t = txt; f.innerHTML = txt; }
+  zapAuto(sit, ja, x);
+}
+// caiu e não voltou sozinho: pede um QR novo (uma vez por queda) e abre a janela pra qualquer pessoa reconectar
+function zapAuto(sit, ja, x){
+  if (!ja || MODO_DEMO) return;
+  if (!['desconectado', 'qr', 'codigo'].includes(sit)) { if (sit === 'conectado') zs.autoQueda = null; return; }
+  const queda = x.caiu_em || 'sem-data';
+  if (sit === 'desconectado' && zs.autoQueda !== queda) {
+    zs.autoQueda = queda;
+    api.waPedir('conectar').then(() => { if (zs.s) { zs.s = { ...zs.s, estado:'conectando', motivo:'Gerando o QR Code…', qr:null, codigo:null }; zapDesenhar(); } zapRapido(); }).catch(() => {});
+  }
+  const aberto = !$('#fundo-zap').classList.contains('oculto'), fechouHa = Date.now() - (zs.fechouEm || 0);
+  if (!aberto && fechouHa > 10 * 60000) zapAbrir();
 }
 const desenharZap = () => { zs.assin = ''; zapDesenhar(); };
 function zapAbrir(){ zs.assin = ''; $('#fundo-zap').classList.remove('oculto'); zapDesenhar(); waSessaoCarregar(); }
 function zapRapido(){ clearInterval(zs.rapido); let n = 0; zs.rapido = setInterval(() => { if (++n > 90 || waSit() === 'conectado') { clearInterval(zs.rapido); zs.rapido = null; return; } waSessaoCarregar(); }, 2000); }
 document.addEventListener('click', async e => {
-  const b = e.target.closest('[data-zap-acao]'); if (!b) { if (e.target.id === 'fundo-zap') $('#fundo-zap').classList.add('oculto'); return; }
+  const b = e.target.closest('[data-zap-acao]'); if (!b) { if (e.target.id === 'fundo-zap') { $('#fundo-zap').classList.add('oculto'); zs.fechouEm = Date.now(); } return; }
   const acao = b.dataset.zapAcao;
-  if (acao === 'fechar') { $('#fundo-zap').classList.add('oculto'); return; }
+  if (acao === 'fechar') { $('#fundo-zap').classList.add('oculto'); zs.fechouEm = Date.now(); return; }
   if (acao === 'abrir') { zapAbrir(); return; }
   if (acao === 'atualizar') { zs.visto = Date.now(); await waSessaoCarregar(); return; }
   let numero = null;
@@ -2622,7 +2720,7 @@ function botResumo(no){
   if (no.tipo === 'pergunta') return (no.texto || '') + '\n→ guarda em: ' + (BM.CAMPOS[no.campo] || 'Observação');
   if (no.tipo === 'horario') return diasTxt(no.dias) + '\n' + (no.ini || '00:00') + ' às ' + (no.fim || '24:00');
   if (no.tipo === 'acao') return [no.etapa && 'Etapa: ' + rotulo(ETAPAS, no.etapa), no.tipoLead && 'Interesse: ' + rotulo(TIPOS, no.tipoLead), no.setor && 'Setor: ' + rotulo(SETORES, no.setor), no.etiqueta && 'Etiqueta: ' + no.etiqueta].filter(Boolean).join('\n') || 'Nada configurado';
-  if (no.tipo === 'humano') return (no.texto || '') + (no.setor ? '\n→ setor ' + rotulo(SETORES, no.setor) : '');
+  if (no.tipo === 'humano') return (no.texto || '') + (no.setor ? '\n→ setor ' + rotulo(SETORES, no.setor) : '') + (no.distribuir !== false ? '\n→ atendente Online' : '');
   if (no.tipo === 'fim') return no.texto || '(encerra sem mensagem)';
   return no.texto || '';
 }
@@ -2777,9 +2875,11 @@ function botLado(){
     h += bSel('etapa', 'Mover o card pra', no.etapa || '', abertas) + bSel('tipoLead', 'Interesse', no.tipoLead || '', [['', '— não mexe —'], ...TIPOS]) +
       bSel('setor', 'Setor', no.setor || '', [['', '— não mexe —'], ...SETORES]) + bCampo('etiqueta', 'Pôr etiqueta', no.etiqueta || '') + '<p class="dica">O cliente não vê nada: é só no card.</p>';
   } else if (no.tipo === 'humano') {
-    h += bCampo('texto', 'Mensagem antes de passar (opcional)', no.texto, true) + bSel('setor', 'Mandar pro setor', no.setor || '', [['', '— o mesmo —'], ...SETORES]) + '<p class="dica">O bot para aqui. O card ganha a etiqueta "aguardando atendente" e no histórico fica tudo que o cliente respondeu.</p>';
+    h += bCampo('texto', 'Mensagem antes de passar (opcional)', no.texto, true) + bSel('setor', 'Mandar pro setor', no.setor || '', [['', '— o mesmo —'], ...SETORES]) +
+      `<label class="chk"><input type="checkbox" data-k="distribuir" ${no.distribuir !== false ? 'checked' : ''}> Entregar pra uma atendente que está <b>Online</b></label>` +
+      '<p class="dica">O bot para aqui. O card ganha a etiqueta "aguardando atendente" e no histórico fica tudo que o cliente respondeu. Com a entrega ligada, o lead vai pra atendente Online do setor com menos conversas abertas; se ninguém estiver Online, fica na fila.</p>';
   } else if (no.tipo === 'fim') h += bCampo('texto', 'Última mensagem (opcional)', no.texto, true);
-  if (['mensagem', 'menu', 'pergunta', 'humano', 'fim'].includes(no.tipo)) h += '<p class="dica">{nome} = primeiro nome · {saudacao} = bom dia/boa tarde/boa noite.</p>';
+  if (['mensagem', 'menu', 'pergunta', 'humano', 'fim'].includes(no.tipo)) h += '<p class="dica">{nome} = primeiro nome · {saudacao} = bom dia/boa tarde/boa noite · {atendente} = "a *Aline*" (a atendente Online que vai receber) ou "a nossa equipe" se ninguém estiver Online.</p>';
   if (no.tipo !== 'inicio') h += '<div class="acoes"><button class="btn sec mini" type="button" data-bl="duplicar">Duplicar</button><button class="btn perigo mini" type="button" data-bl="apagar">Apagar bloco</button></div>';
   lado.innerHTML = h;
 }
@@ -2787,6 +2887,7 @@ $('#bot-lado').addEventListener('input', e => {
   const k = e.target.dataset.k; if (!k || !bt.sel) return; const no = bt.atual.dados.nos[bt.sel]; if (!no) return;
   if (k === 'opcao') no.opcoes[+e.target.dataset.i] = e.target.value;
   else if (k === 'dia') no.dias = [...document.querySelectorAll('#bot-lado [data-k=dia]:checked')].map(x => +x.value);
+  else if (e.target.type === 'checkbox') no[k] = e.target.checked;
   else if (e.target.type === 'number') no[k] = e.target.value === '' ? null : Number(e.target.value);
   else no[k] = e.target.value;
   botMudou();
@@ -2854,12 +2955,14 @@ function botSimEnviar(txt){
   if (!d) s.linhas.push({ q:'info', t:'(o bot fica quieto: ' + (s.sessao?.fim ? 'a conversa já passou pro atendente ou terminou' : 'o Início não manda começar com esta mensagem') + ')' });
   else {
     const r = BM.passo(reg, s.sessao, lead, txt, null, d === 'comecar');
-    r.msgs.forEach(t => s.linhas.push({ q:'bot', t })); s.total += r.msgs.length;
+    const quem = (estado.perfis || []).find(p => p.ativo && p.online && p.papel !== 'gestor'), at = quem ? 'a *' + quem.nome.split(' ')[0] + '*' : 'a nossa equipe';
+    r.msgs.forEach(t => s.linhas.push({ q:'bot', t: t.split('{atendente}').join(at) })); s.total += r.msgs.length;
     s.sessao = { ...r.sessao, atualizado_em:new Date().toISOString() }; Object.assign(s.set, r.set);
     const ver = { etapa:v => rotulo(ETAPAS, v), tipo:v => rotulo(TIPOS, v), setor:v => rotulo(SETORES, v), data_visita:v => String(v).split('-').reverse().join('/') };
-    const sets = Object.entries(r.set).filter(([k]) => k !== 'nota').map(([k, v]) => (BM.CAMPOS[k] || { etapa:'Etapa', tipo:'Interesse', setor:'Setor', etiqueta:'Etiqueta' }[k] || k) + ': ' + (ver[k] ? ver[k](v) : v));
+    const sets = Object.entries(r.set).filter(([k]) => k !== 'nota' && k !== 'distribuir').map(([k, v]) => (BM.CAMPOS[k] || { etapa:'Etapa', tipo:'Interesse', setor:'Setor', etiqueta:'Etiqueta' }[k] || k) + ': ' + (ver[k] ? ver[k](v) : v));
     if (sets.length) s.linhas.push({ q:'info', t:'No card → ' + sets.join(' · ') });
     if (r.set.nota) s.linhas.push({ q:'info', t:'No histórico → ' + r.set.nota });
+    if (r.set.distribuir) s.linhas.push({ q:'info', t: quem ? 'Entregue pra ' + quem.nome + ' (está Online)' : 'Ninguém Online: o lead fica na fila' });
     if (r.sessao.fim) s.linhas.push({ q:'info', t:'Fim do bot: ' + r.sessao.motivo });
   }
   botSimDesenhar();
