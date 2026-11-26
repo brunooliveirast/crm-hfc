@@ -402,6 +402,61 @@ label.marcar input{width:auto}
 .lin-equipe{display:grid;grid-template-columns:1fr 120px 130px 92px auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--linha)}
 .lin-equipe label{margin:0}
 .lin-equipe .e-peso-cx{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--suave)}
+.lin-prod{display:grid;grid-template-columns:1fr 110px 140px auto auto auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--linha)}
+.lin-prod label{margin:0}
+.grade-regras{display:grid;grid-template-columns:150px 90px 1fr 1fr;gap:6px 8px;align-items:center;font-size:13.5px;margin-top:6px}
+.grade-regras .cab{font-weight:600;color:var(--suave);font-size:12px}
+.itens-lead .item-l{display:grid;grid-template-columns:1fr 62px 92px auto;gap:6px;align-items:center;margin-top:6px}
+.itens-lead .item-l b{font-size:13.5px;text-align:right}
+.anuncio-lead{font-size:13px;background:var(--card2);border-radius:8px;padding:8px 10px;margin-top:10px}
+.msg .bot{color:var(--verde);font-weight:700}
+#ver-bot{display:flex;flex-direction:column;padding-bottom:12px}
+.bot-barra{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.bot-barra select,.bot-barra input{width:auto;max-width:230px}
+.bot-barra .selo{background:var(--card2);color:var(--suave)}
+.bot-barra .selo.ok{background:var(--verde-claro);color:var(--verde-esc)}
+.bot-area{flex:1;min-height:440px;display:grid;grid-template-columns:1fr 330px;gap:12px}
+.bot-palco{position:relative;overflow:hidden;border:1px solid var(--linha);border-radius:14px;background-color:var(--card2);background-image:radial-gradient(var(--linha) 1.2px,transparent 1.2px);background-size:22px 22px;touch-action:none;cursor:grab;min-height:440px}
+.bot-palco.puxando{cursor:grabbing}
+.bot-mundo{position:absolute;left:0;top:0;transform-origin:0 0}
+.bot-mundo svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.bot-mundo svg path{fill:none;stroke:var(--verde);stroke-width:2.5}
+.bot-mundo svg path.toque{stroke:transparent;stroke-width:18;pointer-events:stroke;cursor:pointer}
+.bot-mundo svg path.sel{stroke:var(--vinho);stroke-width:3.5}
+.bot-mundo svg path.temp{stroke-dasharray:6 5;stroke:var(--sol-2)}
+.bloco{position:absolute;width:214px;background:var(--card);border:2px solid var(--linha);border-radius:12px;box-shadow:var(--sombra);font-size:13px;user-select:none;-webkit-user-select:none}
+.bloco.sel{border-color:var(--sol);box-shadow:0 0 0 3px rgba(246,185,59,.35)}
+.bloco .bc{padding:7px 10px;border-radius:9px 9px 0 0;font-weight:700;cursor:move;color:#fff;background:#1E4A38;touch-action:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bloco[data-tipo=inicio] .bc{background:#2F7D5B}
+.bloco[data-tipo=menu] .bc{background:#6B1F1A}
+.bloco[data-tipo=pergunta] .bc{background:#8A5A12}
+.bloco[data-tipo=horario] .bc{background:#3E5C76}
+.bloco[data-tipo=acao] .bc{background:#5B4B8A}
+.bloco[data-tipo=humano] .bc,.bloco[data-tipo=fim] .bc{background:#4A4A4A}
+.bloco .bt{padding:7px 10px;color:var(--suave);white-space:pre-wrap;max-height:88px;overflow:hidden;line-height:1.35;word-break:break-word}
+.bloco .saidas{border-top:1px solid var(--linha)}
+.bloco .sd{position:relative;padding:5px 20px 5px 10px;text-align:right;font-size:12.5px;border-top:1px dashed var(--linha);white-space:nowrap;overflow:visible;text-overflow:ellipsis}
+.bloco .sd:first-child{border-top:0}
+.porta{position:absolute;width:18px;height:18px;border-radius:50%;background:var(--sol);border:3px solid var(--card);box-shadow:0 0 0 1px var(--sol-2);cursor:crosshair;touch-action:none}
+.bloco .sd .porta{right:-11px;top:50%;margin-top:-9px}
+.bloco .entrada{left:-11px;top:8px;background:var(--verde);box-shadow:0 0 0 1px var(--verde);cursor:default}
+.bot-zoom{position:absolute;right:10px;bottom:10px;display:flex;gap:6px;z-index:2}
+.bot-zoom button{width:38px;height:38px;border-radius:9px;border:1px solid var(--linha);background:var(--card);color:var(--texto);font-size:18px;line-height:1}
+.bot-lado{border:1px solid var(--linha);border-radius:14px;background:var(--card);padding:14px;overflow-y:auto;max-height:calc(100vh - 190px)}
+.bot-lado h3{margin:0 0 6px;font-size:16px}
+.bot-lado .op{display:flex;gap:6px;margin-top:6px}
+.bot-lado .op .btn{flex:0 0 auto}
+.bot-lado .dias{display:flex;flex-wrap:wrap;gap:4px 10px}
+.bot-lado .dias label{display:flex;gap:4px;align-items:center;margin:0;font-size:13.5px;color:var(--texto)}
+.bot-lado .dias input{width:auto}
+.bot-lado ul.dica{padding-left:18px}
+.sim-msgs{display:flex;flex-direction:column;gap:6px;max-height:360px;min-height:160px;overflow-y:auto;background:var(--card2);border-radius:10px;padding:10px;margin-bottom:8px}
+.sim-msgs .m{max-width:88%;padding:7px 10px;border-radius:10px;white-space:pre-wrap;font-size:13.5px;line-height:1.35}
+.sim-msgs .m.bot{background:var(--card);align-self:flex-start;border:1px solid var(--linha)}
+.sim-msgs .m.cli{background:var(--verde-claro);align-self:flex-end}
+.sim-msgs .m.info{align-self:center;font-size:12px;color:var(--suave);background:none;text-align:center;padding:2px}
+@media (max-width:900px){.bot-area{grid-template-columns:1fr}.bot-palco{min-height:62vh}.bot-lado{max-height:none}}
+@media (max-width:640px){.lin-prod{grid-template-columns:1fr 1fr}.grade-regras{grid-template-columns:1fr 70px}.grade-regras .cab:nth-child(n+3){display:none}.grade-regras [data-c=texto],.grade-regras [data-c=etiqueta]{grid-column:1/-1}}
 .selo.minha{background:var(--amarelo-claro);color:var(--amarelo)}
 .item-resp .de{display:flex;gap:6px;align-items:center;margin-bottom:6px;font-size:12px;color:var(--suave)}
 .item-resp.travado input,.item-resp.travado textarea{background:var(--card2)}
@@ -483,6 +538,7 @@ label.marcar input{width:auto}
     <button data-ver="equipe"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Equipe<span class="pino oculto" id="pino-chat"></span></button>
     <button data-ver="base"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>Base</button>
     <button data-ver="disparos" id="nav-disparos" class="oculto"><svg viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>Disparos</button>
+    <button data-ver="bot" id="nav-bot" class="oculto"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 4v4M9 13.5h.01M15 13.5h.01"/></svg>Bot</button>
     <button data-ver="ajustes" id="nav-ajustes" class="oculto"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Ajustes</button>
   </nav>
 
@@ -648,6 +704,27 @@ label.marcar input{width:auto}
       </div>
     </div>
 
+    <!-- BOT (gestor) -->
+    <div class="ver oculto" id="ver-bot">
+      <div class="bot-barra">
+        <select id="bot-fluxo" aria-label="Fluxo do bot"></select>
+        <input id="bot-nome" placeholder="Nome do fluxo" aria-label="Nome do fluxo">
+        <span class="selo" id="bot-status"></span>
+        <select id="bot-add" aria-label="Adicionar bloco"></select>
+        <button class="btn" type="button" id="bot-salvar">Salvar</button>
+        <button class="btn sec" type="button" id="bot-ativar">Ligar bot</button>
+        <button class="btn sec" type="button" id="bot-simular">▶ Testar</button>
+        <button class="btn sec" type="button" id="bot-novo">Em branco</button>
+        <button class="btn sec" type="button" id="bot-modelo">Modelo pronto</button>
+      </div>
+      <p class="dica" style="margin:0 0 8px">Arraste o bloco pelo título. Puxe a bolinha amarela de uma saída até outro bloco pra ligar. Toque numa linha pra apagar. O bot fica quieto se alguém da equipe falou com o cliente nas últimas 12h, e sai da conversa na hora em que um atendente responde.</p>
+      <div class="bot-area">
+        <div class="bot-palco" id="bot-palco"><div class="bot-mundo" id="bot-mundo"></div>
+          <div class="bot-zoom"><button type="button" data-bz="-" aria-label="Diminuir">−</button><button type="button" data-bz="0" aria-label="Ver tudo">⤢</button><button type="button" data-bz="+" aria-label="Aumentar">+</button></div></div>
+        <div class="bot-lado" id="bot-lado"></div>
+      </div>
+    </div>
+
     <!-- AJUSTES (gestor) -->
     <div class="ver oculto" id="ver-ajustes">
       <div class="cartela">
@@ -675,6 +752,45 @@ label.marcar input{width:auto}
           <option value="fila">Fila: cada vendedor puxa o próximo</option>
         </select>
         <p class="dica" id="aj-dist-info"></p>
+      </div>
+      <div class="cartela">
+        <h2>Atendimento</h2>
+        <p class="sub">Como a equipe aparece pro cliente e o que cada atendente enxerga.</p>
+        <label class="marcar"><input type="checkbox" id="aj-assin"> Assinar as mensagens com o nome do atendente</label>
+        <p class="dica">O cliente recebe <b>*Aline:*</b> em negrito na primeira linha. Vale pra texto (áudio, foto e vídeo saem sem).</p>
+        <label for="aj-escopo">O que o atendente vê</label>
+        <select id="aj-escopo" style="max-width:440px"><option value="todos">Todos os leads (a equipe toda vê tudo)</option><option value="meus">Só os leads dele (e os sem dono do setor dele)</option></select>
+        <p class="dica">Gestor sempre vê tudo. Com "só os dele", o lead transferido some da tela de quem passou.</p>
+      </div>
+      <div class="cartela">
+        <h2>Regras automáticas</h2>
+        <p class="sub">O CRM marca o lembrete sozinho. <b>Nenhuma regra manda mensagem pro cliente</b>: elas jogam o lead no Follow-up de quem atende.</p>
+        <h3 style="font-size:15px;margin:12px 0 2px">Quando o card entra na etapa</h3>
+        <div class="grade-regras" id="aj-auto"></div>
+        <h3 style="font-size:15px;margin:16px 0 2px">Cadência: lead parado sem conversa</h3>
+        <label class="marcar" style="margin-top:6px"><input type="checkbox" id="aj-cad"> Ligar a cadência</label>
+        <div class="grade-regras" id="aj-cad-dias" style="grid-template-columns:150px 90px"></div>
+        <p class="dica">Ex.: 2 dias em "Orçamento enviado" = se ninguém conversou com o cliente por 2 dias e ele está sem lembrete, o CRM marca "retomar contato" pra agora e anota no histórico. Confere de 5 em 5 minutos.</p>
+        <div class="acoes" style="max-width:220px"><button class="btn" type="button" id="aj-salvar-regras">Salvar regras</button></div>
+      </div>
+      <div class="cartela">
+        <h2>Produtos</h2>
+        <p class="sub">O que o hotel vende. Na ficha do lead o atendente escolhe os produtos e o valor soma sozinho. Preço quem define é o hotel.</p>
+        <div id="aj-prod"></div>
+        <div class="acoes" style="max-width:220px"><button class="btn sec" type="button" id="aj-prod-add">+ Produto</button></div>
+      </div>
+      <div class="cartela">
+        <h2>Conversões pra Meta</h2>
+        <p class="sub">Avisa o Facebook/Instagram quem virou lead e quem comprou, pra os anúncios acharem mais gente parecida.</p>
+        <label class="marcar"><input type="checkbox" id="aj-capi"> Enviar conversões pro pixel do hotel</label>
+        <p class="dica">Manda <b>Lead</b> quando o card nasce e <b>Purchase</b> quando vira Vendido com "pago direto com o hotel". Venda da loja online não sai daqui: a Planne já manda (senão conta duas vezes). Telefone e e-mail vão criptografados.</p>
+        <p class="dica" id="aj-capi-st"></p>
+      </div>
+      <div class="cartela">
+        <h2>Bot de pré-atendimento</h2>
+        <p class="sub">Responde quem chega, pergunta o básico e passa pro atendente com tudo anotado.</p>
+        <p class="dica" id="aj-bot-st"></p>
+        <div class="acoes" style="max-width:260px"><button class="btn sec" type="button" id="aj-bot-abrir">Abrir editor do bot</button></div>
       </div>
       <div class="cartela">
         <h2>Equipe</h2>
@@ -741,6 +857,9 @@ label.marcar input{width:auto}
           <div><label for="c-criancas">Crianças</label><input id="c-criancas" type="number" min="0" inputmode="numeric"></div>
           <div><label for="c-valor">Valor da venda (R$)</label><input id="c-valor" inputmode="decimal" placeholder="0,00"></div>
           <div><label class="marcar" style="margin-top:34px"><input id="c-pets" type="checkbox"> Vai levar pet 🐾</label></div>
+          <div class="inteira oculto" id="box-pag"><label for="c-pag">Onde o cliente pagou</label><select id="c-pag"><option value="">— não sei —</option><option value="planne">Loja online (Planne)</option><option value="direto">Direto com o hotel (Pix, cartão, balcão)</option></select></div>
+          <div class="inteira itens-lead oculto" id="box-itens"><label>Produtos</label><div id="c-itens"></div><button type="button" class="btn sec mini" id="c-item-add" style="margin-top:6px">+ produto</button><p class="dica" style="margin-top:4px">Com produto escolhido, o valor da venda soma sozinho.</p></div>
+          <div class="inteira anuncio-lead oculto" id="c-anuncio"></div>
         </div>
       </div>
 
@@ -860,6 +979,7 @@ label.marcar input{width:auto}
 </div>
 
 <script src="marca.js"></script>
+<script src="bot-motor.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 /* =====================================================================
@@ -883,8 +1003,11 @@ const ETIQUETAS_RAPIDAS = ['aniversário','feriado','casal','família com crian�
 const PARADO_DIAS = { novo:1, atendimento:2, orcamento:2, negociando:3 }; // card fica vermelho depois disso
 const FECHADAS = ['ganho','perdido'];
 const SETORES = [['comercial','Comercial'],['reservas','Reservas'],['financeiro','Financeiro']];
-const TITULOS = { painel:'Painel', funil:'Funil de vendas', conversas:'Conversas', followup:'Follow-up', equipe:'Equipe', base:'Base de leads', disparos:'Disparos', ajustes:'Ajustes' };
+const TITULOS = { painel:'Painel', funil:'Funil de vendas', conversas:'Conversas', followup:'Follow-up', equipe:'Equipe', base:'Base de leads', disparos:'Disparos', bot:'Bot de pré-atendimento', ajustes:'Ajustes' };
 const rotulo = (lista, v) => (lista.find(x => x[0] === v) || [, v])[1];
+function jsonCfg(v, padrao){ if (v && typeof v === 'object') return v; try { return JSON.parse(v) || padrao; } catch { return padrao; } }
+// regras de "quando o card entra na etapa" (config.automacoes). O banco aplica; a tela só mostra.
+function regrasAuto(cfg){ return jsonCfg((cfg || estado.config || {}).automacoes, {}); }
 
 /* ---------- utilidades ---------- */
 const $ = s => document.querySelector(s);
@@ -982,7 +1105,8 @@ if (!MODO_DEMO) {
       const env = await todas(() => sb.from('campanha_envios').select('id,campanha_id')), n = {}; env.forEach(e => n[e.campanha_id] = (n[e.campanha_id] || 0) + 1);
       return data.map(c => ({ ...c, enviados: n[c.id] || 0 })); },
     async criar(l){ const { data, error } = await sb.from('leads').insert(l).select().single(); if (error) throw error; return data; },
-    async mudar(id, l){ const { data, error } = await sb.from('leads').update(l).eq('id', id).select().single(); if (error) throw error; return data; },
+    // sem RETURNING: com "só os meus", quem transfere o lead deixa de enxergá-lo e o retorno daria erro
+    async mudar(id, l){ const { error } = await sb.from('leads').update(l).eq('id', id); if (error) throw error; const { data } = await sb.from('leads').select('*').eq('id', id).maybeSingle(); return data || { id, ...l }; },
     async porTelefone(tel){ const { data } = await sb.from('leads').select('*').eq('telefone', tel).eq('arquivado', false).maybeSingle(); return data; },
     async historico(id){ const { data, error } = await sb.from('historico').select('*').eq('lead_id', id).order('criado_em', { ascending:false }); if (error) throw error; return data; },
     async anotar(id, texto, autor, tipo){ const { error } = await sb.from('historico').insert({ lead_id:id, tipo: tipo || 'nota', texto, autor }); if (error) throw error; },
@@ -1020,12 +1144,23 @@ if (!MODO_DEMO) {
     async waPedir(acao, numero){ const { error } = await sb.rpc('wa_pedir', { p_acao:acao, p_numero:numero || null }); if (error) throw error; },
     aoSessao(fn){ sb.channel('wa-sessao').on('postgres_changes', { event:'*', schema:'public', table:'wa_sessao' }, x => fn(x.new)).subscribe(); },
     aoWhats(fn){ sb.channel('wa').on('postgres_changes', { event:'*', schema:'public', table:'wa_mensagens' }, p => fn(p.new)).subscribe(); },
+    async produtos(){ const { data, error } = await sb.from('produtos').select('*').order('ordem').order('nome'); if (error) throw error; return data; },
+    async salvarProduto(p){ const d = { nome:p.nome, preco:p.preco, tipo:p.tipo || null, ativo:p.ativo }; const { error } = await (p.id ? sb.from('produtos').update(d).eq('id', p.id) : sb.from('produtos').insert(d)); if (error) throw error; },
+    async apagarProduto(id){ const { error } = await sb.from('produtos').delete().eq('id', id); if (error) throw error; },
+    async fluxos(){ const { data, error } = await sb.from('bot_fluxos').select('*').order('id'); if (error) throw error; return data; },
+    async salvarFluxo(f){ const d = { nome:f.nome, dados:f.dados, atualizado_em:new Date().toISOString() };
+      if (f.id) { const { error } = await sb.from('bot_fluxos').update(d).eq('id', f.id); if (error) throw error; return f.id; }
+      const { data, error } = await sb.from('bot_fluxos').insert(d).select('id').single(); if (error) throw error; return data.id; },
+    async ativarFluxo(id){ let r = await sb.from('bot_fluxos').update({ ativo:false }).eq('ativo', true); if (r.error) throw r.error; if (id) { r = await sb.from('bot_fluxos').update({ ativo:true }).eq('id', id); if (r.error) throw r.error; } },
+    async apagarFluxo(id){ const { error } = await sb.from('bot_fluxos').delete().eq('id', id); if (error) throw error; },
+    async conversoes(){ const { data, error } = await sb.from('conversoes').select('evento,enviado_em,erro,tentativas,criado_em').order('id', { ascending:false }).limit(300); if (error) throw error; return data; },
     aoMudar(fn){ sb.channel('leads').on('postgres_changes', { event:'*', schema:'public', table:'leads' }, fn).subscribe(); }
   };
 } else {
   // Dados de exemplo (fictícios, gerados). Ficam só na memória desta aba.
   const eu = { id:'u1', email:'demo@coninho.local' };
-  let CFG = { distribuicao:'peso', whatsapp:'ligado', whatsapp_numero:'31900000000', whatsapp_nome:'Hotel (exemplo)' };
+  let CFG = { distribuicao:'peso', whatsapp:'ligado', whatsapp_numero:'31900000000', whatsapp_nome:'Hotel (exemplo)', escopo:'todos', assinatura:'desligado', capi:'desligado',
+    cadencia:'{"ativo":false,"dias":{"atendimento":2,"orcamento":2,"negociando":3}}', automacoes:'{"orcamento":{"dias":1,"texto":"cobrar resposta do orçamento"}}' };
   let P = [{id:'u1',nome:'Gestão',papel:'gestor',ativo:true,peso:0,setor:'comercial'},{id:'u2',nome:'Aline',papel:'vendedor',ativo:true,peso:50,setor:'comercial'},
            {id:'u3',nome:'Leticia',papel:'vendedor',ativo:true,peso:30,setor:'comercial'},{id:'u4',nome:'Matheus',papel:'vendedor',ativo:true,peso:20,setor:'reservas'},
            {id:'u5',nome:'Rene',papel:'vendedor',ativo:true,peso:25,setor:'comercial'},{id:'u6',nome:'Juliana',papel:'vendedor',ativo:true,peso:25,setor:'comercial'}];
@@ -1067,6 +1202,8 @@ if (!MODO_DEMO) {
   let MSG = [{ id:1, autor:'u2', canal:'geral', para:null, lead_id:null, texto:'Bom dia, equipe! (mensagem de exemplo)', criado_em:iso(agora - 3 * 3600000) },
              { id:2, autor:'u3', canal:null, para:'u1', lead_id:'d7', texto:'Esse aqui pediu desconto pra grupo, posso dar? (exemplo)', criado_em:iso(agora - 1800000) }];
   let CAMP = [], ENV = [];
+  let PROD = [{ id:1, nome:'Exemplo: Day Use adulto', preco:100, tipo:'dayuse', ativo:true }, { id:2, nome:'Exemplo: Day Use criança', preco:50, tipo:'dayuse', ativo:true }, { id:3, nome:'Exemplo: diária casal', preco:500, tipo:'hospedagem', ativo:true }], FLX = [];
+  L[0].origem = 'anuncio'; L[0].anuncio_id = '120000000000001'; L[0].anuncio_titulo = 'Exemplo: anúncio Day Use família'; L[3].origem = 'anuncio'; L[3].anuncio_id = '120000000000002'; L[3].anuncio_titulo = 'Exemplo: anúncio feriado';
   // conversas de exemplo (o demo finge que o número está ligado)
   let WA = [], waId = 1, waCb = null;
   const FALAS = [['entrada','Oi, boa tarde! Vi o anúncio de vocês, como funciona? (exemplo)'],['saida','Oi! Tudo bem? Me conta pra quantas pessoas seria e qual data vocês estão pensando. (exemplo)'],
@@ -1106,6 +1243,9 @@ if (!MODO_DEMO) {
       if (n.telefone) n.telefone = soDigitos(n.telefone); valida(n);
       const t = new Date().toISOString();
       if (n.etapa !== a.etapa){ n.etapa_desde = t; if (n.etapa === 'ganho') n.ganho_em = t; if (n.etapa === 'perdido') n.perdido_em = t;
+        const r = regrasAuto(CFG)[n.etapa]; // o mesmo que o gatilho do banco faz
+        if (r && r.dias && !FECHADAS.includes(n.etapa) && !(n.proximo_contato && new Date(n.proximo_contato) > new Date())) { const d = new Date(); d.setDate(d.getDate() + Number(r.dias)); d.setHours(10,0,0,0); n.proximo_contato = d.toISOString(); if (r.texto) n.proximo_passo = r.texto; }
+        if (r && r.etiqueta && !(n.etiquetas || []).includes(r.etiqueta)) n.etiquetas = [...(n.etiquetas || []), r.etiqueta];
         H.push({ id:hid++, lead_id:id, autor:eu.id, tipo:'etapa', de:a.etapa, para:n.etapa, criado_em:t }); }
       if (n.responsavel !== a.responsavel) H.push({ id:hid++, lead_id:id, autor:eu.id, tipo:'responsavel', de:a.responsavel, para:n.responsavel, criado_em:t });
       L[i] = n; return {...n}; },
@@ -1137,6 +1277,14 @@ if (!MODO_DEMO) {
     async waSessao(){ return { estado:'conectado', numero:'5531999990000', nome:'Demonstração', batida_em:new Date().toISOString(), conectado_desde:new Date(Date.now() - 3 * 86400000).toISOString() }; },
     async waPedir(){ throw { message:'no modo demonstração a conexão é só de exemplo' }; },
     aoSessao(){},
+    async produtos(){ return PROD.map(p => ({...p})); },
+    async salvarProduto(p){ if (p.id) Object.assign(PROD.find(x => x.id === p.id), p); else PROD.push({ ...p, id:Date.now() }); },
+    async apagarProduto(id){ PROD = PROD.filter(x => x.id !== id); },
+    async fluxos(){ return JSON.parse(JSON.stringify(FLX)); },
+    async salvarFluxo(f){ const d = JSON.parse(JSON.stringify({ nome:f.nome, dados:f.dados })); if (f.id) { Object.assign(FLX.find(x => x.id === f.id), d); return f.id; } const n = { id:Date.now(), ativo:false, ...d }; FLX.push(n); return n.id; },
+    async ativarFluxo(id){ FLX.forEach(f => f.ativo = f.id === id); },
+    async apagarFluxo(id){ FLX = FLX.filter(x => x.id !== id); },
+    async conversoes(){ return []; },
     aoMudar(){}
   };
 }
@@ -1145,7 +1293,7 @@ if (!MODO_DEMO) {
    ESTADO
    ===================================================================== */
 const estado = { usuario:null, meu:null, perfis:[], leads:[], achados:[], ver:'funil', filtroTipo:'', filtroResp:'', busca:'', aberto:null, quente:false,
-  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, wa:{ convs:[], lead:null, msgs:[], aberto:false, erro:null, extra:null, arquivo:null }, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'mes', ref:new Date(), chave:'mes' }, rk:{ ordem:'valor', tipo:'' }, feed:[], avModo:'geral' };
+  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, wa:{ convs:[], lead:null, msgs:[], aberto:false, erro:null, extra:null, arquivo:null }, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'mes', ref:new Date(), chave:'mes' }, rk:{ ordem:'valor', tipo:'' }, feed:[], avModo:'geral', produtos:[], itens:[] };
 const nomeDe = id => estado.perfis.find(p => p.id === id)?.nome || '';
 const ehGestor = () => estado.meu?.papel === 'gestor';
 const cachePer = new Map();
@@ -1202,8 +1350,9 @@ async function iniciar(){
   try {
     await carregarPerfis();
     $('#quem').textContent = (estado.meu?.nome || estado.usuario.email) + (ehGestor() ? ' · gestão' : '');
-    $('#nav-ajustes').classList.toggle('oculto', !ehGestor()); $('#nav-disparos').classList.toggle('oculto', !ehGestor());
+    $('#nav-ajustes').classList.toggle('oculto', !ehGestor()); $('#nav-disparos').classList.toggle('oculto', !ehGestor()); $('#nav-bot').classList.toggle('oculto', !ehGestor());
     await carregarRespostas();
+    try { estado.produtos = await api.produtos(); } catch { estado.produtos = []; }
     await recarregar(true);
     await carregarMsgs();
     await waCarregar();
@@ -1217,7 +1366,7 @@ async function iniciar(){
     });
     api.aoMensagem(async m => { await carregarMsgs(); if (m && m.autor !== estado.usuario.id && !(estado.ver === 'equipe' && chaveConv(m) === estado.conversa)) toast('Mensagem de ' + (nomeDe(m.autor) || 'equipe')); if (estado.ver === 'equipe') desenharEquipe(); atualizarPinoChat(); });
     const salva = guarda.ler('ver');
-    ir(TITULOS[salva] && (!['ajustes','disparos'].includes(salva) || ehGestor()) ? salva : (ehGestor() ? 'painel' : 'funil'));
+    ir(TITULOS[salva] && (!['ajustes','disparos','bot'].includes(salva) || ehGestor()) ? salva : (ehGestor() ? 'painel' : 'funil'));
     api.aoMudar(() => { clearTimeout(iniciar.t); iniciar.t = setTimeout(() => recarregar(), 400); });
   } catch (e) { toast(traduzErro(e)); }
 }
@@ -1254,7 +1403,7 @@ function ir(v){
   desenhar();
 }
 function desenhar(){
-  ({ painel:desenharPainel, funil:desenharFunil, conversas:desenharConversas, followup:desenharFollow, equipe:desenharEquipe, base:desenharBase, disparos:desenharDisparos, ajustes:desenharAjustes })[estado.ver]();
+  ({ painel:desenharPainel, funil:desenharFunil, conversas:desenharConversas, followup:desenharFollow, equipe:desenharEquipe, base:desenharBase, disparos:desenharDisparos, bot:desenharBot, ajustes:desenharAjustes })[estado.ver]();
   atualizarPinoChat();
   const meus = estado.leads.filter(l => !FECHADAS.includes(l.etapa) && l.responsavel === estado.usuario.id && ['atrasado','hoje'].includes(situacao(l))).length;
   $('#pino-fu').textContent = meus; $('#pino-fu').classList.toggle('oculto', !meus);
@@ -1294,6 +1443,8 @@ function calcular(d, ini, fim){
   c.atendentes = c.atPor('');
   const agrupa = (lista, campo, rot) => { const m = new Map(); lista.forEach(l => m.set(l[campo] || '—', (m.get(l[campo] || '—') || 0) + 1)); return [...m].map(([k, n]) => ({ k, nome: rot ? rotulo(rot, k) : k, n })).sort((x, y) => y.n - x.n); };
   c.origens = agrupa(novos, 'origem', ORIGENS).map(o => { const g = ganhos.filter(l => l.origem === o.k); return { ...o, vendas:g.length, valor:soma(g) }; });
+  const anDe = l => l.anuncio_titulo || (l.anuncio_id ? 'Anúncio ' + l.anuncio_id : '');
+  c.anuncios = agrupa(novos.filter(anDe).map(l => ({ an:anDe(l) })), 'an').map(o => { const g = ganhos.filter(l => anDe(l) === o.k); return { ...o, vendas:g.length, valor:soma(g) }; });
   c.tipos = TIPOS.map(([k, nome]) => { const g = ganhos.filter(l => l.tipo === k); return { nome, n:novos.filter(l => l.tipo === k).length, vendas:g.length, valor:soma(g) }; });
   c.motivos = agrupa(perdidos, 'motivo_perda');
   return c;
@@ -1385,6 +1536,7 @@ async function desenharPainel(){
       <section class="cartela"><h2>Por que perdemos</h2><p class="sub">Motivo marcado em cada lead perdido no período.</p>
         ${barras(c.motivos, Math.max(1, ...c.motivos.map(o => o.n)), o => o.n, 'vinho')}</section>
     </div>
+    ${c.anuncios.length ? `<section class="cartela"><h2>Por anúncio</h2><p class="sub">Leads que chegaram clicando num anúncio de WhatsApp. O CRM lê sozinho de qual anúncio veio.</p>${barras(c.anuncios, Math.max(1, ...c.anuncios.map(o => o.n)), o => `${o.n} leads · ${o.vendas} vendas · ${brl0(o.valor)}`)}</section>` : ''}
     <section class="cartela"><h2>Texto pronto pro WhatsApp</h2><p class="sub">Relatório de ${esc(rot)}. Copie e cole no grupo: já sai com o negrito do WhatsApp.</p>
       <pre class="texto" id="rel-texto"></pre><button class="btn" id="btn-copiar">Copiar relatório</button></section>`;
   $('#rel-texto').textContent = texto;
@@ -1709,6 +1861,7 @@ async function desenharAjustes(){
       <label class="marcar"><input class="e-ativo" type="checkbox" ${p.ativo ? 'checked' : ''} ${eu ? 'disabled' : ''}> Ativo</label>
       <button class="btn sec mini" type="button" data-salvar-perfil>Salvar</button>
     </div>`; }).join('');
+  desenharAjustesNovos();
 }
 
 /* =====================================================================
@@ -1728,14 +1881,27 @@ function ajustarCampos(){
   if (ult >= 0 && ult < 4) $('#btn-avancar').textContent = 'Mover pra ' + ETAPAS[ult + 1][1] + ' →';
   $('#btn-ganho').classList.toggle('oculto', !aberto); $('#btn-perdido').classList.toggle('oculto', !aberto);
   $('#acoes-equipe').classList.toggle('oculto', !estado.aberto);
+  $('#box-pag').classList.toggle('oculto', etapa !== 'ganho');
+  $('#box-itens').classList.toggle('oculto', !(estado.produtos || []).some(p => p.ativo) && !estado.itens.length);
 }
-// Orçamento enviado sem retorno marcado: sugere amanhã 10h (dá pra trocar)
+// Etapa com regra automática (Ajustes) e sem retorno marcado: já preenche o lembrete (dá pra trocar)
 function sugerirRetorno(){
-  if ($('#c-etapa').value === 'orcamento' && !$('#c-proximo').value) {
-    $('#c-proximo').value = isoParaLocal(quandoAtalho('amanha').toISOString());
-    if (!$('#c-passo').value) $('#c-passo').value = 'cobrar resposta do orçamento';
+  const r = regrasAuto()[$('#c-etapa').value];
+  if (r && r.dias && !$('#c-proximo').value) {
+    const d = new Date(); d.setDate(d.getDate() + Number(r.dias)); d.setHours(10,0,0,0);
+    $('#c-proximo').value = isoParaLocal(d.toISOString());
+    if (!$('#c-passo').value && r.texto) $('#c-passo').value = r.texto;
   }
 }
+// ---------- produtos no card ----------
+function desenharItens(){
+  const ativos = (estado.produtos || []).filter(p => p.ativo);
+  $('#c-itens').innerHTML = estado.itens.map((it, i) => { const ops = ativos.concat(it.id && !ativos.some(p => String(p.id) === String(it.id)) ? [{ id:it.id, nome:it.nome, preco:it.preco }] : []);
+    return `<div class="item-l" data-i="${i}"><select class="it-prod" aria-label="Produto"><option value="">— produto —</option>${ops.map(p => `<option value="${esc(p.id)}" ${String(p.id) === String(it.id) ? 'selected' : ''}>${esc(p.nome)} · ${brl(p.preco)}</option>`).join('')}</select>
+      <input class="it-qtd" type="number" min="1" inputmode="numeric" value="${it.qtd || 1}" aria-label="Quantidade"><b>${brl((it.preco || 0) * (it.qtd || 1))}</b>
+      <button type="button" class="btn sec mini it-tirar" aria-label="Tirar produto">×</button></div>`; }).join('');
+}
+function somarItens(){ if (!estado.itens.some(i => i.id)) return; const t = estado.itens.filter(i => i.id).reduce((a, i) => a + Number(i.preco || 0) * Number(i.qtd || 1), 0); $('#c-valor').value = t.toFixed(2).replace('.', ','); }
 function pedirFecho(etapa){
   $('#c-etapa').value = etapa; ajustarCampos();
   if (etapa === 'ganho') { $('#f-erro').textContent = 'Confirme o valor da venda e salve.'; $('#c-valor').focus(); }
@@ -1766,6 +1932,10 @@ async function abrirFicha(lead, etapaForcada){
   desenharRapidas();
   $('#c-resposta').value = '';
   $('#c-obs').value = l.observacoes || '';
+  estado.itens = (l.itens || []).map(i => ({ ...i })); desenharItens();
+  $('#c-pag').value = l.pagamento || '';
+  const an = $('#c-anuncio'); an.classList.toggle('oculto', !l.anuncio_titulo && !l.anuncio_id);
+  an.innerHTML = '📣 Veio do anúncio: <b>' + esc(l.anuncio_titulo || 'sem título') + '</b>' + (l.anuncio_id ? ' <small>(id ' + esc(l.anuncio_id) + ')</small>' : '');
   $('#f-erro').textContent = '';
   $('#f-dup').classList.add('oculto');
   $('#nota').value = '';
@@ -1812,7 +1982,9 @@ function lerFicha(){
     motivo_perda: etapa === 'perdido' ? ($('#c-motivo').value || null) : null,
     etiquetas: lerEtiquetas(),
     pets: $('#c-pets').checked,
-    observacoes: $('#c-obs').value.trim() || null
+    observacoes: $('#c-obs').value.trim() || null,
+    itens: estado.itens.filter(i => i.id).map(({ id, nome, preco, qtd }) => ({ id, nome, preco:Number(preco), qtd:Number(qtd) || 1 })),
+    pagamento: etapa === 'ganho' ? ($('#c-pag').value || null) : null
   };
 }
 
@@ -1972,7 +2144,7 @@ function desenharConversas(){
   $('#wa-msgs').innerHTML = w.msgs.map(m => { const minha = m.direcao === 'saida';
     const st = !minha ? '' : m.status === 'falhou' ? ` · <span class="falhou" title="${esc(m.erro || '')}">não enviada${m.erro ? ': ' + esc(m.erro) : ''}</span>` : ['pendente', 'enviando'].includes(m.status) ? (waSit() === 'conectado' || !zs.s ? ' · enviando…' : ' · 🕓 na fila: sai quando o WhatsApp reconectar') : m.status === 'lida' ? ' · ✓✓ lida' : m.status === 'entregue' ? ' · ✓✓' : ' · ✓';
     const midia = m.midia_url ? (m.tipo === 'imagem' ? `<img src="${esc(m.midia_url)}" alt="Imagem" loading="lazy">` : m.tipo === 'video' ? `<video src="${esc(m.midia_url)}" controls preload="metadata"></video>` : m.tipo === 'audio' ? `<audio src="${esc(m.midia_url)}" controls preload="none"></audio>` : `<a href="${esc(m.midia_url)}" target="_blank" rel="noopener">📎 abrir ${esc(m.tipo)}</a>`) : (m.tipo !== 'texto' ? `<i>[${esc(m.tipo)}]</i>` : '');
-    return `<div class="msg ${minha ? 'minha' : ''}"><div class="q">${minha ? esc(nomeDe(m.autor) || 'equipe') + ' · ' : ''}${horaBR(m.criado_em)}${st}</div>${midia}${m.texto ? `<div class="t">${esc(m.texto)}</div>` : ''}</div>`; }).join('')
+    return `<div class="msg ${minha ? 'minha' : ''}"><div class="q">${minha ? (m.bot ? '<span class="bot">🤖 Bot</span>' : esc(nomeDe(m.autor) || 'equipe')) + ' · ' : ''}${horaBR(m.criado_em)}${st}</div>${midia}${m.texto ? `<div class="t">${esc(m.texto)}</div>` : ''}</div>`; }).join('')
     || `<div class="vazio" style="margin:auto;text-align:center">${c ? 'Nenhuma mensagem ainda com ' + esc(c.nome) + '.' : 'As conversas dos clientes aparecem aqui.'}</div>`;
   $('#wa-msgs').scrollTop = $('#wa-msgs').scrollHeight;
   const ultEntrada = [...w.msgs].reverse().find(m => m.direcao === 'entrada'), fora = c && (!ultEntrada || Date.now() - new Date(ultEntrada.criado_em).getTime() > 24 * 3600000);
@@ -1993,6 +2165,8 @@ async function waEnviarMsg(){
     // Respondeu um lead que estava em Novo: ele já foi atendido, então sai do Novo e fica com quem respondeu
     const l = waConv(id);
     if (l && l.etapa === 'novo') { try { await api.mudar(id, { etapa:'atendimento', responsavel: l.responsavel || estado.usuario.id }); await recarregar(true); toast(`${l.nome} → Em atendimento`); } catch {} }
+    // o bot tinha passado pra equipe: alguém respondeu, tira a etiqueta
+    if (l && (l.etiquetas || []).includes('aguardando atendente')) { try { await api.mudar(id, { etiquetas: l.etiquetas.filter(x => x !== 'aguardando atendente') }); l.etiquetas = l.etiquetas.filter(x => x !== 'aguardando atendente'); } catch {} }
     if (w.lead === id) w.msgs = await api.waMensagens(id); if (w.extra?.id === id) w.extra = null; await waCarregar(); }
   catch (e) { prov.status = 'falhou'; toast('⚠️ Mensagem não enviada: ' + traduzErro(e)); }
   if (estado.ver === 'conversas') desenharConversas();
@@ -2301,10 +2475,354 @@ async function moverEtapa(lead, etapa){
   if ((etapa === 'ganho' && lead.valor == null) || (etapa === 'perdido' && !lead.motivo_perda)) { abrirFicha(lead, etapa); return; }
   const mudanca = { etapa };
   if (FECHADAS.includes(etapa)) { mudanca.proximo_contato = null; mudanca.proximo_passo = null; }
-  if (etapa === 'orcamento' && !lead.proximo_contato) { mudanca.proximo_contato = quandoAtalho('amanha').toISOString(); if (!lead.proximo_passo) mudanca.proximo_passo = 'cobrar resposta do orçamento'; }
-  try { await api.mudar(lead.id, mudanca); await waCarregar(); await recarregar(); toast(`${lead.nome} → ${rotulo(ETAPAS, etapa)}${etapa === 'orcamento' && mudanca.proximo_contato ? ' · retorno amanhã 10h' : ''}`); }
+  const r = regrasAuto()[etapa], lembra = r && r.dias && !FECHADAS.includes(etapa) && !(lead.proximo_contato && new Date(lead.proximo_contato) > new Date());
+  try { await api.mudar(lead.id, mudanca); await waCarregar(); await recarregar(); toast(`${lead.nome} → ${rotulo(ETAPAS, etapa)}${lembra ? ' · retorno em ' + r.dias + (Number(r.dias) === 1 ? ' dia' : ' dias') : ''}`); }
   catch (err) { toast(traduzErro(err)); }
 }
+
+/* =====================================================================
+   AJUSTES NOVOS — atendimento, regras automáticas, produtos, conversões, bot
+   ===================================================================== */
+const ETAPAS_ABERTAS = ETAPAS.filter(e => !FECHADAS.includes(e[0]));
+async function desenharAjustesNovos(){
+  const cfg = estado.config, au = regrasAuto(), cad = jsonCfg(cfg.cadencia, {});
+  $('#aj-assin').checked = cfg.assinatura === 'ligado';
+  $('#aj-escopo').value = cfg.escopo === 'meus' ? 'meus' : 'todos';
+  $('#aj-capi').checked = cfg.capi === 'ligado';
+  $('#aj-auto').innerHTML = '<span class="cab">Etapa</span><span class="cab">Lembrar em (dias)</span><span class="cab">O que fazer</span><span class="cab">Pôr etiqueta</span>' +
+    ETAPAS.filter(e => e[0] !== 'perdido').map(([k, r]) => { const a = au[k] || {}, venda = k === 'ganho';
+      return `<span>${esc(r)}</span><input data-auto="${k}" data-c="dias" type="number" min="0" max="60" inputmode="numeric" value="${a.dias ?? ''}" ${venda ? 'disabled title="Vendido não tem lembrete"' : ''} aria-label="Dias em ${esc(r)}">` +
+        `<input data-auto="${k}" data-c="texto" value="${esc(a.texto || '')}" placeholder="${venda ? '—' : 'ex.: cobrar resposta'}" ${venda ? 'disabled' : ''} aria-label="O que fazer em ${esc(r)}">` +
+        `<input data-auto="${k}" data-c="etiqueta" value="${esc(a.etiqueta || '')}" placeholder="${venda ? 'ex.: pós-venda' : 'opcional'}" aria-label="Etiqueta em ${esc(r)}">`; }).join('');
+  $('#aj-cad').checked = !!cad.ativo;
+  $('#aj-cad-dias').innerHTML = '<span class="cab">Etapa</span><span class="cab">Dias parado</span>' +
+    ETAPAS_ABERTAS.map(([k, r]) => `<span>${esc(r)}</span><input data-cad="${k}" type="number" min="0" max="60" inputmode="numeric" value="${(cad.dias || {})[k] ?? ''}" aria-label="Dias parado em ${esc(r)}">`).join('');
+  desenharProdutos();
+  try {
+    const cv = await api.conversoes(), env = cv.filter(c => c.enviado_em).length, fila = cv.filter(c => !c.enviado_em && c.tentativas < 5).length, err = cv.find(c => c.erro && !c.enviado_em);
+    $('#aj-capi-st').textContent = cv.length ? `Últimas ${cv.length}: ${env} enviadas · ${fila} na fila${err ? ' · ⚠️ erro: ' + err.erro : ''}.` : (cfg.capi === 'ligado' ? 'Ligado. Nenhuma conversão ainda.' : 'Desligado.');
+  } catch { $('#aj-capi-st').textContent = '⚠️ Não consegui ler o status das conversões.'; }
+  try {
+    const f = await api.fluxos(), at = f.find(x => x.ativo);
+    $('#aj-bot-st').innerHTML = at ? `✅ Ligado: <b>${esc(at.nome)}</b>.` : (f.length ? `Desligado (${f.length} fluxo salvo, nenhum ligado).` : 'Nenhum fluxo ainda. O editor já abre com um modelo pronto pra ajustar.');
+  } catch { $('#aj-bot-st').textContent = '⚠️ Não consegui ler o bot.'; }
+}
+function desenharProdutos(){
+  const ps = estado.produtos || [];
+  $('#aj-prod').innerHTML = ps.map((p, i) => `<div class="lin-prod" data-i="${i}">
+      <input class="p-nome" value="${esc(p.nome)}" placeholder="Nome (ex.: Day Use adulto)" aria-label="Nome do produto">
+      <input class="p-preco" inputmode="decimal" value="${p.preco != null ? String(p.preco).replace('.', ',') : ''}" placeholder="Preço" aria-label="Preço">
+      <select class="p-tipo" aria-label="Tipo"><option value="">Qualquer tipo</option>${TIPOS.map(([v, r]) => `<option value="${v}" ${p.tipo === v ? 'selected' : ''}>${r}</option>`).join('')}</select>
+      <label class="marcar"><input class="p-ativo" type="checkbox" ${p.ativo ? 'checked' : ''}> Ativo</label>
+      <button class="btn sec mini" type="button" data-p-salvar>Salvar</button>
+      <button class="btn sec mini" type="button" data-p-apagar aria-label="Apagar produto">🗑</button></div>`).join('') || '<p class="dica">Nenhum produto ainda.</p>';
+}
+async function salvarCfg(k, v, msg){ try { await api.salvarConfig(k, v); estado.config[k] = v; toast(msg); } catch (err) { toast(traduzErro(err)); desenharAjustes(); } }
+$('#aj-assin').addEventListener('change', e => salvarCfg('assinatura', e.target.checked ? 'ligado' : 'desligado', e.target.checked ? 'Assinatura ligada.' : 'Assinatura desligada.'));
+$('#aj-escopo').addEventListener('change', e => salvarCfg('escopo', e.target.value, e.target.value === 'meus' ? 'Atendente agora vê só os leads dele.' : 'A equipe vê todos os leads.'));
+$('#aj-capi').addEventListener('change', e => salvarCfg('capi', e.target.checked ? 'ligado' : 'desligado', e.target.checked ? 'Conversões pra Meta ligadas.' : 'Conversões pra Meta desligadas.'));
+$('#aj-salvar-regras').addEventListener('click', async () => {
+  const au = {};
+  document.querySelectorAll('#aj-auto [data-auto]').forEach(i => { const k = i.dataset.auto, c = i.dataset.c, v = i.value.trim(); if (!v || i.disabled) return;
+    const val = c === 'dias' ? Math.max(0, Math.min(60, parseInt(v) || 0)) : v.slice(0, 60); if (c === 'dias' && !val) return; (au[k] = au[k] || {})[c] = val; });
+  const dias = {}; document.querySelectorAll('#aj-cad-dias [data-cad]').forEach(i => { const n = parseInt(i.value); if (n > 0) dias[i.dataset.cad] = Math.min(60, n); });
+  const cad = { ativo: $('#aj-cad').checked, dias };
+  if (cad.ativo && !Object.keys(dias).length) { toast('Pra ligar a cadência, preencha os dias de pelo menos uma etapa.'); return; }
+  try { await api.salvarConfig('automacoes', JSON.stringify(au)); await api.salvarConfig('cadencia', JSON.stringify(cad));
+    estado.config.automacoes = JSON.stringify(au); estado.config.cadencia = JSON.stringify(cad); toast('Regras salvas.'); }
+  catch (err) { toast(traduzErro(err)); }
+});
+$('#aj-prod-add').addEventListener('click', () => { estado.produtos.push({ id:null, nome:'', preco:null, tipo:null, ativo:true }); desenharProdutos(); document.querySelector('#aj-prod .lin-prod:last-child .p-nome')?.focus(); });
+$('#aj-prod').addEventListener('click', async e => {
+  const lin = e.target.closest('.lin-prod'); if (!lin) return; const p = estado.produtos[+lin.dataset.i];
+  if (e.target.closest('[data-p-apagar]')) {
+    if (!p.id) { estado.produtos.splice(+lin.dataset.i, 1); desenharProdutos(); return; }
+    if (!confirm('Apagar "' + p.nome + '"? Os leads que já têm esse produto continuam com o nome e o preço.')) return;
+    try { await api.apagarProduto(p.id); estado.produtos = await api.produtos(); desenharProdutos(); toast('Produto apagado.'); } catch (err) { toast(traduzErro(err)); }
+    return;
+  }
+  if (e.target.closest('[data-p-salvar]')) {
+    const nome = lin.querySelector('.p-nome').value.trim(), preco = lerValor(lin.querySelector('.p-preco').value);
+    if (nome.length < 2) { toast('Escreva o nome do produto.'); return; }
+    if (preco == null || preco < 0) { toast('Preço inválido.'); return; }
+    try { await api.salvarProduto({ id:p.id, nome, preco, tipo: lin.querySelector('.p-tipo').value || null, ativo: lin.querySelector('.p-ativo').checked });
+      estado.produtos = await api.produtos(); desenharProdutos(); toast('Produto salvo.'); } catch (err) { toast(traduzErro(err)); }
+  }
+});
+$('#aj-bot-abrir').addEventListener('click', () => ir('bot'));
+// produtos dentro da ficha
+$('#c-item-add').addEventListener('click', () => { estado.itens.push({ id:null, nome:'', preco:0, qtd:1 }); desenharItens(); });
+$('#c-itens').addEventListener('change', e => {
+  const lin = e.target.closest('.item-l'); if (!lin) return; const it = estado.itens[+lin.dataset.i];
+  if (e.target.matches('.it-prod')) { const p = (estado.produtos || []).find(x => String(x.id) === e.target.value); Object.assign(it, p ? { id:p.id, nome:p.nome, preco:Number(p.preco) } : { id:null, nome:'', preco:0 }); }
+  if (e.target.matches('.it-qtd')) it.qtd = Math.max(1, parseInt(e.target.value) || 1);
+  desenharItens(); somarItens();
+});
+$('#c-itens').addEventListener('click', e => { const b = e.target.closest('.it-tirar'); if (!b) return; estado.itens.splice(+b.closest('.item-l').dataset.i, 1); desenharItens(); somarItens(); });
+
+/* =====================================================================
+   BOT — editor visual (canvas com blocos e linhas) + simulador
+   O motor (bot-motor.js) é o MESMO que roda no servidor.
+   ===================================================================== */
+const bt = { fluxos:[], atual:null, sel:null, selLig:null, cam:{ x:30, y:30, z:1 }, sim:null, mudou:false, carregado:false, centrar:false };
+const BOT_ICONE = { inicio:'▶', mensagem:'💬', menu:'☰', pergunta:'❓', horario:'🕘', acao:'⚙', humano:'🙋', fim:'⏹' };
+const BOT_PADRAO = { mensagem:{ texto:'Escreva a mensagem aqui' }, menu:{ titulo:'Menu', texto:'Escolha uma opção:', opcoes:['Opção 1', 'Opção 2'] },
+  pergunta:{ texto:'Qual é o seu nome?', campo:'nome' }, horario:{ dias:[0,1,2,3,4,5,6], ini:'08:00', fim:'18:00' }, acao:{ etapa:'atendimento' },
+  humano:{ texto:'Já vou te passar pra um atendente. 🙂' }, fim:{ texto:'' } };
+const DIAS_SEM = ['dom','seg','ter','qua','qui','sex','sáb'];
+const diasTxt = d => { const a = (d && d.length ? d : [0,1,2,3,4,5,6]).map(Number).sort((x, y) => x - y); return a.length === 7 ? 'Todo dia' : a.map(x => DIAS_SEM[x]).join(', '); };
+const fluxoVazio = () => ({ nos:{ n1:{ tipo:'inicio', x:40, y:160, gatilho:'novo' } }, ligacoes:[] });
+const copia = o => JSON.parse(JSON.stringify(o));
+
+function botResumo(no){
+  const BM = window.BotMotor;
+  if (no.tipo === 'inicio') return ({ novo:'Contato novo (1ª mensagem)', sem_conversa:'Contato novo ou sem conversa há ' + (no.dias || 1) + ' dia(s)', palavra:'Só quando escrever a palavra' })[no.gatilho || 'novo'] + (no.palavras ? '\nou se escrever: ' + no.palavras : '');
+  if (no.tipo === 'pergunta') return (no.texto || '') + '\n→ guarda em: ' + (BM.CAMPOS[no.campo] || 'Observação');
+  if (no.tipo === 'horario') return diasTxt(no.dias) + '\n' + (no.ini || '00:00') + ' às ' + (no.fim || '24:00');
+  if (no.tipo === 'acao') return [no.etapa && 'Etapa: ' + rotulo(ETAPAS, no.etapa), no.tipoLead && 'Interesse: ' + rotulo(TIPOS, no.tipoLead), no.setor && 'Setor: ' + rotulo(SETORES, no.setor), no.etiqueta && 'Etiqueta: ' + no.etiqueta].filter(Boolean).join('\n') || 'Nada configurado';
+  if (no.tipo === 'humano') return (no.texto || '') + (no.setor ? '\n→ setor ' + rotulo(SETORES, no.setor) : '');
+  if (no.tipo === 'fim') return no.texto || '(encerra sem mensagem)';
+  return no.texto || '';
+}
+function rotSaida(no, sd){
+  if (sd === 'saida') return 'depois';
+  if (sd === 'dentro') return 'dentro do horário';
+  if (sd === 'fora') return 'fora do horário';
+  if (sd === 'invalido') return 'errou 2x';
+  if (/^op\d+$/.test(sd)) { const i = +sd.slice(2); return (i + 1) + ' · ' + ((no.opcoes || [])[i] || ''); }
+  return sd;
+}
+const botTransf = () => { $('#bot-mundo').style.transform = `translate(${bt.cam.x}px,${bt.cam.y}px) scale(${bt.cam.z})`; };
+
+async function desenharBot(){
+  const BM = window.BotMotor;
+  if (!BM) { $('#bot-lado').innerHTML = '<div class="aviso-erro">⚠️ O motor do bot não carregou (arquivo bot-motor.js). Recarregue a página.</div>'; return; }
+  if (!$('#bot-add').options.length) $('#bot-add').innerHTML = '<option value="">+ Adicionar bloco</option>' + Object.entries(BM.TIPOS).filter(([k]) => k !== 'inicio').map(([k, t]) => `<option value="${k}">${BOT_ICONE[k]} ${t.nome}</option>`).join('');
+  if (!bt.carregado) {
+    try { bt.fluxos = await api.fluxos(); } catch (e) { $('#bot-lado').innerHTML = erroCarga(e); return; }
+    bt.carregado = true; const at = bt.fluxos.find(f => f.ativo) || bt.fluxos[0];
+    bt.atual = at ? copia(at) : { id:null, nome:'Pré-atendimento', ativo:false, dados: BM.modelo() };
+    bt.mudou = !at; bt.centrar = true; bt.sel = null; bt.selLig = null;
+  }
+  botBarra(); botPalco(); botLado();
+  if (bt.centrar) { bt.centrar = false; requestAnimationFrame(botCentro); }
+}
+function botBarra(){
+  preencher($('#bot-fluxo'), bt.fluxos.map(f => [String(f.id), f.nome + (f.ativo ? ' · ligado' : '')]).concat(bt.atual.id ? [] : [['', bt.atual.nome + ' (não salvo)']]));
+  $('#bot-fluxo').value = bt.atual.id ? String(bt.atual.id) : '';
+  $('#bot-nome').value = bt.atual.nome;
+  const st = $('#bot-status'); st.textContent = bt.atual.ativo ? '● ligado' : '○ desligado'; st.className = 'selo' + (bt.atual.ativo ? ' ok' : '');
+  $('#bot-ativar').textContent = bt.atual.ativo ? 'Desligar bot' : 'Ligar bot';
+  $('#bot-salvar').textContent = bt.mudou ? 'Salvar *' : 'Salvo';
+}
+function botPalco(){
+  const BM = window.BotMotor, f = bt.atual.dados; botTransf();
+  $('#bot-mundo').innerHTML = '<svg id="bot-svg" width="9000" height="7000" aria-hidden="true"></svg>' + Object.entries(f.nos).map(([id, no]) => {
+    const ss = BM.saidasDe(no);
+    return `<div class="bloco ${bt.sel === id ? 'sel' : ''}" data-id="${esc(id)}" data-tipo="${esc(no.tipo)}" style="left:${no.x | 0}px;top:${no.y | 0}px">
+      ${no.tipo !== 'inicio' ? '<span class="porta entrada"></span>' : ''}
+      <div class="bc">${BOT_ICONE[no.tipo] || ''} ${esc((no.titulo ? no.titulo + ' · ' : '') + (BM.TIPOS[no.tipo]?.nome || no.tipo))}</div>
+      <div class="bt">${esc(botResumo(no))}</div>
+      ${ss.length ? '<div class="saidas">' + ss.map(sd => `<div class="sd">${esc(rotSaida(no, sd))}<span class="porta" data-saida="${esc(sd)}" title="Puxe até outro bloco"></span></div>`).join('') + '</div>' : ''}
+    </div>`; }).join('');
+  botLinhas();
+}
+function botPonto(id, saida){
+  const el = document.querySelector(`#bot-mundo .bloco[data-id="${CSS.escape(id)}"]`), no = bt.atual.dados.nos[id]; if (!el || !no) return null;
+  if (!saida) return { x:no.x, y:no.y + 17 };
+  const pt = el.querySelector(`.porta[data-saida="${CSS.escape(saida)}"]`); if (!pt) return null;
+  const sd = pt.parentElement; return { x:no.x + el.offsetWidth, y:no.y + sd.offsetTop + sd.offsetHeight / 2 };
+}
+const curva = (a, b) => { const dx = Math.max(50, Math.abs(b.x - a.x) / 2); return `M${a.x},${a.y} C${a.x + dx},${a.y} ${b.x - dx},${b.y} ${b.x},${b.y}`; };
+function botLinhas(temp){
+  const svg = $('#bot-svg'); if (!svg) return;
+  svg.innerHTML = bt.atual.dados.ligacoes.map((l, i) => { const a = botPonto(l.de, l.saida), b = botPonto(l.para); if (!a || !b) return ''; const d = curva(a, b);
+    return `<path d="${d}" class="${bt.selLig === i ? 'sel' : ''}"/><path d="${d}" class="toque" data-lig="${i}"/>`; }).join('') + (temp ? `<path d="${curva(temp.a, temp.b)}" class="temp"/>` : '');
+}
+function botMarcarSel(){ document.querySelectorAll('#bot-mundo .bloco').forEach(b => b.classList.toggle('sel', b.dataset.id === bt.sel)); }
+function botMudou(redesenhar = true){ bt.mudou = true; $('#bot-salvar').textContent = 'Salvar *'; if (redesenhar) botPalco(); }
+function botXY(e){ const r = $('#bot-palco').getBoundingClientRect(); return { x:(e.clientX - r.left - bt.cam.x) / bt.cam.z, y:(e.clientY - r.top - bt.cam.y) / bt.cam.z }; }
+function botZoom(f, e){
+  const r = $('#bot-palco').getBoundingClientRect(), px = e ? e.clientX - r.left : r.width / 2, py = e ? e.clientY - r.top : r.height / 2;
+  const z = Math.min(1.6, Math.max(0.3, bt.cam.z * f));
+  bt.cam.x = px - (px - bt.cam.x) * z / bt.cam.z; bt.cam.y = py - (py - bt.cam.y) * z / bt.cam.z; bt.cam.z = z; botTransf();
+}
+function botCentro(){
+  const nos = Object.values(bt.atual.dados.nos), r = $('#bot-palco').getBoundingClientRect(); if (!nos.length || !r.width) return;
+  const minX = Math.min(...nos.map(n => n.x)), minY = Math.min(...nos.map(n => n.y)), maxX = Math.max(...nos.map(n => n.x)) + 230, maxY = Math.max(...nos.map(n => n.y)) + 190;
+  const z = Math.min(1, Math.max(0.3, Math.min((r.width - 40) / (maxX - minX), (r.height - 40) / (maxY - minY))));
+  bt.cam = { z, x:20 - minX * z, y:20 - minY * z }; botTransf();
+}
+function botNovoId(){ let n = 1; while (bt.atual.dados.nos['n' + n]) n++; return 'n' + n; }
+
+// ---------- arrastar, ligar, mover a tela ----------
+const arr = { modo:null };
+$('#bot-palco').addEventListener('pointerdown', e => {
+  if (e.button > 0 || e.target.closest('.bot-zoom')) return;
+  const porta = e.target.closest('.porta[data-saida]'), cab = e.target.closest('.bc'), bloco = e.target.closest('.bloco'), lig = e.target.closest('[data-lig]'), w = botXY(e);
+  if (porta) { const id = porta.closest('.bloco').dataset.id; Object.assign(arr, { modo:'ligar', de:id, saida:porta.dataset.saida, a:botPonto(id, porta.dataset.saida) }); }
+  else if (bloco) { const id = bloco.dataset.id, no = bt.atual.dados.nos[id]; bt.sel = id; bt.selLig = null; bt.sim = null;
+    Object.assign(arr, { modo: cab ? 'mover' : 'clique', id, dx:w.x - no.x, dy:w.y - no.y, andou:false }); botMarcarSel(); botLinhas(); botLado(); }
+  else if (lig) { bt.selLig = +lig.dataset.lig; bt.sel = null; bt.sim = null; botMarcarSel(); botLinhas(); botLado(); return; }
+  else { Object.assign(arr, { modo:'pan', sx:e.clientX - bt.cam.x, sy:e.clientY - bt.cam.y }); $('#bot-palco').classList.add('puxando'); }
+  try { $('#bot-palco').setPointerCapture(e.pointerId); } catch {}
+  e.preventDefault();
+});
+$('#bot-palco').addEventListener('pointermove', e => {
+  if (!arr.modo) return; const w = botXY(e);
+  if (arr.modo === 'pan') { bt.cam.x = e.clientX - arr.sx; bt.cam.y = e.clientY - arr.sy; botTransf(); }
+  else if (arr.modo === 'mover') { const no = bt.atual.dados.nos[arr.id]; no.x = Math.max(0, Math.round(w.x - arr.dx)); no.y = Math.max(0, Math.round(w.y - arr.dy));
+    const el = document.querySelector(`#bot-mundo .bloco[data-id="${CSS.escape(arr.id)}"]`); if (el) { el.style.left = no.x + 'px'; el.style.top = no.y + 'px'; } arr.andou = true; botLinhas(); }
+  else if (arr.modo === 'ligar') botLinhas({ a:arr.a, b:w });
+});
+function botSoltar(e, cancelou){
+  if (arr.modo === 'ligar') {
+    const alvo = !cancelou && document.elementFromPoint(e.clientX, e.clientY)?.closest('#bot-mundo .bloco'), para = alvo?.dataset.id;
+    if (para && para !== arr.de && bt.atual.dados.nos[para]?.tipo !== 'inicio') {
+      bt.atual.dados.ligacoes = bt.atual.dados.ligacoes.filter(l => !(l.de === arr.de && l.saida === arr.saida)).concat([{ de:arr.de, saida:arr.saida, para }]);
+      botMudou(false); botLado();
+    }
+    botLinhas();
+  }
+  if (arr.modo === 'mover' && arr.andou) botMudou(false);
+  arr.modo = null; $('#bot-palco').classList.remove('puxando');
+}
+$('#bot-palco').addEventListener('pointerup', e => botSoltar(e, false));
+$('#bot-palco').addEventListener('pointercancel', e => botSoltar(e, true));
+$('#bot-palco').addEventListener('wheel', e => { e.preventDefault(); botZoom(e.deltaY < 0 ? 1.1 : 1 / 1.1, e); }, { passive:false });
+document.querySelector('.bot-zoom').addEventListener('click', e => { const b = e.target.closest('[data-bz]'); if (!b) return; if (b.dataset.bz === '0') botCentro(); else botZoom(b.dataset.bz === '+' ? 1.2 : 1 / 1.2); });
+
+// ---------- painel do lado: editar o bloco escolhido ----------
+const bCampo = (k, rot, v, area, extra) => `<label>${rot}</label>${area ? `<textarea data-k="${k}" rows="4">${esc(v || '')}</textarea>` : `<input data-k="${k}" value="${esc(v ?? '')}" ${extra || ''}>`}`;
+const bSel = (k, rot, v, ops) => `<label>${rot}</label><select data-k="${k}">${ops.map(([a, b]) => `<option value="${esc(a)}" ${String(v ?? '') === String(a) ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>`;
+function botLado(){
+  const BM = window.BotMotor, lado = $('#bot-lado'), f = bt.atual.dados;
+  if (bt.sim) return botSimDesenhar();
+  if (bt.selLig != null && f.ligacoes[bt.selLig]) {
+    const l = f.ligacoes[bt.selLig], de = f.nos[l.de], para = f.nos[l.para];
+    lado.innerHTML = `<h3>Ligação</h3><p class="dica">De <b>${esc(BM.TIPOS[de?.tipo]?.nome || '')}</b> (saída "${esc(rotSaida(de || {}, l.saida))}") para <b>${esc(BM.TIPOS[para?.tipo]?.nome || '')}</b>.</p><div class="acoes"><button class="btn perigo" type="button" data-bl="lig-apagar">Apagar ligação</button></div>`;
+    return;
+  }
+  const no = bt.sel && f.nos[bt.sel];
+  if (!no) {
+    const erros = BM.conferir(f);
+    lado.innerHTML = `<h3>Como funciona</h3><p class="dica">1. O <b>Início</b> diz quando o bot começa a falar.<br>2. Cada bloco tem saídas (bolinhas amarelas): puxe uma até outro bloco.<br>3. <b>Menu</b> espera o cliente escolher. <b>Pergunta</b> guarda a resposta no card.<br>4. <b>Passar pro atendente</b> encerra o bot, põe a etiqueta "aguardando atendente" e anota no histórico tudo que o cliente respondeu.<br>5. Clique em <b>▶ Testar</b> pra conversar com o bot antes de ligar.</p>
+      <p class="dica">No texto, <b>{nome}</b> vira o primeiro nome e <b>{saudacao}</b> vira bom dia / boa tarde / boa noite. Negrito do WhatsApp: *assim*.</p>
+      ${erros.length ? `<h3 style="margin-top:12px">⚠️ Falta arrumar antes de ligar</h3><ul class="dica">${erros.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p class="dica">✅ Fluxo sem pendências.</p>'}
+      ${bt.atual.id && !bt.atual.ativo ? '<div class="acoes"><button class="btn perigo mini" type="button" data-bl="fluxo-apagar">Apagar este fluxo</button></div>' : ''}`;
+    return;
+  }
+  const T = BM.TIPOS[no.tipo]?.nome || no.tipo; let h = `<h3>${BOT_ICONE[no.tipo] || ''} ${esc(T)}</h3>`;
+  const abertas = [['', '— não mexe —'], ...ETAPAS_ABERTAS];
+  if (no.tipo === 'inicio') {
+    h += bSel('gatilho', 'Quando o bot começa', no.gatilho || 'novo', [['novo', 'Só na 1ª mensagem de um contato novo'], ['sem_conversa', 'Contato novo ou sumido há X dias'], ['palavra', 'Só quando escrever a palavra-chave']]);
+    if (no.gatilho === 'sem_conversa') h += bCampo('dias', 'Dias sem conversa', no.dias ?? 7, false, 'type="number" min="1" max="365" inputmode="numeric"');
+    h += bCampo('palavras', 'Palavras-chave (separe por vírgula)', no.palavras || '', false, 'placeholder="menu, oi bot"') + '<p class="dica">Quem escrever uma delas recomeça o bot a qualquer hora (menos se um atendente falou com ele nas últimas 12h).</p>';
+  } else if (no.tipo === 'mensagem') h += bCampo('texto', 'Mensagem', no.texto, true);
+  else if (no.tipo === 'menu') {
+    h += bCampo('titulo', 'Nome do menu (só pra você)', no.titulo || '') + bCampo('texto', 'Pergunta', no.texto, true) + '<label>Opções (o cliente responde o número ou o nome)</label>' +
+      (no.opcoes || []).map((o, i) => `<div class="op"><input data-k="opcao" data-i="${i}" value="${esc(o)}" aria-label="Opção ${i + 1}"><button class="btn sec mini" type="button" data-bl="op-tirar" data-i="${i}" aria-label="Tirar opção">×</button></div>`).join('') +
+      `<div class="acoes" style="margin-top:6px"><button class="btn sec mini" type="button" data-bl="op-add">+ opção</button></div>` +
+      bCampo('invalido', 'Se responder outra coisa', no.invalido || 'Não entendi 😅 Responda só com o número da opção:') + '<p class="dica">Na 2ª resposta errada segue a saída "errou 2x" (se não estiver ligada, passa pro atendente).</p>';
+  } else if (no.tipo === 'pergunta') {
+    h += bCampo('titulo', 'Nome (só pra você)', no.titulo || '') + bCampo('texto', 'Pergunta', no.texto, true) +
+      bSel('campo', 'Guardar a resposta em', no.campo || 'obs', Object.entries(BM.CAMPOS)) + '<p class="dica">Data aceita "14/12", "amanhã"... Número aceita "2" ou "dois". Se não entender, pergunta de novo 1 vez.</p>';
+  } else if (no.tipo === 'horario') {
+    const d = (no.dias && no.dias.length ? no.dias : [0,1,2,3,4,5,6]).map(Number);
+    h += '<label>Dias de atendimento</label><div class="dias">' + DIAS_SEM.map((n, i) => `<label><input type="checkbox" data-k="dia" value="${i}" ${d.includes(i) ? 'checked' : ''}> ${n}</label>`).join('') + '</div>' +
+      bCampo('ini', 'Começa', no.ini || '08:00', false, 'type="time"') + bCampo('fim', 'Termina', no.fim || '18:00', false, 'type="time"') + '<p class="dica">Horário de Brasília. Feriado não entra sozinho: desmarque o dia se precisar.</p>';
+  } else if (no.tipo === 'acao') {
+    h += bSel('etapa', 'Mover o card pra', no.etapa || '', abertas) + bSel('tipoLead', 'Interesse', no.tipoLead || '', [['', '— não mexe —'], ...TIPOS]) +
+      bSel('setor', 'Setor', no.setor || '', [['', '— não mexe —'], ...SETORES]) + bCampo('etiqueta', 'Pôr etiqueta', no.etiqueta || '') + '<p class="dica">O cliente não vê nada: é só no card.</p>';
+  } else if (no.tipo === 'humano') {
+    h += bCampo('texto', 'Mensagem antes de passar (opcional)', no.texto, true) + bSel('setor', 'Mandar pro setor', no.setor || '', [['', '— o mesmo —'], ...SETORES]) + '<p class="dica">O bot para aqui. O card ganha a etiqueta "aguardando atendente" e no histórico fica tudo que o cliente respondeu.</p>';
+  } else if (no.tipo === 'fim') h += bCampo('texto', 'Última mensagem (opcional)', no.texto, true);
+  if (['mensagem', 'menu', 'pergunta', 'humano', 'fim'].includes(no.tipo)) h += '<p class="dica">{nome} = primeiro nome · {saudacao} = bom dia/boa tarde/boa noite.</p>';
+  if (no.tipo !== 'inicio') h += '<div class="acoes"><button class="btn sec mini" type="button" data-bl="duplicar">Duplicar</button><button class="btn perigo mini" type="button" data-bl="apagar">Apagar bloco</button></div>';
+  lado.innerHTML = h;
+}
+$('#bot-lado').addEventListener('input', e => {
+  const k = e.target.dataset.k; if (!k || !bt.sel) return; const no = bt.atual.dados.nos[bt.sel]; if (!no) return;
+  if (k === 'opcao') no.opcoes[+e.target.dataset.i] = e.target.value;
+  else if (k === 'dia') no.dias = [...document.querySelectorAll('#bot-lado [data-k=dia]:checked')].map(x => +x.value);
+  else if (e.target.type === 'number') no[k] = e.target.value === '' ? null : Number(e.target.value);
+  else no[k] = e.target.value;
+  botMudou();
+  if (k === 'gatilho') botLado();
+});
+$('#bot-lado').addEventListener('click', async e => {
+  const b = e.target.closest('[data-bl]'); if (!b) return; const a = b.dataset.bl, f = bt.atual.dados, no = f.nos[bt.sel];
+  if (a === 'op-add' && no) { (no.opcoes = no.opcoes || []).push('Nova opção'); botMudou(); botLado(); }
+  if (a === 'op-tirar' && no) { const i = +b.dataset.i; no.opcoes.splice(i, 1);
+    f.ligacoes = f.ligacoes.filter(l => !(l.de === bt.sel && l.saida === 'op' + i)).map(l => l.de === bt.sel && /^op\d+$/.test(l.saida) && +l.saida.slice(2) > i ? { ...l, saida:'op' + (+l.saida.slice(2) - 1) } : l);
+    botMudou(); botLado(); }
+  if (a === 'apagar' && no) { delete f.nos[bt.sel]; f.ligacoes = f.ligacoes.filter(l => l.de !== bt.sel && l.para !== bt.sel); bt.sel = null; botMudou(); botLado(); }
+  if (a === 'duplicar' && no) { const id = botNovoId(); f.nos[id] = { ...copia(no), x:no.x + 30, y:no.y + 40 }; bt.sel = id; botMudou(); botLado(); }
+  if (a === 'lig-apagar') { f.ligacoes.splice(bt.selLig, 1); bt.selLig = null; botMudou(); botLado(); }
+  if (a === 'sim-reiniciar') botSimIniciar();
+  if (a === 'sim-fechar') { bt.sim = null; botLado(); }
+  if (a === 'fluxo-apagar') { if (!confirm('Apagar o fluxo "' + bt.atual.nome + '"? Não dá pra desfazer.')) return;
+    try { await api.apagarFluxo(bt.atual.id); bt.carregado = false; toast('Fluxo apagado.'); desenharBot(); } catch (err) { toast(traduzErro(err)); } }
+});
+
+// ---------- barra de cima ----------
+$('#bot-add').addEventListener('change', e => {
+  const tipo = e.target.value; e.target.value = ''; if (!tipo) return;
+  const r = $('#bot-palco').getBoundingClientRect(), id = botNovoId();
+  bt.atual.dados.nos[id] = { tipo, x:Math.max(0, Math.round((r.width / 2 - 107 - bt.cam.x) / bt.cam.z)), y:Math.max(0, Math.round((r.height / 3 - bt.cam.y) / bt.cam.z)), ...copia(BOT_PADRAO[tipo] || {}) };
+  bt.sel = id; bt.selLig = null; bt.sim = null; botMudou(); botLado();
+});
+$('#bot-nome').addEventListener('input', e => { bt.atual.nome = e.target.value; bt.mudou = true; $('#bot-salvar').textContent = 'Salvar *'; });
+async function botSalvar(silencioso){
+  const nome = (bt.atual.nome || '').trim(); if (nome.length < 2) { toast('Dê um nome pro fluxo.'); return false; }
+  try { bt.atual.id = await api.salvarFluxo({ id:bt.atual.id, nome, dados:bt.atual.dados }); bt.mudou = false; bt.fluxos = await api.fluxos(); botBarra(); if (!silencioso) toast('Fluxo salvo.'); return true; }
+  catch (err) { toast(traduzErro(err)); return false; }
+}
+$('#bot-salvar').addEventListener('click', () => botSalvar());
+$('#bot-ativar').addEventListener('click', async () => {
+  if (bt.atual.ativo) { if (!confirm('Desligar o bot? Os clientes passam a cair direto pra equipe.')) return;
+    try { await api.ativarFluxo(null); bt.atual.ativo = false; bt.fluxos = await api.fluxos(); botBarra(); toast('Bot desligado.'); } catch (err) { toast(traduzErro(err)); } return; }
+  const erros = window.BotMotor.conferir(bt.atual.dados);
+  if (erros.length) { bt.sel = null; bt.selLig = null; bt.sim = null; botMarcarSel(); botLado(); toast('Arrume os pontos do painel ao lado antes de ligar.'); return; }
+  if (!waLigado() && !confirm('O WhatsApp do CRM não está ligado. Ligar o bot mesmo assim? Ele só começa quando o número estiver conectado.')) return;
+  if (!confirm('Ligar o bot "' + bt.atual.nome + '"? Ele vai responder sozinho os clientes que chegarem no WhatsApp do CRM.')) return;
+  if (bt.mudou || !bt.atual.id) { if (!await botSalvar(true)) return; }
+  try { await api.ativarFluxo(bt.atual.id); bt.atual.ativo = true; bt.fluxos = await api.fluxos(); botBarra(); toast('✅ Bot ligado.'); } catch (err) { toast(traduzErro(err)); }
+});
+function botTrocar(novo){ if (bt.mudou && !confirm('Tem mudança não salva neste fluxo. Descartar?')) { botBarra(); return; } bt.atual = novo; bt.mudou = !novo.id; bt.sel = null; bt.selLig = null; bt.sim = null; botBarra(); botPalco(); botLado(); requestAnimationFrame(botCentro); }
+$('#bot-fluxo').addEventListener('change', e => { const f = bt.fluxos.find(x => String(x.id) === e.target.value); if (f) botTrocar(copia(f)); });
+$('#bot-novo').addEventListener('click', () => botTrocar({ id:null, nome:'Fluxo novo', ativo:false, dados:fluxoVazio() }));
+$('#bot-modelo').addEventListener('click', () => botTrocar({ id:null, nome:'Pré-atendimento (modelo)', ativo:false, dados:window.BotMotor.modelo() }));
+$('#bot-simular').addEventListener('click', () => botSimIniciar());
+
+// ---------- simulador: conversa de mentira com o fluxo que está na tela (mesmo sem salvar) ----------
+function botSimIniciar(){ bt.sim = { sessao:null, linhas:[{ q:'info', t:'Teste: nada é enviado de verdade. Escreva como se fosse o cliente.' }], set:{}, total:0 }; bt.sel = null; bt.selLig = null; botMarcarSel(); botSimDesenhar(); setTimeout(() => $('#sim-tx')?.focus(), 0); }
+function botSimDesenhar(){
+  const s = bt.sim;
+  $('#bot-lado').innerHTML = `<h3>▶ Testar o bot</h3><div class="sim-msgs" id="sim-msgs">${s.linhas.map(l => `<div class="m ${l.q}">${esc(l.t)}</div>`).join('')}</div>
+    <form id="sim-form" style="display:flex;gap:6px"><input id="sim-tx" placeholder="Mensagem do cliente" autocomplete="off" aria-label="Mensagem do cliente"><button class="btn">Enviar</button></form>
+    <div class="acoes"><button class="btn sec mini" type="button" data-bl="sim-reiniciar">Recomeçar</button><button class="btn sec mini" type="button" data-bl="sim-fechar">Fechar teste</button></div>`;
+  const m = $('#sim-msgs'); m.scrollTop = m.scrollHeight;
+}
+function botSimEnviar(txt){
+  const BM = window.BotMotor, s = bt.sim, reg = { id:bt.atual.id || 'rascunho', dados:bt.atual.dados };
+  s.linhas.push({ q:'cli', t:txt }); s.total++;
+  const lead = { nome: s.set.nome || 'Cliente Teste', etapa: s.set.etapa || 'novo' };
+  const d = BM.decidir(reg, { sessao:s.sessao, humana_recente:false, total:s.total, anterior_em: s.total > 1 ? new Date().toISOString() : null, lead }, txt);
+  if (!d) s.linhas.push({ q:'info', t:'(o bot fica quieto: ' + (s.sessao?.fim ? 'a conversa já passou pro atendente ou terminou' : 'o Início não manda começar com esta mensagem') + ')' });
+  else {
+    const r = BM.passo(reg, s.sessao, lead, txt, null, d === 'comecar');
+    r.msgs.forEach(t => s.linhas.push({ q:'bot', t })); s.total += r.msgs.length;
+    s.sessao = { ...r.sessao, atualizado_em:new Date().toISOString() }; Object.assign(s.set, r.set);
+    const ver = { etapa:v => rotulo(ETAPAS, v), tipo:v => rotulo(TIPOS, v), setor:v => rotulo(SETORES, v), data_visita:v => String(v).split('-').reverse().join('/') };
+    const sets = Object.entries(r.set).filter(([k]) => k !== 'nota').map(([k, v]) => (BM.CAMPOS[k] || { etapa:'Etapa', tipo:'Interesse', setor:'Setor', etiqueta:'Etiqueta' }[k] || k) + ': ' + (ver[k] ? ver[k](v) : v));
+    if (sets.length) s.linhas.push({ q:'info', t:'No card → ' + sets.join(' · ') });
+    if (r.set.nota) s.linhas.push({ q:'info', t:'No histórico → ' + r.set.nota });
+    if (r.sessao.fim) s.linhas.push({ q:'info', t:'Fim do bot: ' + r.sessao.motivo });
+  }
+  botSimDesenhar();
+}
+$('#bot-lado').addEventListener('submit', e => { if (e.target.id !== 'sim-form') return; e.preventDefault(); const t = $('#sim-tx').value.trim(); if (!t) return; botSimEnviar(t); setTimeout(() => $('#sim-tx')?.focus(), 0); });
 
 /* =====================================================================
    LIGAÇÕES
