@@ -188,6 +188,46 @@ pre.texto{white-space:pre-wrap;word-break:break-word;background:var(--card2);bor
 .cartao{background:var(--card);border-radius:10px;box-shadow:var(--sombra);padding:10px;cursor:pointer;border-left:4px solid transparent}
 .cartao:hover{filter:brightness(1.03)}
 .cartao.arrastando{opacity:.4}
+.cartao{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.cartao.fantasma{position:fixed;z-index:60;pointer-events:none;margin:0;opacity:.96;transform:rotate(2deg) scale(1.03);box-shadow:0 14px 34px rgba(0,0,0,.4);outline:2px solid var(--sol)}
+.quadro.arrastando-toque{scroll-snap-type:none}
+.dica-funil{margin:0 22px 8px;font-size:12.5px;color:var(--suave)}
+.per-btn{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.periodo-nav .per-btn{width:auto;border-radius:999px;padding:0 12px;font-weight:600;white-space:nowrap;font-size:14px}
+.pp-fundo{position:fixed;inset:0;z-index:30;background:rgba(15,25,20,.45);display:flex;align-items:flex-start;justify-content:center;padding:64px 12px 12px;overflow:auto}
+.pp{background:var(--card);border:1px solid var(--linha);border-radius:16px;box-shadow:var(--sombra);display:flex;width:100%;max-width:780px}
+.pp-lista{flex:0 0 190px;border-right:1px solid var(--linha);padding:12px 10px;display:flex;flex-direction:column;gap:2px}
+.pp-lista label{display:flex;gap:8px;align-items:center;padding:7px 8px;border-radius:9px;margin:0;font-size:14px;color:var(--texto);cursor:pointer}
+.pp-lista label:hover{background:var(--card2)}
+.pp-lista input{width:auto;margin:0;accent-color:var(--verde)}
+.pp-corpo{flex:1;min-width:0;padding:12px 14px 14px}
+.pp-nav{display:flex;justify-content:space-between;margin-bottom:2px}
+.pp-nav button{border:0;background:none;width:34px;height:34px;border-radius:50%;font-size:20px;line-height:1}
+.pp-nav button:hover{background:var(--card2)}
+.pp-nav button:disabled{opacity:.3}
+.pp-meses{display:flex;gap:22px}
+.pp-mes{flex:1;min-width:0}
+.pp-tit{text-align:center;font-weight:700;margin:-30px 0 10px;text-transform:capitalize}
+.pp-grade{display:grid;grid-template-columns:repeat(7,1fr);gap:2px 0;text-align:center}
+.pp-grade span{font-size:11px;color:var(--suave);padding-bottom:4px}
+.pp-grade button{border:0;background:none;height:34px;border-radius:8px;font-size:14px;padding:0}
+.pp-grade button:hover:not(:disabled){background:var(--card2)}
+.pp-grade button:disabled{opacity:.3;cursor:default}
+.pp-grade button.hoje{font-weight:800;text-decoration:underline}
+.pp-grade button.meio{background:var(--verde-claro);border-radius:0}
+.pp-grade button.sel{background:var(--btn);color:var(--btn-texto)}
+.pp-res{margin-top:10px;font-size:13px;color:var(--suave)}
+.pp-pe{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.secao .exp{font-size:12.5px;line-height:1.4;color:var(--suave);margin:-4px 0 8px}
+.corpo-ficha .secao:first-child{margin-top:10px;border-top:0;padding-top:4px}
+.lin-etapa{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lin-etapa select{flex:1 1 160px;font-weight:700}
+.lin-etapa .btn{flex:1 1 160px;white-space:normal;line-height:1.25}
+.lista-acoes{display:grid;gap:8px}
+.lista-acoes .item{display:flex;gap:10px;align-items:center}
+.lista-acoes .btn{flex:0 0 46%;white-space:normal;line-height:1.25;text-align:center;text-decoration:none}
+.lista-acoes small{flex:1;font-size:12.5px;line-height:1.35;color:var(--suave)}
+.btn-salvar{width:100%;margin-top:18px;padding:12px 14px;font-size:16px;background:var(--sol);color:#221F1A}
 .cartao .nome{font-weight:600;margin-bottom:4px;word-break:break-word;display:flex;gap:7px;align-items:baseline}
 .bola{flex-shrink:0;width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--verde)}
 .bola.atrasado{background:#D7392E}.bola.hoje{background:var(--sol-2)}.bola.sem{background:none;border:2px solid var(--suave)}
@@ -223,7 +263,7 @@ pre.texto{white-space:pre-wrap;word-break:break-word;background:var(--card2);bor
 :root[data-theme="dark"] .ficha{--card:#241E16;--card2:#30281D;--campo:#19140E;--linha:#463B2A;--suave:#B9AE96}
 .ficha .cab-ficha{border-bottom:2px solid var(--sol)}
 .ficha .acoes .btn[type=submit]{background:var(--sol);color:#221F1A}
-.mover{width:auto;max-width:112px;padding:4px 6px;font-size:12px;font-weight:700;border-radius:8px;border:1px solid var(--sol-2);background:var(--amarelo-claro);color:var(--amarelo)}
+
 .cab-ficha{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--linha);padding:14px 16px;display:flex;gap:8px;align-items:center;z-index:1}
 .cab-ficha h3{margin:0;font-size:19px;flex:1;word-break:break-word;color:var(--vinho)}
 .fechar{border:0;background:none;font-size:26px;line-height:1;padding:0 4px;color:var(--suave)}
@@ -365,6 +405,12 @@ label.marcar input{width:auto}
   .quadro{padding:4px 14px 14px}
   .coluna{flex-basis:84vw}
   .grade{grid-template-columns:1fr}
+  .dica-funil{margin:0 14px 6px}
+  .pp-fundo{padding:10px 8px;align-items:flex-end}
+  .pp{flex-direction:column;max-height:94vh;overflow:auto}
+  .pp-lista{flex:none;flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--linha);gap:4px}
+  .pp-lista label{padding:6px 10px;border:1px solid var(--linha);border-radius:999px;font-size:13px}
+  .pp-mes:first-child{display:none}
   .heroi{padding:14px;border-radius:16px}
   .kpi .v{font-size:26px}
   .etapas-funil{grid-template-columns:1fr}
@@ -413,7 +459,7 @@ label.marcar input{width:auto}
     <button data-ver="funil"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/></svg>Funil</button>
     <button data-ver="conversas"><svg viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4.2A8 8 0 1 1 20 11.5z"/></svg>Conversas<span class="pino oculto" id="pino-wa"></span></button>
     <button data-ver="followup"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Follow-up<span class="pino oculto" id="pino-fu"></span></button>
-    <button data-ver="relatorios"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h5M10 16h5"/></svg>Relatórios</button>
+
     <button data-ver="equipe"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Equipe<span class="pino oculto" id="pino-chat"></span></button>
     <button data-ver="base"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>Base</button>
     <button data-ver="disparos" id="nav-disparos" class="oculto"><svg viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>Disparos</button>
@@ -435,8 +481,7 @@ label.marcar input{width:auto}
     <!-- PAINEL -->
     <div class="ver oculto" id="ver-painel">
       <div class="barra-ver">
-        <div class="periodo-nav"><button id="mes-ant" aria-label="Mês anterior">‹</button><span id="mes-rot"></span><button id="mes-prox" aria-label="Próximo mês">›</button></div>
-        <button class="btn sec mini" id="btn-fechamento">Ver fechamento do mês</button>
+        <div class="periodo-nav"><button id="per-ant" aria-label="Período anterior">‹</button><button type="button" id="per-btn" class="per-btn" title="Escolher o período">📅 <span id="per-rot"></span> ▾</button><button id="per-prox" aria-label="Próximo período">›</button></div>
       </div>
       <div id="painel-conteudo"></div>
     </div>
@@ -455,6 +500,7 @@ label.marcar input{width:auto}
         <button class="btn sol mini oculto" id="btn-pegar" type="button" style="flex-shrink:0">Pegar próximo lead</button>
         <div class="resumo" id="resumo"></div>
       </div>
+      <p class="dica-funil">Pra mudar de etapa, arraste o cartão pra outra coluna. No celular: segure o dedo no cartão e puxe. Tocar abre a ficha.</p>
       <main class="quadro" id="quadro"></main>
     </div>
 
@@ -468,22 +514,6 @@ label.marcar input{width:auto}
     </div>
 
     <!-- RELATÓRIOS -->
-    <div class="ver oculto" id="ver-relatorios">
-      <div class="barra-ver">
-        <div class="seg" id="rel-modo"><button data-modo="dia">Diário</button><button data-modo="semana">Semanal</button><button data-modo="mes">Mensal</button></div>
-        <div class="periodo-nav"><button id="rel-ant" aria-label="Anterior">‹</button><span id="rel-rot"></span><button id="rel-prox" aria-label="Próximo">›</button></div>
-        <select id="rel-atalho" aria-label="Escolher período">
-          <option value="">Escolher período…</option><option value="hoje">Hoje</option><option value="ontem">Ontem</option>
-          <option value="7">Últimos 7 dias</option><option value="14">Últimos 14 dias</option><option value="28">Últimos 28 dias</option>
-          <option value="30">Últimos 30 dias</option><option value="90">Últimos 90 dias</option>
-          <option value="semana">Esta semana</option><option value="mes">Este mês</option><option value="mesant">Mês passado</option>
-          <option value="livre">Personalizado…</option>
-        </select>
-        <span class="rel-livre oculto" id="rel-livre"><input type="date" id="rel-de" aria-label="De"><span>a</span><input type="date" id="rel-ate" aria-label="Até"><button class="btn mini" type="button" id="rel-aplicar">Aplicar</button></span>
-      </div>
-      <div id="rel-conteudo"></div>
-    </div>
-
     <!-- CONVERSAS (WhatsApp dentro do CRM) -->
     <div class="ver oculto" id="ver-conversas">
       <div class="aviso-zap oculto" id="wa-aviso" style="margin-bottom:12px"></div>
@@ -649,6 +679,7 @@ label.marcar input{width:auto}
 </div>
 
 <!-- ================= FICHA ================= -->
+<div class="pp-fundo oculto" id="per-fundo"><div class="pp" id="per-pop" role="dialog" aria-modal="true" aria-label="Escolher período"></div></div>
 <div class="fundo-ficha oculto" id="fundo-ficha">
   <aside class="ficha" role="dialog" aria-modal="true" aria-labelledby="f-titulo">
     <div class="cab-ficha">
@@ -658,53 +689,87 @@ label.marcar input{width:auto}
       <button class="fechar" id="btn-fechar" aria-label="Fechar">×</button>
     </div>
     <form class="corpo-ficha" id="form-ficha" novalidate>
-      <div class="grade">
-        <div class="inteira"><label for="c-nome">Nome *</label><input id="c-nome" required></div>
-        <div><label for="c-telefone">WhatsApp (com DDD)</label><input id="c-telefone" inputmode="tel" placeholder="31 99999-8888"></div>
-        <div><label for="c-email">E-mail</label><input id="c-email" type="email"></div>
-        <div><label for="c-tipo">Interesse</label><select id="c-tipo"></select></div>
-        <div><label for="c-origem">Como chegou</label><select id="c-origem"></select></div>
-        <div><label for="c-etapa">Etapa</label><select id="c-etapa"></select></div>
-        <div><label for="c-resp">Responsável</label><select id="c-resp"></select></div>
-        <div><label for="c-visita" id="lbl-visita">Data do Day Use</label><input id="c-visita" type="date"></div>
-        <div id="box-saida"><label for="c-saida">Check-out</label><input id="c-saida" type="date"></div>
-        <div><label for="c-adultos">Adultos</label><input id="c-adultos" type="number" min="0" inputmode="numeric"></div>
-        <div><label for="c-criancas">Crianças</label><input id="c-criancas" type="number" min="0" inputmode="numeric"></div>
-        <div><label for="c-valor">Valor (R$)</label><input id="c-valor" inputmode="decimal" placeholder="0,00"></div>
-        <div><label class="marcar" style="margin-top:34px"><input id="c-pets" type="checkbox"> Vai levar pet 🐾</label></div>
-        <div class="inteira" id="box-motivo"><label for="c-motivo">Motivo da perda *</label><select id="c-motivo"></select></div>
-        <div class="caixa-passo">
-          <label for="c-passo">Próximo passo (o que precisa ser feito)</label>
+      <div class="secao">
+        <h4>Etapa no funil</h4>
+        <p class="exp">Onde este lead está agora. Trocou aqui e salvou, o cartão muda de coluna no Funil.</p>
+        <div class="lin-etapa">
+          <select id="c-etapa" aria-label="Etapa no funil"></select>
+          <button class="btn sec" type="button" id="btn-avancar">Avançar etapa →</button>
+        </div>
+        <div id="box-motivo"><label for="c-motivo">Motivo da perda *</label><select id="c-motivo"></select></div>
+      </div>
+
+      <div class="secao">
+        <h4>Dados do lead</h4>
+        <div class="grade">
+          <div class="inteira"><label for="c-nome">Nome *</label><input id="c-nome" required></div>
+          <div><label for="c-telefone">WhatsApp (com DDD)</label><input id="c-telefone" inputmode="tel" placeholder="31 99999-8888"></div>
+          <div><label for="c-email">E-mail</label><input id="c-email" type="email"></div>
+          <div><label for="c-tipo">Interesse</label><select id="c-tipo"></select></div>
+          <div><label for="c-origem">Como chegou</label><select id="c-origem"></select></div>
+          <div class="inteira"><label for="c-resp">Responsável (quem atende)</label><select id="c-resp"></select></div>
+          <div><label for="c-visita" id="lbl-visita">Data do Day Use</label><input id="c-visita" type="date"></div>
+          <div id="box-saida"><label for="c-saida">Check-out</label><input id="c-saida" type="date"></div>
+          <div><label for="c-adultos">Adultos</label><input id="c-adultos" type="number" min="0" inputmode="numeric"></div>
+          <div><label for="c-criancas">Crianças</label><input id="c-criancas" type="number" min="0" inputmode="numeric"></div>
+          <div><label for="c-valor">Valor da venda (R$)</label><input id="c-valor" inputmode="decimal" placeholder="0,00"></div>
+          <div><label class="marcar" style="margin-top:34px"><input id="c-pets" type="checkbox"> Vai levar pet 🐾</label></div>
+        </div>
+      </div>
+
+      <div class="secao">
+        <h4>Lembrete de retorno <small style="font-weight:400;color:var(--suave)">(opcional)</small></h4>
+        <p class="exp">É um lembrete pra você, não pro cliente. No dia marcado este lead aparece na aba Follow-up e no sino. <b>Não envia mensagem sozinho.</b></p>
+        <div class="caixa-passo" style="margin-top:0">
+          <label for="c-passo">O que você precisa fazer</label>
           <input id="c-passo" placeholder="Ex.: cobrar resposta do orçamento">
+          <label>Quando lembrar</label>
           <div class="rapidas" id="atalhos-passo">
             <button type="button" data-quando="hoje">hoje</button><button type="button" data-quando="amanha">amanhã</button>
             <button type="button" data-quando="3d">em 3 dias</button><button type="button" data-quando="7d">em 1 semana</button>
-            <button type="button" data-quando="">sem data</button>
+            <button type="button" data-quando="">sem lembrete</button>
           </div>
-          <label for="c-proximo">Quando</label><input id="c-proximo" type="datetime-local">
+          <label for="c-proximo">Ou escolha dia e hora</label><input id="c-proximo" type="datetime-local">
         </div>
-        <div class="inteira"><label for="c-etiquetas">Etiquetas (toque pra marcar ou escreva, separando por vírgula)</label><input id="c-etiquetas" placeholder="aniversário, VIP">
-          <div class="rapidas" id="etq-rapidas"></div></div>
-        <div class="inteira"><label for="c-obs">Observações</label><textarea id="c-obs" rows="3"></textarea></div>
       </div>
+
+      <div class="secao">
+        <h4>Etiquetas</h4>
+        <p class="exp">Marcadores pra achar este lead depois, na Base de leads e nos Disparos (ex.: todos os "aniversário"). Toque pra marcar ou escreva separando por vírgula.</p>
+        <input id="c-etiquetas" aria-label="Etiquetas" placeholder="aniversário, VIP">
+        <div class="rapidas" id="etq-rapidas"></div>
+      </div>
+
+      <div class="secao">
+        <h4>Observações</h4>
+        <p class="exp">Informação fixa do lead, que vale sempre (ex.: alergia, quarto que prefere).</p>
+        <textarea id="c-obs" rows="3" aria-label="Observações"></textarea>
+      </div>
+
       <div class="erro" id="f-erro"></div>
       <div class="dup oculto" id="f-dup"></div>
-      <div class="acoes">
-        <button class="btn" type="submit">Salvar ficha</button>
-        <button class="btn sec" type="button" id="btn-avancar">Avançar etapa →</button>
-        <a class="btn sec" id="btn-zap" target="_blank" rel="noopener">Abrir WhatsApp</a>
+      <button class="btn btn-salvar" type="submit">Salvar ficha</button>
+      <p class="exp" style="margin:6px 0 0;font-size:12.5px;color:var(--suave);text-align:center">Grava tudo que você mudou acima.</p>
+
+      <div class="secao">
+        <h4>Atendimento</h4>
+        <div class="lista-acoes">
+          <div class="item"><a class="btn sec" id="btn-zap" target="_blank" rel="noopener">Abrir WhatsApp</a><small>Falar com o cliente.</small></div>
+          <div class="item"><button class="btn sec" type="button" id="btn-minhas-resp">Mensagens prontas</button><small>Seus textos salvos pra responder mais rápido.</small></div>
+        </div>
+        <div id="box-resp" class="oculto">
+          <label for="c-resposta">Mandar resposta pronta no WhatsApp</label>
+          <select id="c-resposta"></select>
+        </div>
+        <div class="lista-acoes oculto" id="acoes-equipe" style="margin-top:8px">
+          <div class="item"><button class="btn sec" type="button" id="btn-transferir">Transferir lead ⇄</button><small>Passar pra outro atendente ou setor.</small></div>
+          <div class="item"><button class="btn sec" type="button" id="btn-falar">Falar com a equipe</button><small>Recado interno sobre este lead. O cliente não vê.</small></div>
+        </div>
       </div>
-      <div class="acoes oculto" id="acoes-equipe" style="margin-top:8px">
-        <button class="btn sec" type="button" id="btn-transferir">Transferir lead ⇄</button>
-        <button class="btn sec" type="button" id="btn-falar">Falar com a equipe</button>
-      </div>
-      <div id="box-resp" class="oculto">
-        <label for="c-resposta">Mandar resposta pronta no WhatsApp</label>
-        <select id="c-resposta"></select>
-      </div>
-      <p class="dica"><button class="btn sec mini" type="button" id="btn-minhas-resp">Minhas mensagens prontas</button></p>
+
       <div class="secao" id="secao-hist">
         <h4>Anotações e histórico</h4>
+        <p class="exp">Escreva o que foi conversado. As mudanças de etapa entram aqui sozinhas.</p>
         <div class="nota-nova">
           <textarea id="nota" placeholder="O que foi conversado?"></textarea>
           <button class="btn sec" type="button" id="btn-nota">Anotar</button>
@@ -791,7 +856,7 @@ const ETIQUETAS_RAPIDAS = ['aniversário','feriado','casal','família com crian�
 const PARADO_DIAS = { novo:1, atendimento:2, orcamento:2, negociando:3 }; // card fica vermelho depois disso
 const FECHADAS = ['ganho','perdido'];
 const SETORES = [['comercial','Comercial'],['reservas','Reservas'],['financeiro','Financeiro']];
-const TITULOS = { painel:'Painel do mês', funil:'Funil de vendas', conversas:'Conversas', followup:'Follow-up', relatorios:'Relatórios', equipe:'Equipe', base:'Base de leads', disparos:'Disparos', ajustes:'Ajustes' };
+const TITULOS = { painel:'Painel', funil:'Funil de vendas', conversas:'Conversas', followup:'Follow-up', equipe:'Equipe', base:'Base de leads', disparos:'Disparos', ajustes:'Ajustes' };
 const rotulo = (lista, v) => (lista.find(x => x[0] === v) || [, v])[1];
 
 /* ---------- utilidades ---------- */
@@ -1036,7 +1101,7 @@ if (!MODO_DEMO) {
    ESTADO
    ===================================================================== */
 const estado = { usuario:null, meu:null, perfis:[], leads:[], achados:[], ver:'funil', filtroTipo:'', filtroResp:'', busca:'', aberto:null, quente:false,
-  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, wa:{ convs:[], lead:null, msgs:[], aberto:false, erro:null, extra:null, arquivo:null }, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'dia', ref:new Date() }, rk:{ ordem:'valor', tipo:'' }, feed:[], avModo:'geral' };
+  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, wa:{ convs:[], lead:null, msgs:[], aberto:false, erro:null, extra:null, arquivo:null }, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'mes', ref:new Date(), chave:'mes' }, rk:{ ordem:'valor', tipo:'' }, feed:[], avModo:'geral' };
 const nomeDe = id => estado.perfis.find(p => p.id === id)?.nome || '';
 const ehGestor = () => estado.meu?.papel === 'gestor';
 const cachePer = new Map();
@@ -1144,7 +1209,7 @@ function ir(v){
   desenhar();
 }
 function desenhar(){
-  ({ painel:desenharPainel, funil:desenharFunil, conversas:desenharConversas, followup:desenharFollow, relatorios:desenharRel, equipe:desenharEquipe, base:desenharBase, disparos:desenharDisparos, ajustes:desenharAjustes })[estado.ver]();
+  ({ painel:desenharPainel, funil:desenharFunil, conversas:desenharConversas, followup:desenharFollow, equipe:desenharEquipe, base:desenharBase, disparos:desenharDisparos, ajustes:desenharAjustes })[estado.ver]();
   atualizarPinoChat();
   const meus = estado.leads.filter(l => !FECHADAS.includes(l.etapa) && l.responsavel === estado.usuario.id && ['atrasado','hoje'].includes(situacao(l))).length;
   $('#pino-fu').textContent = meus; $('#pino-fu').classList.toggle('oculto', !meus);
@@ -1224,31 +1289,34 @@ const erroCarga = e => `<div class="aviso-erro">⚠️ Não consegui carregar os
    PAINEL DO MÊS
    ===================================================================== */
 let fichaPainel = 0;
+const PRESETS = [['hoje','Hoje'],['ontem','Ontem'],['7','Últimos 7 dias'],['14','Últimos 14 dias'],['28','Últimos 28 dias'],['30','Últimos 30 dias'],['90','Últimos 90 dias'],['semana','Esta semana'],['mes','Este mês'],['mesant','Mês passado'],['livre','Personalizado']];
+function perRotulo(){ const r = estado.rel, n = (PRESETS.find(x => x[0] === r.chave) || [])[1]; return (n && r.chave !== 'livre' ? n + ': ' : '') + relFaixa().rot; }
 async function desenharPainel(){
-  const ini = D.ini('mes', estado.mesRef), fim = D.fim('mes', estado.mesRef), vez = ++fichaPainel;
-  $('#mes-rot').textContent = D.rot('mes', estado.mesRef);
-  let d, meta;
-  try { [d, meta] = await Promise.all([dadosPeriodo(ini, fim), api.meta(D.chaveMes(estado.mesRef))]); }
+  const r = estado.rel, { ini, fim, rot } = relFaixa(), vez = ++fichaPainel, ehMes = r.modo === 'mes';
+  if (ehMes) estado.mesRef = new Date(r.ref);
+  $('#per-rot').textContent = perRotulo();
+  let d, meta = null;
+  try { d = await dadosPeriodo(ini, fim); if (ehMes) meta = await api.meta(D.chaveMes(r.ref)); }
   catch (e) { if (vez === fichaPainel) $('#painel-conteudo').innerHTML = erroCarga(e); return; }
   if (vez !== fichaPainel || estado.ver !== 'painel') return;
-  const c = calcular(d, ini, fim), m = meta || {}, temMeta = ['leads','orcamentos','vendas','faturamento'].some(k => m[k]);
+  const c = calcular(d, ini, fim), m = meta || {}, temMeta = ['leads','orcamentos','vendas','faturamento'].some(k => m[k]), texto = textoRelatorio(c, r.modo, rot, meta);
   const kpi = (i, nome, valor, sub, alvo, atual, fmt) => `<div class="kpi"><div class="n">${String(i).padStart(2, '0')} · ${nome}</div><div class="v num">${valor}</div><div class="s">${sub}</div>
     ${alvo ? `<span class="meta num">Meta: ${fmt ? fmt(alvo) : alvo} · ${pct(atual, alvo)}%</span><div class="trilho"><i style="width:${Math.min(100, pct(atual, alvo))}%"></i></div>` : ''}</div>`;
-  const ehMesAtual = D.chaveMes(new Date()) === D.chaveMes(estado.mesRef);
+  const incluiHoje = Date.now() >= ini.getTime() && Date.now() < fim.getTime();
   $('#painel-conteudo').innerHTML = `
     <section class="heroi">
-      <div class="cab"><span class="rot">Funil do mês</span><span class="mes">${D.rot('mes', estado.mesRef)}</span></div>
+      <div class="cab"><span class="rot">Resultado do período</span><span class="mes">${esc(rot)}</span></div>
       <div class="kpis">
-        ${kpi(1, 'Leads novos', c.novos, 'entraram no mês', m.leads, c.novos)}
+        ${kpi(1, 'Leads novos', c.novos, 'entraram no período', m.leads, c.novos)}
         ${kpi(2, 'Orçamentos', c.orcados, pctTxt(c.orcados, c.novos) + ' dos leads', m.orcamentos, c.orcados)}
         ${kpi(3, 'Na mesa agora', brl0(c.agora.naMesa), 'em orçamento e negociação')}
-        ${kpi(4, 'Vendas', c.vendas, c.ticket ? 'ticket médio ' + brl0(c.ticket) : 'fechadas no mês', m.vendas, c.vendas)}
-        ${kpi(5, 'Faturamento', brl0(c.faturamento), 'vendido no mês', m.faturamento, c.faturamento, brl0)}
+        ${kpi(4, 'Vendas', c.vendas, c.ticket ? 'ticket médio ' + brl0(c.ticket) : 'fechadas no período', m.vendas, c.vendas)}
+        ${kpi(5, 'Faturamento', brl0(c.faturamento), 'vendido no período', m.faturamento, c.faturamento, brl0)}
       </div>
-      ${temMeta ? '' : `<div class="fichas"><span>Sem meta definida pra este mês${ehGestor() ? ' · <a href="#" id="lk-metas" style="color:var(--sol)">definir metas</a>' : ''}</span></div>`}
+      ${!ehMes ? '<div class="fichas"><span>A meta aparece quando o período é um mês inteiro (Este mês ou Mês passado).</span></div>' : temMeta ? '' : `<div class="fichas"><span>Sem meta definida pra este mês${ehGestor() ? ' · <a href="#" id="lk-metas" style="color:var(--sol)">definir metas</a>' : ''}</span></div>`}
     </section>
     <section class="heroi">
-      <div class="cab"><span class="rot">Do lead à venda</span><span class="mes">${D.rot('mes', estado.mesRef)}</span></div>
+      <div class="cab"><span class="rot">Do lead à venda</span><span class="mes">${esc(rot)}</span></div>
       <div class="etapas-funil">
         <div class="caixa-etapa"><div class="n">Leads</div><div class="v num">${c.novos}</div><div class="s">chegaram</div></div>
         <div class="taxa"><b class="num">${pctTxt(c.orcados, c.novos)}</b><span>receberam orçamento</span></div>
@@ -1260,25 +1328,31 @@ async function desenharPainel(){
         <span>Vendas sobre leads <b class="num">${pctTxt(c.vendas, c.novos)}</b></span>
         <span>Perdidos <b class="num">${c.perdidos}</b></span>
         <span>Follow-ups feitos <b class="num">${c.followups}</b></span>
-        ${ehMesAtual && c.agora.atrasados ? `<span class="alerta">Retornos atrasados agora <b class="num">${c.agora.atrasados}</b></span>` : ''}
-        ${ehMesAtual && c.agora.semResp ? `<span class="alerta">Sem responsável <b class="num">${c.agora.semResp}</b></span>` : ''}
+        ${incluiHoje && c.agora.atrasados ? `<span class="alerta">Retornos atrasados agora <b class="num">${c.agora.atrasados}</b></span>` : ''}
+        ${incluiHoje && c.agora.semResp ? `<span class="alerta">Sem responsável <b class="num">${c.agora.semResp}</b></span>` : ''}
       </div>
     </section>
-    ${cartelaRanking(c)}
+    ${tabTipos(c)}
+    ${cartelaRanking(c, rot)}
     <div class="duas">
-      <section class="cartela"><h2>De onde vêm os leads</h2><p class="sub">Leads do mês e quantos viraram venda.</p>
+      <section class="cartela"><h2>De onde vêm os leads</h2><p class="sub">Leads do período e quantos viraram venda.</p>
         ${barras(c.origens, Math.max(1, ...c.origens.map(o => o.n)), o => `${o.n} leads · ${o.vendas} vendas`)}</section>
-      <section class="cartela"><h2>Por que perdemos</h2><p class="sub">Motivo marcado em cada lead perdido no mês.</p>
+      <section class="cartela"><h2>Por que perdemos</h2><p class="sub">Motivo marcado em cada lead perdido no período.</p>
         ${barras(c.motivos, Math.max(1, ...c.motivos.map(o => o.n)), o => o.n, 'vinho')}</section>
     </div>
-    ${tabTipos(c)}`;
+    <section class="cartela"><h2>Texto pronto pro WhatsApp</h2><p class="sub">Relatório de ${esc(rot)}. Copie e cole no grupo: já sai com o negrito do WhatsApp.</p>
+      <pre class="texto" id="rel-texto"></pre><button class="btn" id="btn-copiar">Copiar relatório</button></section>`;
+  $('#rel-texto').textContent = texto;
+  $('#btn-copiar').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(texto); toast('Relatório copiado.'); }
+    catch { const x = document.createRange(); x.selectNodeContents($('#rel-texto')); const g = getSelection(); g.removeAllRanges(); g.addRange(x); toast('Selecionei o texto: aperte Ctrl+C.'); }
+  });
   $('#lk-metas')?.addEventListener('click', e => { e.preventDefault(); ir('ajustes'); });
 }
 
 /* =====================================================================
    RELATÓRIOS (diário, semanal, mensal)
    ===================================================================== */
-let fichaRel = 0;
 function textoRelatorio(c, modo, rot, meta){
   const nome = { dia:'Relatório do dia', semana:'Relatório da semana', mes:'Fechamento do mês', livre:'Relatório do período' }[modo];
   const m = modo === 'mes' && meta ? meta : {};
@@ -1308,32 +1382,57 @@ function relFaixa(){
   return { ini, fim:D.fim('dia', ate), rot: ini.getTime() === ult.getTime() ? f(ini) : f(ini) + ' a ' + f(ult) };
 }
 function relMover(n){
-  const r = estado.rel;
-  if (r.modo === 'livre') { const dias = Math.round((D.ini('dia', r.ate) - D.ini('dia', r.de)) / 86400000) + 1; r.de = D.mover('dia', r.de, n * dias); r.ate = D.mover('dia', r.ate, n * dias); $('#rel-de').value = ymdLocal(r.de); $('#rel-ate').value = ymdLocal(r.ate); }
+  const r = estado.rel; r.chave = '';
+  if (r.modo === 'livre') { const dias = Math.round((D.ini('dia', r.ate) - D.ini('dia', r.de)) / 86400000) + 1; r.de = D.mover('dia', r.de, n * dias); r.ate = D.mover('dia', r.ate, n * dias); }
   else r.ref = D.mover(r.modo, r.ref, n);
   desenhar();
 }
-async function desenharRel(){
-  const { modo, ref } = estado.rel, { ini, fim, rot } = relFaixa(), vez = ++fichaRel;
-  document.querySelectorAll('#rel-modo button').forEach(b => b.classList.toggle('ativo', b.dataset.modo === modo));
-  $('#rel-rot').textContent = rot;
-  let d, meta = null;
-  try { d = await dadosPeriodo(ini, fim); if (modo === 'mes') meta = await api.meta(D.chaveMes(ref)); }
-  catch (e) { if (vez === fichaRel) $('#rel-conteudo').innerHTML = erroCarga(e); return; }
-  if (vez !== fichaRel || estado.ver !== 'relatorios') return;
-  const c = calcular(d, ini, fim), texto = textoRelatorio(c, modo, rot, meta);
-  const st = (n, v) => `<div class="stat"><div class="n">${n}</div><div class="v num">${v}</div></div>`;
-  $('#rel-conteudo').innerHTML = `
-    <div class="stats">${st('Leads novos', c.novos)}${st('Orçamentos', c.orcados)}${st('Vendas', c.vendas)}${st('Faturamento', brl0(c.faturamento))}${st('Follow-ups', c.followups)}</div>
-    ${cartelaRanking(c, rot)}
-    ${tabTipos(c)}
-    <section class="cartela"><h2>Texto pronto pro WhatsApp</h2><p class="sub">Copie e cole no grupo. Já sai com negrito do WhatsApp.</p>
-      <pre class="texto" id="rel-texto"></pre><button class="btn" id="btn-copiar">Copiar relatório</button></section>`;
-  $('#rel-texto').textContent = texto;
-  $('#btn-copiar').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(texto); toast('Relatório copiado.'); }
-    catch { const r = document.createRange(); r.selectNodeContents($('#rel-texto')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selecionei o texto: aperte Ctrl+C.'); }
-  });
+// ---------- janela de período: atalhos à esquerda, calendário à direita ----------
+const pp = { chave:'', de:null, ate:null, mes:null, meio:false };
+function ppFaixa(chave){
+  const h = D.ini('dia', new Date()), menos1 = x => { x.setDate(x.getDate() - 1); return x; };
+  if (chave === 'hoje') return [h, h];
+  if (chave === 'ontem') { const o = D.mover('dia', h, -1); return [o, o]; }
+  if (chave === 'semana') return [D.ini('semana', h), menos1(D.fim('semana', h))];
+  if (chave === 'mes' || chave === 'mesant') { const ref = chave === 'mes' ? h : D.mover('mes', h, -1); return [D.ini('mes', ref), menos1(D.fim('mes', ref))]; }
+  if (Number(chave)) return [D.mover('dia', h, -(Number(chave) - 1)), h];
+  return null;
+}
+function ppAbrir(){
+  const f = relFaixa(), ult = new Date(f.fim); ult.setDate(ult.getDate() - 1);
+  Object.assign(pp, { chave: estado.rel.chave || 'livre', de: new Date(f.ini), ate: ult, meio:false, mes: D.ini('mes', ult) });
+  $('#per-fundo').classList.remove('oculto'); ppDesenhar();
+}
+function ppFechar(){ $('#per-fundo').classList.add('oculto'); }
+function ppMes(ref){
+  const i = D.ini('mes', ref), n = new Date(i.getFullYear(), i.getMonth() + 1, 0).getDate(), hoje = D.ini('dia', new Date()).getTime();
+  const a = pp.de ? pp.de.getTime() : null, b = pp.ate ? pp.ate.getTime() : a;
+  let h = '<div class="pp-mes"><div class="pp-tit">' + esc(D.rot('mes', i)) + '</div><div class="pp-grade">' + ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(x => '<span>' + x + '</span>').join('') + '<i></i>'.repeat((i.getDay() + 6) % 7);
+  for (let k = 1; k <= n; k++) {
+    const d = new Date(i.getFullYear(), i.getMonth(), k), t = d.getTime();
+    const cls = (t === a || t === b ? 'sel' : a != null && t > a && t < b ? 'meio' : '') + (t === hoje ? ' hoje' : '');
+    h += '<button type="button" data-dia="' + ymdLocal(d) + '" class="' + cls + '"' + (t > hoje ? ' disabled' : '') + '>' + k + '</button>';
+  }
+  return h + '</div></div>';
+}
+function ppDesenhar(){
+  const f = x => x ? x.toLocaleDateString('pt-BR') : '—', noFim = D.ini('mes', pp.mes).getTime() >= D.ini('mes', new Date()).getTime();
+  $('#per-pop').innerHTML = `<div class="pp-lista">${PRESETS.map(x => `<label><input type="radio" name="pp-pre" value="${x[0]}"${pp.chave === x[0] ? ' checked' : ''}> ${x[1]}</label>`).join('')}</div>
+    <div class="pp-corpo">
+      <div class="pp-nav"><button type="button" data-pp-mes="-1" aria-label="Mês anterior">‹</button><button type="button" data-pp-mes="1" aria-label="Próximo mês"${noFim ? ' disabled' : ''}>›</button></div>
+      <div class="pp-meses">${ppMes(D.mover('mes', pp.mes, -1))}${ppMes(pp.mes)}</div>
+      <div class="pp-res">${pp.meio ? 'Começa em <b>' + f(pp.de) + '</b>. Agora toque no último dia.' : 'Período: <b>' + f(pp.de) + (pp.ate && pp.ate.getTime() !== pp.de.getTime() ? ' a ' + f(pp.ate) : '') + '</b>'}</div>
+      <div class="pp-pe"><button class="btn sec" type="button" id="pp-cancelar">Cancelar</button><button class="btn" type="button" id="pp-ok">Atualizar</button></div>
+    </div>`;
+}
+function ppAplicar(){
+  const { chave, de, ate } = pp;
+  if ((ate - de) / 86400000 > 366) { toast('No máximo 1 ano por vez.'); return; }
+  if (chave === 'hoje' || chave === 'ontem' || de.getTime() === ate.getTime()) estado.rel = { modo:'dia', ref:de, chave: chave === 'livre' ? '' : chave };
+  else if (chave === 'semana') estado.rel = { modo:'semana', ref:de, chave };
+  else if (chave === 'mes' || chave === 'mesant') estado.rel = { modo:'mes', ref:de, chave };
+  else estado.rel = { modo:'livre', de, ate, chave };
+  ppFechar(); desenhar();
 }
 
 /* =====================================================================
@@ -1392,7 +1491,7 @@ function cartao(l){
     <div class="rodape">
       <span>${l.valor != null ? `<b style="color:var(--texto)">${brl(l.valor)}</b> · ` : ''}<span class="${parado ? 'parado' : ''}">${dias === 0 ? 'hoje' : dias + 'd'} na etapa</span></span>
       <span style="display:inline-flex;gap:6px;align-items:center">
-        <select class="mover" data-mover aria-label="Mover ${esc(l.nome)} de etapa"><option value="">⇄ Mover</option>${ETAPAS.filter(e => e[0] !== l.etapa).map(e => `<option value="${e[0]}">${esc(e[1])}</option>`).join('')}</select>
+
         ${linkZap(l.telefone) ? `<a class="zap" href="${linkZap(l.telefone)}" target="_blank" rel="noopener" title="Abrir WhatsApp" data-zap>✆</a>` : ''}
         <span class="avatar ${resp ? '' : 'vazio'}" title="${esc(resp || 'Sem responsável')}">${resp ? esc(iniciais(resp)) : '?'}</span>
       </span>
@@ -2056,7 +2155,7 @@ $('#lista-resp').addEventListener('click', async e => {
 
 /* ---------- arrastar e soltar (computador) ---------- */
 let arrastado = null;
-document.addEventListener('dragstart', e => { const c = e.target.closest?.('.cartao'); if (!c) return; arrastado = c.dataset.id; c.classList.add('arrastando'); e.dataTransfer.effectAllowed = 'move'; });
+document.addEventListener('dragstart', e => { const c = e.target.closest?.('.cartao'); if (!c) return; if (toque.cartao || toque.ativo) { e.preventDefault(); return; } arrastado = c.dataset.id; c.classList.add('arrastando'); e.dataTransfer.effectAllowed = 'move'; });
 document.addEventListener('dragend', e => { e.target.closest?.('.cartao')?.classList.remove('arrastando'); document.querySelectorAll('.coluna.alvo').forEach(c => c.classList.remove('alvo')); });
 document.addEventListener('dragover', e => { const col = e.target.closest?.('.coluna'); if (!col || !arrastado) return; e.preventDefault(); document.querySelectorAll('.coluna.alvo').forEach(c => c !== col && c.classList.remove('alvo')); col.classList.add('alvo'); });
 document.addEventListener('drop', async e => {
@@ -2093,32 +2192,28 @@ $('#btn-sair').addEventListener('click', async () => { await api.sair(); locatio
 $('#btn-tema').addEventListener('click', () => aplicarTema(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
 document.querySelectorAll('.lado [data-ver]').forEach(b => b.addEventListener('click', () => ir(b.dataset.ver)));
 
-// painel e relatórios
-$('#mes-ant').addEventListener('click', () => { estado.mesRef = D.mover('mes', estado.mesRef, -1); desenhar(); });
-$('#mes-prox').addEventListener('click', () => { estado.mesRef = D.mover('mes', estado.mesRef, 1); desenhar(); });
-$('#btn-fechamento').addEventListener('click', () => { estado.rel = { modo:'mes', ref:new Date(estado.mesRef) }; ir('relatorios'); });
-$('#rel-modo').addEventListener('click', e => { const b = e.target.closest('[data-modo]'); if (!b) return; estado.rel = { modo:b.dataset.modo, ref:new Date() }; $('#rel-livre').classList.add('oculto'); desenhar(); });
-$('#rel-ant').addEventListener('click', () => relMover(-1));
-$('#rel-prox').addEventListener('click', () => relMover(1));
-$('#rel-atalho').addEventListener('change', e => {
-  const v = e.target.value, hoje = new Date(); e.target.value = '';
-  if (v === 'livre') { const f = relFaixa(), ult = new Date(f.fim); ult.setDate(ult.getDate() - 1); $('#rel-de').value = ymdLocal(f.ini); $('#rel-ate').value = ymdLocal(ult); $('#rel-livre').classList.remove('oculto'); $('#rel-de').focus(); return; }
-  if (v === 'hoje') estado.rel = { modo:'dia', ref:hoje };
-  else if (v === 'ontem') estado.rel = { modo:'dia', ref:D.mover('dia', hoje, -1) };
-  else if (v === 'semana') estado.rel = { modo:'semana', ref:hoje };
-  else if (v === 'mes') estado.rel = { modo:'mes', ref:hoje };
-  else if (v === 'mesant') estado.rel = { modo:'mes', ref:D.mover('mes', hoje, -1) };
-  else if (Number(v)) estado.rel = { modo:'livre', de:D.mover('dia', hoje, -(Number(v) - 1)), ate:hoje };
-  else return;
-  $('#rel-livre').classList.add('oculto'); desenhar();
+// painel: período
+$('#per-ant').addEventListener('click', () => relMover(-1));
+$('#per-prox').addEventListener('click', () => relMover(1));
+$('#per-btn').addEventListener('click', ppAbrir);
+$('#per-fundo').addEventListener('click', e => {
+  if (e.target === e.currentTarget || e.target.closest('#pp-cancelar')) { ppFechar(); return; }
+  if (e.target.closest('#pp-ok')) { ppAplicar(); return; }
+  const m = e.target.closest('[data-pp-mes]'), dia = e.target.closest('[data-dia]');
+  if (m) { pp.mes = D.mover('mes', pp.mes, Number(m.dataset.ppMes)); ppDesenhar(); return; }
+  if (!dia) return;
+  const d = new Date(dia.dataset.dia + 'T00:00:00');
+  if (!pp.meio) { pp.de = d; pp.ate = d; pp.meio = true; }
+  else { if (d < pp.de) { pp.ate = pp.de; pp.de = d; } else pp.ate = d; pp.meio = false; }
+  pp.chave = 'livre'; ppDesenhar();
 });
-$('#rel-aplicar').addEventListener('click', () => {
-  const a = $('#rel-de').value, b = $('#rel-ate').value; if (!a || !b) { toast('Escolha as duas datas.'); return; }
-  const de = new Date(a + 'T00:00:00'), ate = new Date(b + 'T00:00:00');
-  if (ate < de) { toast('A data final vem antes da inicial.'); return; }
-  if ((ate - de) / 86400000 > 366) { toast('No máximo 1 ano por relatório.'); return; }
-  estado.rel = { modo:'livre', de, ate }; desenhar();
+$('#per-fundo').addEventListener('change', e => {
+  if (e.target.name !== 'pp-pre') return;
+  pp.chave = e.target.value; const f = ppFaixa(pp.chave);
+  if (f) { pp.de = f[0]; pp.ate = f[1]; pp.meio = false; pp.mes = D.ini('mes', f[1]); }
+  ppDesenhar();
 });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#per-fundo').classList.contains('oculto')) ppFechar(); });
 
 // ficha
 $('#btn-novo').addEventListener('click', () => abrirFicha(null));
@@ -2157,8 +2252,50 @@ $('#btn-arquivar').addEventListener('click', async () => {
 });
 
 // funil
-$('#quadro').addEventListener('change', e => { const m = e.target.closest('[data-mover]'); if (!m || !m.value) return; const id = m.closest('.cartao').dataset.id, etapa = m.value; m.value = ''; moverEtapa(estado.leads.find(l => l.id === id) || estado.achados.find(l => l.id === id), etapa); });
-$('#quadro').addEventListener('click', e => { if (e.target.closest('[data-zap],[data-mover]')) return; const c = e.target.closest('.cartao'); if (c) abrirFicha(estado.leads.find(l => l.id === c.dataset.id) || estado.achados.find(l => l.id === c.dataset.id)); });
+
+// Celular: segurar o cartão (0,3 s) e puxar com o dedo. O arrastar do navegador não funciona em tela de toque.
+const toque = { id:null, t:null, x:0, y:0, dx:0, dy:0, fant:null, ativo:false, alvo:null, raf:0, cartao:null, fim:0 };
+function toqueLimpar(){
+  clearTimeout(toque.t); cancelAnimationFrame(toque.raf); toque.fant?.remove(); toque.cartao?.classList.remove('arrastando');
+  document.querySelectorAll('.coluna.alvo').forEach(c => c.classList.remove('alvo')); $('#quadro').classList.remove('arrastando-toque');
+  Object.assign(toque, { id:null, t:null, fant:null, ativo:false, alvo:null, cartao:null });
+}
+function toqueAlvo(){
+  const col = document.elementFromPoint(toque.x, toque.y)?.closest('.coluna') || null;
+  document.querySelectorAll('.coluna.alvo').forEach(c => c !== col && c.classList.remove('alvo')); col?.classList.add('alvo'); toque.alvo = col;
+}
+function toqueRolar(){
+  if (!toque.ativo) return;
+  const q = $('#quadro'), b = q.getBoundingClientRect();
+  if (toque.x > b.right - 56) { q.scrollLeft += 12; toqueAlvo(); } else if (toque.x < b.left + 56) { q.scrollLeft -= 12; toqueAlvo(); }
+  toque.raf = requestAnimationFrame(toqueRolar);
+}
+$('#quadro').addEventListener('touchstart', e => {
+  const c = e.target.closest('.cartao'); if (!c || e.touches.length !== 1 || e.target.closest('[data-zap]')) return;
+  toqueLimpar(); const p = e.touches[0]; toque.x = p.clientX; toque.y = p.clientY; toque.cartao = c;
+  toque.t = setTimeout(() => {
+    const r = c.getBoundingClientRect(), f = c.cloneNode(true);
+    toque.ativo = true; toque.id = c.dataset.id; toque.dx = toque.x - r.left; toque.dy = toque.y - r.top;
+    f.className = 'cartao fantasma'; f.style.width = r.width + 'px'; f.style.left = r.left + 'px'; f.style.top = r.top + 'px';
+    document.body.append(f); toque.fant = f; c.classList.add('arrastando'); $('#quadro').classList.add('arrastando-toque');
+    try { navigator.vibrate?.(15); } catch {}
+    toqueAlvo(); toqueRolar();
+  }, 300);
+}, { passive:true });
+$('#quadro').addEventListener('touchmove', e => {
+  const p = e.touches[0];
+  if (!toque.ativo) { if (Math.abs(p.clientX - toque.x) > 8 || Math.abs(p.clientY - toque.y) > 8) { clearTimeout(toque.t); toque.cartao = null; } return; }
+  e.preventDefault(); toque.x = p.clientX; toque.y = p.clientY;
+  toque.fant.style.left = (p.clientX - toque.dx) + 'px'; toque.fant.style.top = (p.clientY - toque.dy) + 'px'; toqueAlvo();
+}, { passive:false });
+$('#quadro').addEventListener('touchend', e => {
+  if (!toque.ativo) { clearTimeout(toque.t); toque.cartao = null; return; }
+  e.preventDefault(); const id = toque.id, col = toque.alvo; toque.fim = Date.now(); toqueLimpar();
+  if (col) moverEtapa(estado.leads.find(l => l.id === id) || estado.achados.find(l => l.id === id), col.dataset.etapa);
+});
+$('#quadro').addEventListener('touchcancel', toqueLimpar);
+$('#quadro').addEventListener('contextmenu', e => { if (toque.cartao || toque.ativo) e.preventDefault(); });
+$('#quadro').addEventListener('click', e => { if (e.target.closest('[data-zap]') || Date.now() - toque.fim < 600) return; const c = e.target.closest('.cartao'); if (c) abrirFicha(estado.leads.find(l => l.id === c.dataset.id) || estado.achados.find(l => l.id === c.dataset.id)); });
 let tBusca;
 $('#busca').addEventListener('input', e => {
   estado.busca = e.target.value; estado.achados = []; desenharFunil();
