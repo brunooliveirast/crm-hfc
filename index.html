@@ -152,6 +152,20 @@ table.tab{width:100%;border-collapse:collapse;font-size:14px;min-width:660px}
 .tab-rola{overflow-x:auto;margin-top:12px}
 .aviso-zap{border:1px dashed var(--linha);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.5}
 .aviso-zap b.st{display:inline-block;margin-bottom:4px}
+.faixa-zap{background:var(--vermelho-claro);color:var(--vermelho);padding:9px 14px;font-size:13.5px;line-height:1.4;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
+.faixa-zap.leve{background:var(--amarelo-claro);color:var(--amarelo)}
+.faixa-zap .btn{flex-shrink:0}
+.zap-cx{font-size:14px;line-height:1.5}
+.zap-cx .st{font-size:16px;font-weight:700;display:block;margin-bottom:4px}
+.zap-cx .qr{display:block;width:100%;max-width:280px;margin:12px auto;border-radius:12px;background:#fff;padding:6px}
+.zap-cx .cod{font:700 34px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;text-align:center;margin:14px 0;color:var(--texto)}
+.zap-cx ol{margin:8px 0 0;padding-left:20px}
+.zap-cx ol li{margin-bottom:3px}
+.zap-cx .ou{margin-top:16px;padding-top:12px;border-top:1px solid var(--linha)}
+.zap-cx .lin{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.zap-cx .lin input{flex:1 1 150px}
+.zap-cx .acoes .btn{white-space:normal}
+.msg audio{display:block;max-width:240px;width:100%;margin-bottom:4px}
 .tab .ruim{color:var(--vermelho);font-weight:700}
 .lin-barra{display:grid;grid-template-columns:minmax(90px,150px) 1fr auto;gap:10px;align-items:center;padding:6px 0;font-size:14px}
 .lin-barra .b{height:8px;border-radius:4px;background:var(--card2);overflow:hidden}
@@ -468,6 +482,7 @@ label.marcar input{width:auto}
 
   <div class="corpo">
     <div class="faixa-demo oculto" id="faixa-demo">Modo demonstração: dados de exemplo, nada é salvo.</div>
+    <div class="faixa-zap oculto" id="faixa-zap" role="status"></div>
     <header class="topo">
       <div class="tit"><h1 id="titulo-ver">Painel</h1><div class="quem" id="quem"></div></div>
       <div class="direita">
@@ -643,7 +658,7 @@ label.marcar input{width:auto}
       <div class="cartela">
         <h2>WhatsApp do CRM</h2>
         <p class="sub">O número de atendimento da empresa. É por ele que as conversas chegam e saem na aba Conversas.</p>
-        <div id="aj-zap"></div>
+        <div id="aj-zap" class="zap-cx"></div>
       </div>
       <div class="cartela">
         <h2>Distribuição dos leads</h2>
@@ -679,6 +694,12 @@ label.marcar input{width:auto}
 </div>
 
 <!-- ================= FICHA ================= -->
+<div class="janela oculto" id="fundo-zap">
+  <div class="cx" role="dialog" aria-modal="true" aria-label="Conexão do WhatsApp" style="max-width:440px;max-height:94vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h3 style="margin:0">WhatsApp do CRM</h3><button class="fechar" type="button" data-zap-acao="fechar" aria-label="Fechar">×</button></div>
+    <div id="zap-janela" class="zap-cx"></div>
+  </div>
+</div>
 <div class="pp-fundo oculto" id="per-fundo"><div class="pp" id="per-pop" role="dialog" aria-modal="true" aria-label="Escolher período"></div></div>
 <div class="fundo-ficha oculto" id="fundo-ficha">
   <aside class="ficha" role="dialog" aria-modal="true" aria-labelledby="f-titulo">
@@ -977,7 +998,21 @@ if (!MODO_DEMO) {
     aoMensagem(fn){ sb.channel('mensagens').on('postgres_changes', { event:'INSERT', schema:'public', table:'mensagens' }, p => fn(p.new)).subscribe(); },
     async conversas(){ const { data, error } = await L().not('ultima_msg_em', 'is', null).order('ultima_msg_em', { ascending:false }).limit(300); if (error) throw error; return data; },
     async waMensagens(id){ const { data, error } = await sb.from('wa_mensagens').select('*').eq('lead_id', id).order('criado_em', { ascending:false }).limit(300); if (error) throw error; return data.reverse(); },
-    async waEnviar(id, texto, arq){ if (arq) throw { message:'o envio de imagem e vídeo entra junto com a ligação do número' }; const { data, error } = await sb.functions.invoke('wa-enviar', { body:{ lead_id:id, texto } }); if (error) throw error; if (data?.erro) throw { message:data.erro }; },
+    async waEnviar(id, texto, arq){
+      let tipo = 'texto', midia = null;
+      if (arq) {
+        tipo = arq.type.startsWith('video') ? 'video' : 'imagem';
+        const ext = (arq.name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'bin';
+        const caminho = 'out/' + new Date().toISOString().slice(0, 7) + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 10) + '.' + ext;
+        const up = await sb.storage.from('wa-midia').upload(caminho, arq, { contentType: arq.type });
+        if (up.error) throw up.error;
+        midia = sb.storage.from('wa-midia').getPublicUrl(caminho).data.publicUrl;
+      }
+      const { error } = await sb.rpc('wa_enviar', { p_lead:id, p_texto:texto, p_tipo:tipo, p_midia:midia }); if (error) throw error;
+    },
+    async waSessao(){ const { data, error } = await sb.from('wa_sessao').select('*').eq('id', 1).maybeSingle(); if (error) throw error; return data; },
+    async waPedir(acao, numero){ const { error } = await sb.rpc('wa_pedir', { p_acao:acao, p_numero:numero || null }); if (error) throw error; },
+    aoSessao(fn){ sb.channel('wa-sessao').on('postgres_changes', { event:'*', schema:'public', table:'wa_sessao' }, x => fn(x.new)).subscribe(); },
     aoWhats(fn){ sb.channel('wa').on('postgres_changes', { event:'*', schema:'public', table:'wa_mensagens' }, p => fn(p.new)).subscribe(); },
     aoMudar(fn){ sb.channel('leads').on('postgres_changes', { event:'*', schema:'public', table:'leads' }, fn).subscribe(); }
   };
@@ -1093,6 +1128,9 @@ if (!MODO_DEMO) {
       setTimeout(() => { const m = grava('entrada', 'Recebi, obrigado! (resposta automática do modo demonstração)'); if (waCb) waCb(m); }, 2500);
     },
     aoWhats(fn){ waCb = fn; },
+    async waSessao(){ return { estado:'conectado', numero:'5531999990000', nome:'Demonstração', batida_em:new Date().toISOString(), conectado_desde:new Date(Date.now() - 3 * 86400000).toISOString() }; },
+    async waPedir(){ throw { message:'no modo demonstração a conexão é só de exemplo' }; },
+    aoSessao(){},
     aoMudar(){}
   };
 }
@@ -1163,6 +1201,7 @@ async function iniciar(){
     await recarregar(true);
     await carregarMsgs();
     await waCarregar();
+    waSessaoCarregar(); api.aoSessao(x => waSessaoChegou(x)); setInterval(waSessaoCarregar, 30000);
     api.aoWhats(async m => {
       await waCarregar();
       const vendo = estado.ver === 'conversas' && m && estado.wa.lead === m.lead_id && (estado.wa.aberto || matchMedia('(min-width:641px)').matches);
@@ -1575,21 +1614,72 @@ function desenharAvisos(){
    AJUSTES (gestor)
    ===================================================================== */
 const telBR = t => { const d = soDigitos(t); return d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : d.length === 10 ? `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}` : d; };
-function desenharZap(){
-  const c = estado.config, num = c.whatsapp_numero || '', ligado = waLigado();
-  $('#aj-zap').innerHTML = `<div class="aviso-zap"><b class="st">${ligado ? '✅ Número conectado' : num ? '⏳ Número cadastrado, aguardando ativação' : '⚠️ Nenhum número cadastrado'}</b>${num ? '<br><b>' + esc(telBR(num)) + '</b>' + (c.whatsapp_nome ? ' · ' + esc(c.whatsapp_nome) : '') : ''}<br>
-    ${ligado ? 'As conversas dos clientes chegam e saem pela aba Conversas.' : num ? 'A ativação é feita pelo suporte: o WhatsApp manda um código de confirmação pra esse número. Até lá a aba Conversas fica travada.' : 'Cadastre abaixo o número que a empresa usa pra atender. Ele precisa conseguir receber SMS ou ligação pra confirmar.'}</div>
-    <div class="metas-grade" style="margin-top:12px"><div><label for="z-num">Número com DDD</label><input id="z-num" inputmode="tel" placeholder="(31) 99999-8888" value="${esc(num ? telBR(num) : '')}"></div>
-      <div><label for="z-nome">Nome que aparece pro cliente</label><input id="z-nome" maxlength="40" placeholder="Nome da empresa" value="${esc(c.whatsapp_nome || '')}"></div></div>
-    <div class="acoes" style="max-width:240px"><button class="btn" type="button" id="z-salvar">${num ? 'Salvar alteração' : 'Cadastrar número'}</button></div>`;
+// ---------- conexão do WhatsApp (QR Code / código) ----------
+const zs = { s:null, visto:Date.now(), bat:null, antes:null, assin:'', rapido:null };
+function waSit(){
+  const x = zs.s; if (!x) return 'desconhecido';
+  if (Date.now() - zs.visto > 100000) return 'fora';   // o conector bate ponto a cada ~20 s; sem batida = servidor parado
+  return x.estado;
 }
-$('#aj-zap').addEventListener('click', async e => {
-  if (!e.target.closest('#z-salvar')) return;
-  let d = soDigitos($('#z-num').value); if (d.length >= 12 && d.startsWith('55')) d = d.slice(2);
-  const nome = $('#z-nome').value.trim();
-  if (d.length < 10 || d.length > 11) { toast('Confira o número: DDD + número.'); return; }
-  try { await api.salvarConfig('whatsapp_numero', d); await api.salvarConfig('whatsapp_nome', nome); estado.config.whatsapp_numero = d; estado.config.whatsapp_nome = nome; toast('Número salvo.'); desenharZap(); }
-  catch (err) { toast(traduzErro(err)); }
+function waSessaoChegou(x){
+  if (!x) return;
+  if (x.batida_em !== zs.bat) { zs.bat = x.batida_em; zs.visto = Date.now(); }
+  const antes = zs.s?.estado; zs.s = x;
+  if (x.estado === 'conectado' && antes && antes !== 'conectado') {
+    toast('✅ WhatsApp conectado.'); estado.config.whatsapp = 'ligado'; if (x.numero) estado.config.whatsapp_numero = x.numero.replace(/^55/, '');
+    clearInterval(zs.rapido); zs.rapido = null; setTimeout(() => $('#fundo-zap').classList.add('oculto'), 1800);
+    waCarregar().then(() => { if (estado.ver === 'conversas') desenharConversas(); });
+  }
+  if (antes === 'conectado' && x.estado !== 'conectado') toast('⚠️ O WhatsApp desconectou. As conversas estão salvas.');
+  zapDesenhar();
+}
+async function waSessaoCarregar(){ try { waSessaoChegou(await api.waSessao()); } catch { zapDesenhar(); } }
+function zapHTML(){
+  const x = zs.s || {}, sit = waSit(), num = x.numero ? telBR(x.numero.replace(/^55/, '')) : '', motivo = x.motivo ? `<br>${esc(x.motivo)}` : '';
+  const passos = ultimo => `<ol><li>No celular do número, abra o <b>WhatsApp</b>.</li><li>Toque em <b>⋮ (Android)</b> ou <b>Configurações (iPhone)</b> e depois em <b>Aparelhos conectados</b>.</li><li>Toque em <b>Conectar um aparelho</b>.</li><li>${ultimo}</li></ol>`;
+  if (sit === 'conectado') return `<span class="st">✅ Conectado${num ? ' · ' + esc(num) : ''}</span>${x.nome ? esc(x.nome) + ' · ' : ''}${x.conectado_desde ? 'desde ' + esc(dataBR(x.conectado_desde)) + ' ' + horaBR(x.conectado_desde) : ''}<br>As conversas chegam e saem pela aba Conversas. Se a conexão cair, ela tenta voltar sozinha e avisa aqui.
+    <div class="acoes"><button class="btn sec" type="button" data-zap-acao="reiniciar">Reiniciar conexão</button>${ehGestor() ? '<button class="btn perigo" type="button" data-zap-acao="desconectar">Desconectar número</button>' : ''}</div>`;
+  if (sit === 'qr') return `<span class="st">📷 Escaneie o QR Code</span>${passos('Aponte a câmera pra este QR Code.')}<img class="qr" src="${esc(x.qr || '')}" alt="QR Code do WhatsApp"><p class="dica" style="text-align:center">O QR Code troca sozinho a cada poucos segundos. Se o tempo acabar, é só pedir outro.</p>`;
+  if (sit === 'codigo') return `<span class="st">🔢 Digite este código no celular</span>${passos('Toque em <b>Conectar com número de telefone</b> e digite o código abaixo.')}<div class="cod">${esc(x.codigo || '')}</div>`;
+  if (sit === 'conectando') return `<span class="st">🔄 Conectando…</span>${esc(x.motivo || 'Aguarde alguns segundos.')}${x.caiu_em ? '<br>Nenhuma conversa foi perdida. O que for enviado agora fica na fila e sai quando voltar.' : ''}
+    <div class="acoes"><button class="btn sec" type="button" data-zap-acao="reiniciar">Tentar agora</button></div>`;
+  if (sit === 'fora') return `<span class="st">⚠️ Sem sinal do servidor do WhatsApp</span>O servidor que mantém a conexão não responde há mais de 1 minuto. As conversas estão salvas. Se não voltar em alguns minutos, avise o suporte.
+    <div class="acoes"><button class="btn sec" type="button" data-zap-acao="atualizar">Verificar de novo</button></div>`;
+  return `<span class="st">⚠️ ${x.conectado_desde || x.caiu_em ? 'WhatsApp desconectado' : 'Nenhum número conectado'}</span>${x.motivo ? esc(x.motivo) : 'Conecte o número de atendimento da empresa.'}${x.caiu_em ? '<br><b>Nenhuma conversa foi perdida:</b> ao reconectar, o atendimento continua de onde parou.' : ''}
+    <div class="acoes"><button class="btn" type="button" data-zap-acao="qr">Conectar com QR Code</button></div>
+    <div class="ou"><b>Sem câmera por perto?</b> Conecte com um código de 8 dígitos.
+      <div class="lin"><input class="zap-num" inputmode="tel" placeholder="Número com DDD: (31) 99999-8888" aria-label="Número com DDD" value="${esc(estado.config.whatsapp_numero ? telBR(estado.config.whatsapp_numero) : '')}"><button class="btn sec" type="button" data-zap-acao="codigo">Gerar código</button></div></div>`;
+}
+function zapDesenhar(){
+  const x = zs.s || {}, sit = waSit(), ja = estado.config.whatsapp === 'ligado';
+  const assin = [sit, (x.qr || '').length, x.codigo, x.motivo, x.numero, x.caiu_em, ehGestor()].join('|');
+  if (assin !== zs.assin) { zs.assin = assin; const h = zapHTML(); for (const id of ['#aj-zap', '#zap-janela']) { const el = $(id); if (el) el.innerHTML = h; } }
+  // faixa no topo de todas as telas: só depois que o número já foi conectado alguma vez
+  const f = $('#faixa-zap'), caiuHa = x.caiu_em ? Date.now() - new Date(x.caiu_em).getTime() : 0;
+  let txt = '', leve = false;
+  if (ja && sit === 'conectando' && caiuHa > 20000) { leve = true; txt = '🔄 <b>WhatsApp reconectando sozinho.</b> As conversas estão salvas e o que você enviar sai quando voltar. <button class="btn mini sec" type="button" data-zap-acao="abrir">Ver</button>'; }
+  else if (ja && ['desconectado', 'qr', 'codigo'].includes(sit)) txt = '⚠️ <b>WhatsApp desconectado.</b> Nenhuma conversa foi perdida: reconecte pra voltar a receber e enviar. <button class="btn mini" type="button" data-zap-acao="abrir">Reconectar</button>';
+  else if (ja && sit === 'fora') txt = '⚠️ <b>Sem sinal do servidor do WhatsApp.</b> As conversas estão salvas. <button class="btn mini sec" type="button" data-zap-acao="abrir">Ver</button>';
+  f.classList.toggle('oculto', !txt); f.classList.toggle('leve', leve); if (f.dataset.t !== txt) { f.dataset.t = txt; f.innerHTML = txt; }
+}
+const desenharZap = () => { zs.assin = ''; zapDesenhar(); };
+function zapAbrir(){ zs.assin = ''; $('#fundo-zap').classList.remove('oculto'); zapDesenhar(); waSessaoCarregar(); }
+function zapRapido(){ clearInterval(zs.rapido); let n = 0; zs.rapido = setInterval(() => { if (++n > 90 || waSit() === 'conectado') { clearInterval(zs.rapido); zs.rapido = null; return; } waSessaoCarregar(); }, 2000); }
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-zap-acao]'); if (!b) { if (e.target.id === 'fundo-zap') $('#fundo-zap').classList.add('oculto'); return; }
+  const acao = b.dataset.zapAcao;
+  if (acao === 'fechar') { $('#fundo-zap').classList.add('oculto'); return; }
+  if (acao === 'abrir') { zapAbrir(); return; }
+  if (acao === 'atualizar') { zs.visto = Date.now(); await waSessaoCarregar(); return; }
+  let numero = null;
+  if (acao === 'codigo') { numero = soDigitos(b.closest('.zap-cx').querySelector('.zap-num').value); if (numero.length >= 12 && numero.startsWith('55')) numero = numero.slice(2); if (numero.length < 10 || numero.length > 11) { toast('Confira o número: DDD + número.'); return; } }
+  if (acao === 'desconectar' && !confirm('Desconectar o número do CRM? As conversas continuam salvas, mas ninguém recebe nem envia até conectar de novo.')) return;
+  b.disabled = true;
+  try {
+    await api.waPedir(acao === 'qr' ? 'conectar' : acao, numero);
+    if (zs.s && acao !== 'desconectar') { zs.s = { ...zs.s, estado:'conectando', motivo: acao === 'codigo' ? 'Gerando o código…' : acao === 'qr' ? 'Gerando o QR Code…' : 'Reconectando…', qr:null, codigo:null }; zapDesenhar(); }
+    zapRapido();
+  } catch (err) { toast(traduzErro(err)); b.disabled = false; }
 });
 async function desenharAjustes(){
   desenharZap();
@@ -1859,8 +1949,8 @@ function desenharConversas(){
   const w = estado.wa, ligado = waLigado(), largo = matchMedia('(min-width:641px)').matches;
   const av = $('#wa-aviso'); av.classList.toggle('oculto', ligado && !w.erro);
   if (w.erro) av.innerHTML = erroCarga(w.erro);
-  else if (!ligado) av.innerHTML = '<b class="st">⚠️ Nenhum número de WhatsApp conectado.</b><br>É nesta tela que a equipe vai atender: as conversas dos clientes aparecem aqui e a resposta sai daqui, sem abrir o WhatsApp. Falta cadastrar e ativar o número (Ajustes → WhatsApp do CRM). Enquanto isso, o botão do WhatsApp nos cards continua abrindo o aplicativo.' + (ehGestor() ? '<br><button class="btn mini" type="button" id="wa-ir-ajustes" style="margin-top:8px">Cadastrar o número</button>' : '');
-  $('#wa-ir-ajustes')?.addEventListener('click', () => ir('ajustes'));
+  else if (!ligado) av.innerHTML = '<b class="st">⚠️ Nenhum número de WhatsApp conectado.</b><br>É nesta tela que a equipe atende: as conversas dos clientes aparecem aqui e a resposta sai daqui, sem abrir o WhatsApp. Pra começar, conecte o número da empresa (leva 1 minuto, com o celular na mão).<br><button class="btn mini" type="button" data-zap-acao="abrir" style="margin-top:8px">Conectar WhatsApp</button>';
+
   if (largo && !w.lead && w.convs.length) { waAbrir(w.convs[0].id); return; }
   $('#wa-lista').innerHTML = waListaHTML();
   $('#wa').classList.toggle('aberta', w.aberto && !!w.lead);
@@ -1870,14 +1960,13 @@ function desenharConversas(){
   if (c) { preencher($('#wa-etapa'), ETAPAS); $('#wa-etapa').value = c.etapa;
     $('#wa-info-tx').innerHTML = [esc(rotulo(TIPOS, c.tipo)), c.responsavel ? 'com <b>' + esc(nomeDe(c.responsavel)) + '</b>' : '<b>sem responsável</b>', c.valor != null ? esc(brl0(c.valor)) : '', c.proximo_contato ? 'retorno ' + esc(dataBR(c.proximo_contato)) : ''].filter(Boolean).join(' · '); }
   $('#wa-msgs').innerHTML = w.msgs.map(m => { const minha = m.direcao === 'saida';
-    const st = !minha ? '' : m.status === 'falhou' ? ' · <span class="falhou">não enviada</span>' : m.status === 'pendente' ? ' · enviando…' : m.status === 'lida' ? ' · ✓✓ lida' : m.status === 'entregue' ? ' · ✓✓' : ' · ✓';
-    const midia = m.midia_url ? (m.tipo === 'imagem' ? `<img src="${esc(m.midia_url)}" alt="Imagem" loading="lazy">` : m.tipo === 'video' ? `<video src="${esc(m.midia_url)}" controls preload="metadata"></video>` : `<a href="${esc(m.midia_url)}" target="_blank" rel="noopener">📎 abrir ${esc(m.tipo)}</a>`) : (m.tipo !== 'texto' ? `<i>[${esc(m.tipo)}]</i>` : '');
+    const st = !minha ? '' : m.status === 'falhou' ? ` · <span class="falhou" title="${esc(m.erro || '')}">não enviada${m.erro ? ': ' + esc(m.erro) : ''}</span>` : ['pendente', 'enviando'].includes(m.status) ? (waSit() === 'conectado' || !zs.s ? ' · enviando…' : ' · 🕓 na fila: sai quando o WhatsApp reconectar') : m.status === 'lida' ? ' · ✓✓ lida' : m.status === 'entregue' ? ' · ✓✓' : ' · ✓';
+    const midia = m.midia_url ? (m.tipo === 'imagem' ? `<img src="${esc(m.midia_url)}" alt="Imagem" loading="lazy">` : m.tipo === 'video' ? `<video src="${esc(m.midia_url)}" controls preload="metadata"></video>` : m.tipo === 'audio' ? `<audio src="${esc(m.midia_url)}" controls preload="none"></audio>` : `<a href="${esc(m.midia_url)}" target="_blank" rel="noopener">📎 abrir ${esc(m.tipo)}</a>`) : (m.tipo !== 'texto' ? `<i>[${esc(m.tipo)}]</i>` : '');
     return `<div class="msg ${minha ? 'minha' : ''}"><div class="q">${minha ? esc(nomeDe(m.autor) || 'equipe') + ' · ' : ''}${horaBR(m.criado_em)}${st}</div>${midia}${m.texto ? `<div class="t">${esc(m.texto)}</div>` : ''}</div>`; }).join('')
     || `<div class="vazio" style="margin:auto;text-align:center">${c ? 'Nenhuma mensagem ainda com ' + esc(c.nome) + '.' : 'As conversas dos clientes aparecem aqui.'}</div>`;
   $('#wa-msgs').scrollTop = $('#wa-msgs').scrollHeight;
   const ultEntrada = [...w.msgs].reverse().find(m => m.direcao === 'entrada'), fora = c && (!ultEntrada || Date.now() - new Date(ultEntrada.criado_em).getTime() > 24 * 3600000);
-  $('#wa-janela').classList.toggle('oculto', !fora || !ligado);
-  if (fora) $('#wa-janela').textContent = ultEntrada ? '⏳ Faz mais de 24h que esse cliente escreveu: pela API oficial, até ele responder, só sai mensagem-modelo aprovada.' : '⏳ Esse cliente ainda não escreveu: pela API oficial, a primeira mensagem tem que ser um modelo aprovado.';
+  $('#wa-janela').classList.add('oculto');
   $('#wa-rapidas').innerHTML = c && ligado ? '<span class="rot">Respostas prontas</span>' + estado.respostas.map(r => `<button type="button" data-rapida="${esc(r.id)}">${esc(r.titulo)}</button>`).join('') + '<button type="button" class="editar" data-rapida-editar>✎ Criar ou editar</button>' : '';
   const pode = !!c && ligado; $('#wa-texto').disabled = !pode; $('#wa-enviar').disabled = !pode; $('#wa-anexar').disabled = !pode;
   const arq = w.arquivo, ax = $('#wa-anexo'); ax.classList.toggle('oculto', !arq);
