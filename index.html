@@ -534,6 +534,27 @@ label.marcar input{width:auto}
 #bot-lado label.chk input{width:auto;margin:0}
 @media (max-width:420px){.st-on b{display:none}.st-on{padding:0 11px}}
 .bot-previa{display:block;width:100%;max-width:200px;border-radius:10px;margin:6px 0}
+/* ---------- gráficos do painel ---------- */
+.gr-meta .trilho2{position:relative;height:22px;border-radius:11px;background:var(--card2);overflow:hidden;margin:10px 0 6px}
+.gr-meta .trilho2 i{display:block;height:100%;border-radius:11px;background:var(--verde)}
+.gr-meta .trilho2 i.bateu{background:#2E9E5B}
+.gr-meta .grande{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.1}
+.gr-meta .linha{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--suave)}
+.gr-cols{display:flex;align-items:flex-end;gap:2px;height:170px;border-bottom:1px solid var(--linha);padding-top:22px}
+.gr-cols .c{flex:1;min-width:0;height:100%;display:flex;align-items:flex-end;position:relative;cursor:default;outline:none}
+.gr-cols .c i{display:block;width:100%;border-radius:4px 4px 0 0;background:var(--verde);min-height:0}
+.gr-cols .c.zero i{background:transparent}
+.gr-cols .c:hover i,.gr-cols .c:focus i{background:var(--verde-esc)}
+.gr-cols .c[data-tip]:hover::after,.gr-cols .c[data-tip]:focus::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--texto);color:var(--fundo);font-size:12px;line-height:1.35;padding:6px 9px;border-radius:8px;white-space:pre;z-index:5;pointer-events:none}
+.gr-cols .c:first-child[data-tip]:hover::after,.gr-cols .c:first-child[data-tip]:focus::after{left:0;transform:none}
+.gr-cols .c:last-child[data-tip]:hover::after,.gr-cols .c:last-child[data-tip]:focus::after{left:auto;right:0;transform:none}
+.gr-eixo{display:flex;gap:2px;font-size:11px;color:var(--suave);margin-top:4px}
+.gr-eixo span{flex:1;min-width:0;text-align:center;overflow:visible;white-space:nowrap}
+.gr-vend .lin-barra{grid-template-columns:minmax(70px,110px) 1fr auto}
+.gr-vend .lin-barra .b{height:14px;border-radius:7px}
+.gr-vend .lin-barra .b i{border-radius:7px}
+.gr-vend .lin-barra small{color:var(--texto);font-weight:600}
+@media (max-width:640px){.gr-cols{height:140px}}
 </style>
 </head>
 <body>
@@ -1527,6 +1548,7 @@ function calcular(d, ini, fim){
   c.anuncios = agrupa(novos.filter(anDe).map(l => ({ an:anDe(l) })), 'an').map(o => { const g = ganhos.filter(l => anDe(l) === o.k); return { ...o, vendas:g.length, valor:soma(g) }; });
   c.tipos = TIPOS.map(([k, nome]) => { const g = ganhos.filter(l => l.tipo === k); return { nome, n:novos.filter(l => l.tipo === k).length, vendas:g.length, valor:soma(g) }; });
   c.motivos = agrupa(perdidos, 'motivo_perda');
+  c.ganhos = ganhos;
   return c;
 }
 
@@ -1554,6 +1576,42 @@ function rankingHTML(c){
 const cartelaRanking = (c, sub) => `<section class="cartela"><h2>Ranking por atendente</h2><p class="sub">${sub ? esc(sub) + ' · ' : ''}No empate vale valor vendido, depois nº de vendas, depois conversão. Tempo pra atender = do lead chegar até sair do Novo (mediana).</p><div class="rk-caixa">${rankingHTML(c)}</div></section>`;
 document.addEventListener('click', e => { const b = e.target.closest('[data-rk-ordem]'); if (!b || !rkUlt) return; estado.rk.ordem = b.dataset.rkOrdem; b.closest('.rk-caixa').innerHTML = rankingHTML(rkUlt); });
 document.addEventListener('change', e => { const x = e.target.closest('[data-rk-tipo]'); if (!x || !rkUlt) return; estado.rk.tipo = x.value; x.closest('.rk-caixa').innerHTML = rankingHTML(rkUlt); });
+// ---------- gráficos (pra quem não é técnico ler de bater o olho) ----------
+function graficosHTML(c, ini, fim, rot, meta, ehMes){
+  const out = [];
+  // 1) meta do mês: barra que vai enchendo
+  const alvo = Number(meta?.faturamento || 0);
+  if (ehMes && alvo > 0) {
+    const p = c.faturamento / alvo, falta = Math.max(0, alvo - c.faturamento);
+    out.push(`<section class="cartela gr-meta"><h2>Meta do mês</h2><p class="sub">Quanto já foi vendido de ${esc(rot)}.</p>
+      <div class="grande num">${brl0(c.faturamento)} <small style="font-size:15px;color:var(--suave);font-family:var(--sans)">de ${brl0(alvo)}</small></div>
+      <div class="trilho2" role="img" aria-label="${Math.round(p * 100)}% da meta"><i class="${p >= 1 ? 'bateu' : ''}" style="width:${Math.min(100, p * 100).toFixed(1)}%"></i></div>
+      <div class="linha"><span><b style="color:var(--texto)">${Math.round(p * 100)}%</b> da meta</span><span>${falta ? 'Faltam <b style="color:var(--texto)">' + brl0(falta) + '</b>' : '🎉 Meta batida!'}</span></div></section>`);
+  }
+  // 2) vendido por dia (ou por mês, se o período for longo)
+  const dias = Math.round((fim - ini) / 864e5), porMes = dias > 62, cols = [];
+  for (let t = new Date(ini); t < fim; t = porMes ? new Date(t.getFullYear(), t.getMonth() + 1, 1) : new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1)) {
+    const a = t.getTime(), b = porMes ? new Date(t.getFullYear(), t.getMonth() + 1, 1).getTime() : new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1).getTime();
+    const g = c.ganhos.filter(l => { const x = new Date(l.ganho_em || l.etapa_desde).getTime(); return x >= a && x < b; });
+    cols.push({ t:new Date(t), v:g.reduce((s, l) => s + Number(l.valor || 0), 0), n:g.length });
+    if (cols.length > 400) break;
+  }
+  const mx = Math.max(0, ...cols.map(x => x.v)), passo = Math.max(1, Math.ceil(cols.length / 10));
+  const rotCol = x => porMes ? x.t.toLocaleDateString('pt-BR', { month:'short' }).replace('.', '') : String(x.t.getDate());
+  const nomeCol = x => porMes ? x.t.toLocaleDateString('pt-BR', { month:'long', year:'numeric' }) : x.t.toLocaleDateString('pt-BR', { weekday:'short', day:'2-digit', month:'2-digit' }).replace('.', '');
+  out.push(`<section class="cartela"><h2>Vendido por ${porMes ? 'mês' : 'dia'}</h2><p class="sub">${esc(rot)} · passe o dedo ou o mouse na barra pra ver o valor.</p>
+    ${mx ? `<div class="gr-cols" role="img" aria-label="Valor vendido por ${porMes ? 'mês' : 'dia'}">${cols.map(x => `<div class="c ${x.v ? '' : 'zero'}" tabindex="0" data-tip="${esc(nomeCol(x) + '\n' + (x.n ? brl0(x.v) + ' · ' + x.n + (x.n > 1 ? ' vendas' : ' venda') : 'sem venda'))}"><i style="height:${mx ? (x.v / mx * 100).toFixed(1) : 0}%"></i></div>`).join('')}</div>
+    <div class="gr-eixo">${cols.map((x, i) => `<span>${i % passo === 0 ? esc(rotCol(x)) : ''}</span>`).join('')}</div>
+    <p class="sub" style="margin:10px 0 0">Melhor ${porMes ? 'mês' : 'dia'}: <b style="color:var(--texto)">${esc(nomeCol(cols.reduce((m, x) => x.v > m.v ? x : m)))}</b> · ${brl0(mx)}</p>` : '<div class="vazio">Nenhuma venda no período.</div>'}</section>`);
+  // 3) por vendedora: valor, ticket médio e conversão (cada um no seu gráfico)
+  const vs = c.atendentes.filter(r => r.id && (r.vendas || r.leads));
+  const bar = (titulo, sub, itens, fmt) => { const mxv = Math.max(0, ...itens.map(i => i.n)); return `<section class="cartela gr-vend"><h2>${titulo}</h2><p class="sub">${sub}</p>${itens.length && mxv ? barras(itens, mxv, fmt) : '<div class="vazio">Nada no período.</div>'}</section>`; };
+  const ord = a => a.sort((x, y) => y.n - x.n);
+  out.push(bar('Valor vendido por vendedora', 'Quem trouxe mais dinheiro no período.', ord(vs.filter(r => r.valor > 0).map(r => ({ nome:r.nome, n:r.valor, vendas:r.vendas }))), i => brl0(i.n)));
+  out.push(`<div class="duas">${bar('Ticket médio', 'Valor médio de cada venda.', ord(vs.filter(r => r.vendas).map(r => ({ nome:r.nome, n:r.valor / r.vendas }))), i => brl0(i.n))}
+    ${bar('Conversão', 'De cada 100 leads, quantos viraram venda.', ord(vs.filter(r => r.leads).map(r => ({ nome:r.nome, n:Math.round(r.vendas / r.leads * 100) }))), i => i.n + '%')}</div>`);
+  return out.join('');
+}
 const tabTipos = c => `<section class="cartela"><h2>Day Use, hospedagem e grupos</h2><p class="sub">Cada tipo de venda separado.</p><div class="rolagem"><table class="tab num" style="min-width:480px">
   <tr><th>Tipo</th><th>Leads</th><th>Vendas</th><th>Conversão</th><th>Faturamento</th><th>Ticket médio</th></tr>
   ${c.tipos.map(t => `<tr><td class="forte">${esc(t.nome)}</td><td>${t.n}</td><td class="forte">${t.vendas}</td><td>${pctTxt(t.vendas, t.n)}</td><td>${brl(t.valor)}</td><td>${t.vendas ? brl0(t.valor / t.vendas) : '—'}</td></tr>`).join('')}
@@ -1608,6 +1666,7 @@ async function desenharPainel(){
         ${incluiHoje && c.agora.semResp ? `<span class="alerta">Sem responsável <b class="num">${c.agora.semResp}</b></span>` : ''}
       </div>
     </section>
+    ${graficosHTML(c, ini, fim, rot, meta, ehMes)}
     ${tabTipos(c)}
     ${cartelaRanking(c, rot)}
     <div class="duas">
