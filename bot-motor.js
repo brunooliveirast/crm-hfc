@@ -215,6 +215,8 @@
       const t = texto(no.texto || '', ctxTxt, agora); if (t) out.msgs.push(t);
       out.set.etiqueta = 'aguardando atendente';
       if (no.setor) out.set.setor = no.setor;
+      // entrega pra uma atendente que está online (o banco escolhe e troca {atendente} pelo nome dela)
+      if (no.distribuir !== false) out.set.distribuir = true;
       s.fim = true; s.esperando = false; s.motivo = motivo;
       const r = (s.vars.respostas || []);
       notas.push('🤖 Bot passou pro atendente.' + (r.length ? '\n' + r.join('\n') : ''));
@@ -242,29 +244,29 @@
     return erros;
   }
 
-  // ---------- modelo inicial (sem preço nem regra do hotel: isso o hotel preenche) ----------
+  // ---------- modelo inicial: a "Ju" (textos tirados do site do hotel, sem preço) ----------
   function modelo() {
     return {
       nos: {
-        n1: { tipo: 'inicio', x: 40, y: 200, gatilho: 'sem_conversa', dias: 7, palavras: 'menu' },
-        n2: { tipo: 'mensagem', x: 300, y: 200, texto: 'Olá, {saudacao}! 😊 Aqui é do Hotel Fazenda Coninho.' },
-        n3: { tipo: 'menu', x: 560, y: 160, titulo: 'Assunto', texto: 'Como posso te ajudar?', opcoes: ['Day Use', 'Hospedagem', 'Grupos e eventos', 'Falar com um atendente'], invalido: 'Não entendi 😅 Responda só com o número da opção:' },
+        n1: { tipo: 'inicio', x: 40, y: 220, gatilho: 'sem_conversa', dias: 30, palavras: 'menu, ju' },
+        n2: { tipo: 'mensagem', x: 300, y: 220, texto: 'Olá, {saudacao}! 😊 Eu sou a *Ju*, do *Hotel Fazenda Coninho*.\n\nVou fazer o seu atendimento inicial e já te passo para uma das nossas atendentes.' },
+        n3: { tipo: 'menu', x: 560, y: 200, titulo: 'Assunto', texto: 'Hoje você busca atendimento para:', opcoes: ['Day Use', 'Hospedagem', 'Outro assunto'], invalido: 'Não entendi 😅 Me responde só com o número da opção:' },
         n4: { tipo: 'acao', x: 860, y: 20, etapa: 'atendimento', tipoLead: 'dayuse' },
-        n5: { tipo: 'acao', x: 860, y: 150, etapa: 'atendimento', tipoLead: 'hospedagem' },
-        n6: { tipo: 'acao', x: 860, y: 280, etapa: 'atendimento', tipoLead: 'grupo' },
-        n7: { tipo: 'pergunta', x: 1120, y: 120, campo: 'data_visita', texto: 'Pra qual data você está pensando? (ex.: 14/12)' },
-        n8: { tipo: 'pergunta', x: 1380, y: 120, campo: 'adultos', texto: 'Quantos adultos?' },
-        n9: { tipo: 'pergunta', x: 1640, y: 120, campo: 'criancas', texto: 'E crianças? (se não tiver, responda 0)' },
-        n10: { tipo: 'horario', x: 1900, y: 160, dias: [0, 1, 2, 3, 4, 5, 6], ini: '08:00', fim: '18:00' },
-        n11: { tipo: 'humano', x: 2160, y: 60, texto: 'Perfeito! Já vou te passar pra um atendente. É rapidinho. 🙌' },
-        n12: { tipo: 'humano', x: 2160, y: 280, texto: 'Anotei tudo! Nosso atendimento está fora do horário agora, mas te respondemos assim que voltar. 🙏' },
+        n5: { tipo: 'mensagem', x: 1120, y: 20, titulo: 'Sobre o Day Use', texto: 'Que bom! ☀️ O nosso *Day Use* é um dia inteiro na fazenda, aos fins de semana e feriados.\n\nEstão incluídos as piscinas semiaquecidas, a sauna, os passeios a cavalo e de charrete, a recreação infantil com monitoras e a comida mineira feita no fogão a lenha: tira-gosto, almoço à vontade e mesa de doces.' },
+        n6: { tipo: 'mensagem', x: 1380, y: 20, titulo: 'Transferindo (Day Use)', texto: 'Estou te transferindo para {atendente}, nossa especialista em Day Use. 😊\n\nEnquanto você aguarda, deixa eu te contar um pouquinho sobre o Coninho:' },
+        n7: { tipo: 'acao', x: 860, y: 260, etapa: 'atendimento', tipoLead: 'hospedagem' },
+        n8: { tipo: 'mensagem', x: 1120, y: 260, titulo: 'Sobre a hospedagem', texto: 'Que bom! 🏡 A nossa *hospedagem* é de fim de semana e feriado, com *pensão completa*: café da manhã, tira-gosto, almoço, sobremesa e jantar.\n\nSão chalés para 2 a 8 pessoas, todos com ar-condicionado, frigobar, TV, wi-fi e varanda. Todo o lazer da fazenda está incluído, e cães de pequeno porte são bem-vindos em alguns chalés. 🐾' },
+        n9: { tipo: 'mensagem', x: 1380, y: 260, titulo: 'Transferindo (hospedagem)', texto: 'Estou te transferindo para {atendente}, nossa especialista em hospedagem. 😊\n\nEnquanto você aguarda, deixa eu te contar um pouquinho sobre o Coninho:' },
+        n10: { tipo: 'mensagem', x: 1640, y: 140, titulo: 'Sobre o Coninho', texto: '🌳 O *Hotel Fazenda Coninho* fica em Inhaúma (MG), a 20 km de Sete Lagoas e 80 km de BH: pertinho, mas longe da correria.\n\n🍲 Comida mineira feita no fogão a lenha\n🏊 Piscinas semiaquecidas e sauna\n🐴 Passeio a cavalo e de charrete\n🧒 Recreação infantil com monitoras\n\nQuem vem, volta! 💚' },
+        n11: { tipo: 'humano', x: 1900, y: 140, texto: 'Em instantes a gente continua por aqui. 🙂', distribuir: true },
+        n12: { tipo: 'humano', x: 860, y: 480, texto: 'Certo! Estou te transferindo para {atendente}, que vai te ajudar com isso. 😊', distribuir: true },
       },
       ligacoes: [
         { de: 'n1', saida: 'saida', para: 'n2' }, { de: 'n2', saida: 'saida', para: 'n3' },
-        { de: 'n3', saida: 'op0', para: 'n4' }, { de: 'n3', saida: 'op1', para: 'n5' }, { de: 'n3', saida: 'op2', para: 'n6' }, { de: 'n3', saida: 'op3', para: 'n10' },
-        { de: 'n4', saida: 'saida', para: 'n7' }, { de: 'n5', saida: 'saida', para: 'n7' }, { de: 'n6', saida: 'saida', para: 'n7' },
+        { de: 'n3', saida: 'op0', para: 'n4' }, { de: 'n3', saida: 'op1', para: 'n7' }, { de: 'n3', saida: 'op2', para: 'n12' }, { de: 'n3', saida: 'invalido', para: 'n12' },
+        { de: 'n4', saida: 'saida', para: 'n5' }, { de: 'n5', saida: 'saida', para: 'n6' }, { de: 'n6', saida: 'saida', para: 'n10' },
         { de: 'n7', saida: 'saida', para: 'n8' }, { de: 'n8', saida: 'saida', para: 'n9' }, { de: 'n9', saida: 'saida', para: 'n10' },
-        { de: 'n10', saida: 'dentro', para: 'n11' }, { de: 'n10', saida: 'fora', para: 'n12' },
+        { de: 'n10', saida: 'saida', para: 'n11' },
       ],
     };
   }
