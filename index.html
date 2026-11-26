@@ -1636,7 +1636,8 @@ function waSessaoChegou(x){
     clearInterval(zs.rapido); zs.rapido = null; setTimeout(() => $('#fundo-zap').classList.add('oculto'), 1800);
     waCarregar().then(() => { if (estado.ver === 'conversas') desenharConversas(); });
   }
-  if (antes === 'conectado' && x.estado !== 'conectado') toast('⚠️ O WhatsApp desconectou. As conversas estão salvas.');
+  // soluço de poucos segundos (o servidor reiniciou e voltou) não vira alarme: só avisa se continuar fora
+  if (antes === 'conectado' && x.estado !== 'conectado') { clearTimeout(zs.aviso); zs.aviso = setTimeout(() => { if (waSit() !== 'conectado') toast('⚠️ O WhatsApp desconectou. As conversas estão salvas.'); }, 20000); }
   zapDesenhar();
 }
 async function waSessaoCarregar(){ try { waSessaoChegou(await api.waSessao()); } catch { zapDesenhar(); } }
