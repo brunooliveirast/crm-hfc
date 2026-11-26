@@ -554,6 +554,8 @@ label.marcar input{width:auto}
 .gr-vend .lin-barra .b{height:14px;border-radius:7px}
 .gr-vend .lin-barra .b i{border-radius:7px}
 .gr-vend .lin-barra small{color:var(--texto);font-weight:600}
+.gr-can .det{grid-column:1/-1;margin:-2px 0 4px;font-size:12px;color:var(--suave)}
+.gr-can .seg{margin-bottom:12px}
 @media (max-width:640px){.gr-cols{height:140px}}
 </style>
 </head>
@@ -1369,7 +1371,7 @@ if (!MODO_DEMO) {
    ESTADO
    ===================================================================== */
 const estado = { usuario:null, meu:null, perfis:[], leads:[], achados:[], ver:'funil', filtroTipo:'', filtroResp:'', busca:'', aberto:null, quente:false,
-  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, wa:{ convs:[], lead:null, msgs:[], aberto:false, erro:null, extra:null, arquivo:null }, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'mes', ref:new Date(), chave:'mes' }, rk:{ ordem:'valor', tipo:'' }, feed:[], avModo:'geral', produtos:[], itens:[] };
+  respostas:[], config:{}, filtroSetor:'', base:null, baseErro:null, wa:{ convs:[], lead:null, msgs:[], aberto:false, erro:null, extra:null, arquivo:null }, msgs:[], conversa:'geral', chatLead:null, chatAberto:false, mesRef:new Date(), rel:{ modo:'mes', ref:new Date(), chave:'mes' }, rk:{ ordem:'valor', tipo:'' }, canTipo:'', feed:[], avModo:'geral', produtos:[], itens:[] };
 const nomeDe = id => estado.perfis.find(p => p.id === id)?.nome || '';
 const ehGestor = () => estado.meu?.papel === 'gestor';
 const cachePer = new Map();
@@ -1603,6 +1605,7 @@ function graficosHTML(c, ini, fim, rot, meta, ehMes){
     ${mx ? `<div class="gr-cols" role="img" aria-label="Valor vendido por ${porMes ? 'mês' : 'dia'}">${cols.map(x => `<div class="c ${x.v ? '' : 'zero'}" tabindex="0" data-tip="${esc(nomeCol(x) + '\n' + (x.n ? brl0(x.v) + ' · ' + x.n + (x.n > 1 ? ' vendas' : ' venda') : 'sem venda'))}"><i style="height:${mx ? (x.v / mx * 100).toFixed(1) : 0}%"></i></div>`).join('')}</div>
     <div class="gr-eixo">${cols.map((x, i) => `<span>${i % passo === 0 ? esc(rotCol(x)) : ''}</span>`).join('')}</div>
     <p class="sub" style="margin:10px 0 0">Melhor ${porMes ? 'mês' : 'dia'}: <b style="color:var(--texto)">${esc(nomeCol(cols.reduce((m, x) => x.v > m.v ? x : m)))}</b> · ${brl0(mx)}</p>` : '<div class="vazio">Nenhuma venda no período.</div>'}</section>`);
+  out.push(`<section class="cartela gr-vend gr-can" id="gr-canal">${canalHTML(c)}</section>`);
   // 3) por vendedora: valor, ticket médio e conversão (cada um no seu gráfico)
   const vs = c.atendentes.filter(r => r.id && (r.vendas || r.leads));
   const bar = (titulo, sub, itens, fmt) => { const mxv = Math.max(0, ...itens.map(i => i.n)); return `<section class="cartela gr-vend"><h2>${titulo}</h2><p class="sub">${sub}</p>${itens.length && mxv ? barras(itens, mxv, fmt) : '<div class="vazio">Nada no período.</div>'}</section>`; };
@@ -1612,6 +1615,24 @@ function graficosHTML(c, ini, fim, rot, meta, ehMes){
     ${bar('Conversão', 'De cada 100 leads, quantos viraram venda.', ord(vs.filter(r => r.leads).map(r => ({ nome:r.nome, n:Math.round(r.vendas / r.leads * 100) }))), i => i.n + '%')}</div>`);
   return out.join('');
 }
+// vendas por canal (de onde veio o cliente que comprou), com filtro Day Use / hospedagem / grupo
+let canUlt = null;
+function canalHTML(c){
+  canUlt = c; const tipo = estado.canTipo;
+  const chave = l => (l.etiquetas || []).includes('Bio do Instagram') ? 'bio' : (l.origem || 'whatsapp');
+  const nomeK = k => k === 'bio' ? 'Bio do Instagram' : rotulo(ORIGENS, k);
+  const m = new Map();
+  c.ganhos.filter(l => !tipo || l.tipo === tipo).forEach(l => {
+    const k = chave(l), x = m.get(k) || { k, nome:nomeK(k), n:0, vendas:0, porTipo:{} };
+    x.n += Number(l.valor || 0); x.vendas++; x.porTipo[l.tipo || '—'] = (x.porTipo[l.tipo || '—'] || 0) + Number(l.valor || 0); m.set(k, x);
+  });
+  const itens = [...m.values()].sort((a, b) => b.n - a.n), mx = Math.max(0, ...itens.map(i => i.n)), total = itens.reduce((s, i) => s + i.n, 0);
+  const seg = `<div class="seg" role="group" aria-label="Tipo de venda">${[['', 'Tudo'], ...TIPOS].map(([k, n]) => `<button type="button" data-can-tipo="${k}" class="${k === tipo ? 'ativo' : ''}">${esc(n)}</button>`).join('')}</div>`;
+  const linhas = itens.map(i => `<div class="lin-barra"><span>${esc(i.nome)}</span><div class="b"><i style="width:${mx ? Math.max(3, i.n / mx * 100) : 0}%"></i></div><small class="num">${brl0(i.n)}</small>
+    <div class="det">${i.vendas} ${i.vendas > 1 ? 'vendas' : 'venda'} · ${pctTxt(i.n, total)} do total${!tipo ? ' · ' + TIPOS.filter(([t]) => i.porTipo[t]).map(([t, n]) => n + ' ' + brl0(i.porTipo[t])).join(' · ') : ''}</div></div>`).join('');
+  return `<h2>Vendas por canal</h2><p class="sub">De onde veio o cliente que comprou. A origem é a da ficha do lead (anúncio é marcado sozinho).</p>${seg}${linhas || '<div class="vazio">Nenhuma venda no período.</div>'}`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-can-tipo]'); if (!b || !canUlt) return; estado.canTipo = b.dataset.canTipo; const el = $('#gr-canal'); if (el) el.innerHTML = canalHTML(canUlt); });
 const tabTipos = c => `<section class="cartela"><h2>Day Use, hospedagem e grupos</h2><p class="sub">Cada tipo de venda separado.</p><div class="rolagem"><table class="tab num" style="min-width:480px">
   <tr><th>Tipo</th><th>Leads</th><th>Vendas</th><th>Conversão</th><th>Faturamento</th><th>Ticket médio</th></tr>
   ${c.tipos.map(t => `<tr><td class="forte">${esc(t.nome)}</td><td>${t.n}</td><td class="forte">${t.vendas}</td><td>${pctTxt(t.vendas, t.n)}</td><td>${brl(t.valor)}</td><td>${t.vendas ? brl0(t.valor / t.vendas) : '—'}</td></tr>`).join('')}
